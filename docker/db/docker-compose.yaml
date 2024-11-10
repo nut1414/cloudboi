@@ -1,0 +1,22 @@
+services:
+  postgresql:
+    image: postgres:alpine # Use the latest official PostgreSQL image
+    restart: always # Always restart the container if it stops
+    environment:
+      POSTGRES_USER: ${DATABASE_USER:-cloudboi} # Set the PostgreSQL username
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-cloudboi} # Set a strong password
+      POSTGRES_DB: ${DATABASE_NAME:-cloudboidb} # Set the default database name
+    volumes:
+      - ./db_data:/var/lib/postgresql/data # Persist data in a volume
+
+  pgadmin:
+    image: dpage/pgadmin4:latest # Use the latest official pgAdmin image
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com # Set pgAdmin email
+      PGADMIN_DEFAULT_PASSWORD: admin # Set pgAdmin password
+    ports:
+      - "5050:80" # Map port 5050 on the host to port 80 in the container
+    depends_on:
+      - postgresql # Ensure PostgreSQL starts before pgAdmin
+
