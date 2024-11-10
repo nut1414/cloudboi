@@ -11,6 +11,10 @@ for windows, please run everything in WSL
 - pnpm `npm install --global pnpm`
 - docker
 
+# contribution
+
+please create a branch with feature as name then request a pull request review on that branch
+
 # running project
 
 ```sh
