@@ -8,7 +8,7 @@ for windows, please run everything in WSL
 
 - python>=3.12.0
 - nodejs>=22
-- pnpm
+- pnpm `npm install --global pnpm`
 - docker
 
 # running project
