@@ -2,3 +2,4 @@ uvicorn[standard]
 fastapi[standard]
 sqlalchemy
 pylxd
+git+https://github.com/canonical/python-libmaas.git

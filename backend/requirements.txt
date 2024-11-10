@@ -4,6 +4,12 @@
 #
 #    pip-compile --output-file=requirements.txt --strip-extras requirements.in
 #
+aiohappyeyeballs==2.4.3
+    # via aiohttp
+aiohttp==3.10.10
+    # via python-libmaas
+aiosignal==1.3.1
+    # via aiohttp
 annotated-types==0.7.0
     # via pydantic
 anyio==4.6.2.post1
@@ -11,29 +17,43 @@ anyio==4.6.2.post1
     #   httpx
     #   starlette
     #   watchfiles
+argcomplete==3.5.1
+    # via python-libmaas
+attrs==24.2.0
+    # via aiohttp
 certifi==2024.8.30
     # via
     #   httpcore
     #   httpx
     #   requests
 cffi==1.17.1
-    # via cryptography
+    # via
+    #   cryptography
+    #   pynacl
 charset-normalizer==3.4.0
     # via requests
 click==8.1.7
     # via
     #   typer
     #   uvicorn
+colorclass==2.2.2
+    # via python-libmaas
 cryptography==43.0.3
     # via pylxd
 dnspython==2.7.0
-    # via email-validator
+    # via
+    #   email-validator
+    #   pymongo
 email-validator==2.2.0
     # via fastapi
 fastapi==0.115.4
     # via -r requirements.in
 fastapi-cli==0.0.5
     # via fastapi
+frozenlist==1.5.0
+    # via
+    #   aiohttp
+    #   aiosignal
 h11==0.14.0
     # via
     #   httpcore
@@ -50,14 +70,29 @@ idna==3.10
     #   email-validator
     #   httpx
     #   requests
+    #   yarl
 jinja2==3.1.4
     # via fastapi
+macaroonbakery==1.3.4
+    # via python-libmaas
 markdown-it-py==3.0.0
     # via rich
 markupsafe==3.0.2
     # via jinja2
 mdurl==0.1.2
     # via markdown-it-py
+multidict==6.1.0
+    # via
+    #   aiohttp
+    #   yarl
+oauthlib==3.2.2
+    # via python-libmaas
+packaging==24.2
+    # via python-libmaas
+propcache==0.2.0
+    # via yarl
+protobuf==5.28.3
+    # via macaroonbakery
 pycparser==2.22
     # via cffi
 pydantic==2.9.2
@@ -68,16 +103,35 @@ pygments==2.18.0
     # via rich
 pylxd==2.3.5
     # via -r requirements.in
+pymacaroons==0.13.0
+    # via macaroonbakery
+pymongo==4.10.1
+    # via python-libmaas
+pynacl==1.5.0
+    # via
+    #   macaroonbakery
+    #   pymacaroons
+pyrfc3339==1.1
+    # via macaroonbakery
 python-dateutil==2.9.0.post0
     # via pylxd
 python-dotenv==1.0.1
     # via uvicorn
+python-libmaas @ git+https://github.com/canonical/python-libmaas.git
+    # via -r requirements.in
 python-multipart==0.0.17
     # via fastapi
+pytz==2024.2
+    # via
+    #   pyrfc3339
+    #   python-libmaas
 pyyaml==6.0.2
-    # via uvicorn
+    # via
+    #   python-libmaas
+    #   uvicorn
 requests==2.32.3
     # via
+    #   macaroonbakery
     #   pylxd
     #   requests-toolbelt
 requests-toolbelt==1.0.0
@@ -87,7 +141,10 @@ rich==13.9.4
 shellingham==1.5.4
     # via typer
 six==1.16.0
-    # via python-dateutil
+    # via
+    #   macaroonbakery
+    #   pymacaroons
+    #   python-dateutil
 sniffio==1.3.1
     # via
     #   anyio
@@ -96,6 +153,8 @@ sqlalchemy==2.0.36
     # via -r requirements.in
 starlette==0.41.2
     # via fastapi
+terminaltables==3.1.10
+    # via python-libmaas
 typer==0.13.0
     # via fastapi-cli
 typing-extensions==4.12.2
@@ -120,3 +179,5 @@ websockets==14.0
     # via uvicorn
 ws4py==0.5.1
     # via pylxd
+yarl==1.17.1
+    # via aiohttp
