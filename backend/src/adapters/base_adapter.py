@@ -20,3 +20,8 @@ class BaseAdapter(ABC):
   @abstractmethod
   def delete_instance(self, name):
     pass
+  
+  @abstractmethod
+  def connect_instance(self, name) -> str:
+    pass
+  

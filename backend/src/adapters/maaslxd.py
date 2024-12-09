@@ -31,7 +31,14 @@ class MAASLXDAdapter(BaseAdapter):
 
   def delete_container(self, name):
     container = self.client.containers.get(name)
-    container.delete(wait=True)
+    # check if there is container
+    if container:
+      
+      container.delete(wait=True)
+    
+  def connect_instance(self, name):
+    container = self.client.containers.get(name)
+    return container.execute(["/bin/bash"], stdin=True, stdout=True)
 
 # Example usage
 if __name__ == "__main__":

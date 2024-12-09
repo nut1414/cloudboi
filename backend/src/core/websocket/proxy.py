@@ -1,7 +1,6 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-import httpx
+from fastapi import WebSocket, WebSocketDisconnect, APIRouter
 
-app = FastAPI()
+router = APIRouter()
 
 class ConnectionManager:
   def __init__(self):
@@ -17,13 +16,9 @@ class ConnectionManager:
   async def send_personal_message(self, message: str, websocket: WebSocket):
     await websocket.send_text(message)
 
-  async def broadcast(self, message: str):
-    for connection in self.active_connections:
-      await connection.send_text(message)
-
 manager = ConnectionManager()
 
-@app.websocket("/ws/{client_id}")
+@router.websocket("/ws/{client_id}")
 async def websocket_endpoint(websocket: WebSocket, client_id: int):
   await manager.connect(websocket)
   try:
@@ -35,6 +30,6 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
     manager.disconnect(websocket)
     await manager.broadcast(f"Client #{client_id} left the chat")
 
-@app.get("/")
+@router.get("/ws")
 async def get():
   return {"message": "WebSocket Proxy using FastAPI"}

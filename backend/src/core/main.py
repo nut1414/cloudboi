@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .dependencies import get_token_header
 from .routers import items, users, admin
+from .websocket.proxy import router as websocket_router
 
 
 def custom_generate_unique_id(route: APIRoute):
@@ -32,6 +33,7 @@ app.include_router(
     dependencies=[Depends(get_token_header)],
     # responses={418: {"description": "I'm a teapot"}},
 )
+app.include_router(websocket_router)
 
 
 @app.get("/", tags=["root"])
