@@ -16,4 +16,4 @@ sync: activate-env
 init: install sync
 
 run: activate-env
-	uvicorn src.main:app --reload
+	uvicorn src.core.main:app --reload
