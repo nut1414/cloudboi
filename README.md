@@ -13,6 +13,7 @@ for windows, please run everything in WSL
 
 # for ubuntu wsl instruction
 
+- install git
 - Enable WSL Feature in Windows then reboot system
 - Install Ubuntu from Microsoft Store, setup password by open Ubuntu
 
@@ -33,7 +34,9 @@ sudo chmod g+rwx "$HOME/.docker" -R
 
 sudo apt update
 sudo add-apt-repository ppa:deadsnakes/ppa
-sudo apt install python-is-python3 python3 python3.12-venv python3-pip python3-full
+sudo apt install python-is-python3 python3 python3.12-venv python3-pip python3-full git make
+
+git clone https://github.com/nut1414/cloudboi.git
 
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
 
