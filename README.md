@@ -21,6 +21,7 @@ for windows, please run everything in WSL
 
 https://www.docker.com/products/docker-desktop/
 
+- clone the project
 - open up terminal in `cloudboi` folder
 - do `wsl` then do the following command
 
@@ -35,8 +36,6 @@ sudo chmod g+rwx "$HOME/.docker" -R
 sudo apt update
 sudo add-apt-repository ppa:deadsnakes/ppa
 sudo apt install python-is-python3 python3 python3.12-venv python3-pip python3-full git make
-
-git clone https://github.com/nut1414/cloudboi.git
 
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
 
