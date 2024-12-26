@@ -15,7 +15,7 @@ dev-frontend-install:
 	cd frontend && . ${HOME}/.nvm/nvm.sh && nvm install 23 && nvm use 23 && npm install -g pnpm && pnpm install
 
 dev-frontend:
-	cd frontend && nvm use 23 && pnpm dev
+	cd frontend && . ${HOME}/.nvm/nvm.sh && nvm use 23 && pnpm dev
 
 dev: db-up dev-backend dev-frontend db-down
 
