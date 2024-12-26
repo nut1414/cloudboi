@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 db-up:
 	docker-compose -f ./docker/db/docker-compose.yaml up -d
 db-down:

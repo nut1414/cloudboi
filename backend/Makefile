@@ -1,7 +1,10 @@
+.ONESHELL:
+SHELL := /bin/bash
+
 create-env:
 	python -m venv .venv
 activate-env:
-	$(source .venv/bin/activate)
+	. .venv/bin/activate
 deactivate-env:
 	deactivate
 

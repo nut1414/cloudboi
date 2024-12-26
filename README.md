@@ -11,6 +11,19 @@ for windows, please run everything in WSL
 - pnpm `npm install --global pnpm`
 - docker
 
+for ubuntu wsl
+
+```sh
+sudo apt update
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt install python-is-python3 python3 python3.12-venv python3-pip python3-full
+
+nvm install 23
+nvm use 23
+
+make dev
+```
+
 # contribution
 
 please create a branch with feature as name then request a pull request review on that branch
