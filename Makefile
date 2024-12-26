@@ -1,9 +1,9 @@
 SHELL := /bin/bash
 
 db-up:
-	docker-compose -f ./docker/db/docker-compose.yaml up -d
+	docker compose -f ./docker/db/docker-compose.yaml up -d
 db-down:
-	docker-compose -f ./docker/db/docker-compose.yaml down
+	docker compose -f ./docker/db/docker-compose.yaml down
 
 dev-backend-install:
 	cd backend && sh ./install.sh
