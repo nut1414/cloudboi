@@ -4,10 +4,10 @@ db-down:
 	docker-compose -f ./docker/db/docker-compose.yaml down
 
 dev-backend-install:
-	cd backend && ./install.sh
+	sh ./backend/install.sh
 
 dev-backend:
-	cd backend && ./run.sh &
+	sh ./backend/run.sh &
 
 dev-frontend-install:
 	cd frontend && pnpm install
