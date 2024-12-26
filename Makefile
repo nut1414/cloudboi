@@ -19,6 +19,8 @@ dev-frontend:
 
 dev: db-up dev-backend dev-frontend db-down
 
+install: dev-backend-install dev-frontend-install
+
 gen-client: dev-frontend-install
 	cd frontend && pnpm gen-client
 
