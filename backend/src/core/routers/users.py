@@ -18,3 +18,5 @@ async def read_user_me():
 @router.get("/users/{username}", response_model=Users.User, tags=["users"])
 async def read_user(username: str):
     return {"username": username}
+
+

@@ -20,5 +20,5 @@ sync: activate-env
 
 init: install sync
 
-run: 
+run:
 	$(PYTHON) -m uvicorn src.core.main:app --reload
