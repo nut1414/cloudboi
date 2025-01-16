@@ -3,6 +3,7 @@ import viteLogo from "/vite.svg";
 import "./App.css";
 import { AdminService, client } from "./client";
 
+// Test change
 function App() {
   const testCallApi = async () => {
     const { data, error } = await AdminService.adminAdminUpdateAdmin({
