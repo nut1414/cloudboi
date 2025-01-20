@@ -4,24 +4,27 @@
 
 ```sh
 
+# removing maas
+sudo ./clear_maas.sh
+
+
 # installing and setting up maas
 sudo ./init_maas.sh
 
-# removeing maas
-sudo ./clear_maas.sh
 
 ```
+
+maas should then be accessible at `https://yourip:5240/MAAS`
 
 ## LXD
 
 ```sh
 
-# installing and config lxd
-sudo ./init_main_lxd.sh
-
 # remove lxd
 snap remove lxd
 
+# installing and config lxd
+sudo ./init_main_lxd.sh
 
 ## detailed config for lxd
 
@@ -39,3 +42,12 @@ snap remove lxd
 # 12. 'yes' print yaml
 
 ```
+
+lxd should be accessible at `https://yourip:8443`
+
+open lxd in browser
+
+proceed to follow the on-screen instruction (generate then use the cert to trust on the lxd) \*note that this is not required, everything can be done on terminal with `lxc` command
+
+for connection with pylxd client, please read up on document here:
+https://pylxd.readthedocs.io/en/latest/authentication.html#generate-a-certificate
