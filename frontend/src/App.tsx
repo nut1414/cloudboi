@@ -1,11 +1,11 @@
 import "./App.css";
 // import Nav from "./components/Nav";
-import NavbarUnLogin from "./components/NavbarUnLogin";
+import UnauthenticatedNavbar from "./components/UnauthenticatedNavbar";
 
 function App() {
   return (
     <>
-      <NavbarUnLogin>
+      <UnauthenticatedNavbar>
         <ul className="flex space-x-4 items-center">
           <li>
             <a
@@ -48,7 +48,7 @@ function App() {
             </a>
           </li>
         </ul>
-      </NavbarUnLogin>
+      </UnauthenticatedNavbar>
 
       {/* Large Square Content */}
       <div className="mr-0 ml-0 mt-[10vh] flex justify-center items-center h-[500px] w-[1200px] bg-[#D5C6E0] rounded-2xl">

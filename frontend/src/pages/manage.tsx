@@ -1,4 +1,4 @@
-import Navbartest from "../components/Test";
+import VerticalSidebar from "../components/VerticalSidebar";
 import Navbar from "../components/Navbar";
 
 function Manage() {
@@ -10,7 +10,7 @@ function Manage() {
 
   return (
     <>
-      <Navbartest />
+      <VerticalSidebar />
       <Navbar />
       <p className="text-black  pt-20 pl-0 mr-96"> Displaying xx items</p>
       {/* Large Square Content */}

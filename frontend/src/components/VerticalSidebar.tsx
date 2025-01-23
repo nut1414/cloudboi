@@ -1,7 +1,7 @@
 import React,{useEffect,useState} from "react";
 import { useLocation } from "react-router-dom";
 
-const Navbartest: React.FC = () => {
+const VerticalSidebar: React.FC = () => {
 
   
   const location = useLocation();
@@ -37,7 +37,7 @@ const Navbartest: React.FC = () => {
         </li>
         <li className="relative group p-4">
           {/* bg-red-300 */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 top-0 bottom-0 w-[50%] h-[180%] -z-10 bg-[#967AA1]  scale-110 rounded-md opacity-100 transition-all p-2">
+          <div className="shadow-md absolute left-1/2 transform -translate-x-1/2 top-0 bottom-0 w-[50%] h-[180%] -z-10 bg-[#967AA1]  scale-110 rounded-md opacity-100 transition-all p-2">
             <span className="absolute top-2 left-2 text-xs text-gray-700">
               Available Credit:
             </span>
@@ -92,11 +92,11 @@ const Navbartest: React.FC = () => {
           <li className={`relative group p-4 
                 ${pathValue === "setting" && showDiv ? "bg-[#1E345F]" : ""} 
                 ${!showDiv ? "hover:bg-[#1E345F]" : ""}`}>
-            <div className="absolute left-1/2 transform -translate-x-1/2 top-0 bottom-0 w-[70%] -z-10 bg-[#967AA1]  scale-110 rounded-md opacity-0 group-hover:opacity-100 transition-all"></div>
+            <div className="absolute  left-1/2 transform -translate-x-1/2 top-0 bottom-0 w-[70%] -z-10 bg-[#967AA1]  scale-110 rounded-md opacity-0 group-hover:opacity-100 transition-all"></div>
             {pathValue === "setting" && showDiv && (
           <div className="absolute left-1/2 transform -translate-x-1/2 top-0 bottom-0 w-[70%] -z-10 bg-[#967AA1] scale-110 rounded-md opacity-0 opacity-100 transition-all"></div>
         )}
-            <a href="/setting" className="text-white">
+            <a href="/setting/access" className="text-white">
             Setting
             </a>
           </li>
@@ -108,4 +108,4 @@ const Navbartest: React.FC = () => {
   );
 };
 
-export default Navbartest;
+export default VerticalSidebar;

@@ -1,4 +1,4 @@
-import Navbartest from "../components/Test";
+import Navbartest from "../components/VerticalSidebar";
 
 
 function Support() {
