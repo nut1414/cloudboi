@@ -13,6 +13,11 @@ export type ResponseMessage = {
     message: string;
 };
 
+export type TestModel = {
+    test_response: number;
+    test_response2: number;
+};
+
 export type User = {
     username: string;
 };
@@ -32,6 +37,10 @@ export type AdminAdminUpdateAdminData = {
 export type AdminAdminUpdateAdminResponse = (ResponseMessage);
 
 export type AdminAdminUpdateAdminError = (HTTPValidationError);
+
+export type GetResponse = (unknown);
+
+export type GetError = unknown;
 
 export type ItemsItemsReadItemsData = {
     headers: {
@@ -72,6 +81,16 @@ export type ItemsItemsUpdateItemError = (unknown | HTTPValidationError);
 export type RootRootResponse = (unknown);
 
 export type RootRootError = unknown;
+
+export type TestapiReadTestapiData = {
+    path: {
+        item: number;
+    };
+};
+
+export type TestapiReadTestapiResponse = (TestModel);
+
+export type TestapiReadTestapiError = (HTTPValidationError);
 
 export type UsersReadUsersResponse = (Array<User>);
 

@@ -2,9 +2,9 @@
 
 import type { Options } from '@hey-api/client-axios';
 import { queryOptions, type UseMutationOptions } from '@tanstack/react-query';
-import type { AdminAdminUpdateAdminData, AdminAdminUpdateAdminError, AdminAdminUpdateAdminResponse, ItemsItemsReadItemsData, ItemsItemsReadItemData, ItemsItemsUpdateItemData, ItemsItemsUpdateItemError, ItemsItemsUpdateItemResponse, UsersReadUserData } from '../types.gen';
+import type { AdminAdminUpdateAdminData, AdminAdminUpdateAdminError, AdminAdminUpdateAdminResponse, ItemsItemsReadItemsData, ItemsItemsReadItemData, ItemsItemsUpdateItemData, ItemsItemsUpdateItemError, ItemsItemsUpdateItemResponse, TestapiReadTestapiData, UsersReadUserData } from '../types.gen';
 import type { AxiosError } from 'axios';
-import { client, AdminService, ItemsService, RootService, UsersService } from '../services.gen';
+import { client, AdminService, DefaultService, ItemsService, RootService, TestapiService, UsersService } from '../services.gen';
 
 type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseURL' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -64,6 +64,25 @@ export const adminAdminUpdateAdminMutation = (options?: Partial<Options<AdminAdm
         }
     };
     return mutationOptions;
+};
+
+export const getQueryKey = (options?: Options) => [
+    createQueryKey('get', options)
+];
+
+export const getOptions = (options?: Options) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await DefaultService.get({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: getQueryKey(options)
+    });
 };
 
 export const itemsItemsReadItemsQueryKey = (options: Options<ItemsItemsReadItemsData>) => [
@@ -134,6 +153,25 @@ export const rootRootOptions = (options?: Options) => {
             return data;
         },
         queryKey: rootRootQueryKey(options)
+    });
+};
+
+export const testapiReadTestapiQueryKey = (options: Options<TestapiReadTestapiData>) => [
+    createQueryKey('testapiReadTestapi', options)
+];
+
+export const testapiReadTestapiOptions = (options: Options<TestapiReadTestapiData>) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await TestapiService.testapiReadTestapi({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: testapiReadTestapiQueryKey(options)
     });
 };
 

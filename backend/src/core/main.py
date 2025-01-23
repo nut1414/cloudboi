@@ -3,7 +3,7 @@ from fastapi.routing import APIRoute
 from fastapi.middleware.cors import CORSMiddleware
 
 from .dependencies import get_token_header
-from .routers import items, users, admin
+from .routers import items, users, admin, testapi
 from .websocket.proxy import router as websocket_router
 
 
@@ -24,6 +24,7 @@ app.add_middleware(
 )
 
 
+app.include_router(testapi.router)
 app.include_router(users.router)
 app.include_router(items.router)
 app.include_router(
