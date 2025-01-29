@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import VerticalSidebar from "../components/VerticalSidebar";
+import VerticalSidebar from "../components/sidebar/VerticalSidebar";
 
 function CreateInstance() {
     const [selectedVersion, setSelectedVersion] = useState("");

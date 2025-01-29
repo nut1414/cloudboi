@@ -1,4 +1,4 @@
-import VerticalSidebar from "../components/VerticalSidebar";
+import VerticalSidebar from "../components/sidebar/VerticalSidebar";
 import Navbar from "../components/Navbar";
 
 function Manage() {
