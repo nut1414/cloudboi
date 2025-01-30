@@ -1,9 +1,9 @@
-import NavbarUnLogin from "../components/NavbarUnLogin";
+import UnauthenticatedNavbar from "../components/UnauthenticatedNavbar";
 
 function SignUp() {
   return (
     <>
-      <NavbarUnLogin>
+      <UnauthenticatedNavbar>
        
       <ul className="flex space-x-4 items-center">
          
@@ -21,7 +21,7 @@ function SignUp() {
       
        
         
-      </NavbarUnLogin>
+      </UnauthenticatedNavbar>
       <div className="mr-0 ml-0 mt-[10vh] flex flex-col justify-start items-start h-[400px] w-[500px] bg-[#D5C6E0] rounded-2xl p-6">
         {/* <div className="bg-[#192A51] px-3 py-2 mb-4 rounded-2xl    border-transparent border-white border-2 ">
           <p className=" text-white text-xl ">Sign Up with Email</p>
