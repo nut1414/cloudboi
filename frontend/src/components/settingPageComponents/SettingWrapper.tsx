@@ -2,7 +2,7 @@ import React from "react";
 import VerticalSidebar from "../sidebar/VerticalSidebar";
 import SidebarWrapper from "../sidebar/SidebarWrapper";
 import TopicName from "./TopicName";
-import SlidebarSettingPage from "../slidebarSetting/SlidebarSettingPage";
+import SlidebarSettingPage from "./slidebarSetting/SlidebarSettingPage";
 
 
 interface ComponentWithChildren {
