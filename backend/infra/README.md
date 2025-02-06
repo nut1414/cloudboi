@@ -16,6 +16,15 @@ sudo ./init_maas.sh
 
 maas should then be accessible at `https://yourip:5240/MAAS`
 
+> Make sure to stop MAAS service before proceeding into init the LXD.
+> Due to MAAS including its own LXD, overlapped of subnet usage will break LXD init script.
+
+```sh
+
+snap stop maas
+
+```
+
 ## LXD
 
 ```sh
