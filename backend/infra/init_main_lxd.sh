@@ -23,9 +23,6 @@ if [ "$INSTALL_LXD" != "y" ]; then
     exit
 fi
 
-# grab current UP interface
-ACTIVE_INTERFACE=$(ip link show | grep 'state UP' | awk '{print $2}' | tr -d :)
-
 # install LXD and dependencies
 snap install lxd --channel=${DEFAULT_LXD_CHANNEL}
 
@@ -37,15 +34,16 @@ snap install lxd --channel=${DEFAULT_LXD_CHANNEL}
 # 6. 'dir' Name of the new storage pool: dir
 # 7. 'no' Don't use remote storage
 # 8. 'no' Don't connect to maas
-# 9. 'yes' Use existing bridge/interface
-# 10. 'ACTIVE_INTERFACE' Name of the existing bridge/interface
-# 11. 'yes' stale cached image
-# 12. 'yes' print yaml 
+# 9. 'no' Use existing bridge/interface
+# 10. 'yes' Create a new fan overlay network,
+# 11. '' Auto subnet for fan overlay network 
+# 12. 'yes' stale cached image
+# 13. 'yes' print yaml 
 
 # init LXD
 echo "Initializing LXD..."
 
-printf "yes\n\nno\ncloudboi-main\nyes\ndir\nno\nno\nyes\n$ACTIVE_INTERFACE\nyes\nyes\n\n\n" | lxd init 
+printf "yes\n\nno\ncloudboi-main\nyes\ndir\nno\nno\nno\nyes\n\nyes\nyes\n\n\n" | lxd init 
 
 
 
