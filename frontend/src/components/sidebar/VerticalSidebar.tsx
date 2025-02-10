@@ -19,8 +19,8 @@ const VerticalSidebar: React.FC = () => {
         <ul onMouseEnter={() => setShowDiv(false)}
           onMouseLeave={() => setShowDiv(true)}>
 
-          <ContainerSidebar currentPath={(location.pathname.split("/").filter(Boolean)[0] || "")} pathName={"manage"} showDiv={showDiv} name={"Manage"} />
-          <ContainerSidebar currentPath={(location.pathname.split("/").filter(Boolean)[0] || "")} pathName={"billing"} showDiv={showDiv} name={"Billing"} />
+          <ContainerSidebar currentPath={(location.pathname.split("/").filter(Boolean)[0] || "")} pathName={"instance"} showDiv={showDiv} name={"Manage"} />
+          <ContainerSidebar currentPath={(location.pathname.split("/").filter(Boolean)[0] || "")} pathName={"billing/overview"} showDiv={showDiv} name={"Billing"} />
           <ContainerSidebar currentPath={(location.pathname.split("/").filter(Boolean)[0] || "")} pathName={"support"} showDiv={showDiv} name={"Support"} />
           <ContainerSidebar currentPath={(location.pathname.split("/").filter(Boolean)[0] || "")} pathName={"setting/access"} showDiv={showDiv} name={"Setting"} />
 
