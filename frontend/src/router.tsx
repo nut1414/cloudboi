@@ -1,15 +1,13 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "./App";
 import SignUp from "./pages/signUp";
-import Manage from "./pages/manage";
+import Manage from "./pages/manage/manage";
 import CreateInstance from "./pages/createInstance";
-import Billing from "./pages/billing";
-import AccessPage from "./pages/setting/access";
-import GraphsPage from "./pages/setting/graphs";
-import PowersPage from "./pages/setting/powers";
-import NetworkingPage from "./pages/setting/networking";
-import DestroyPage from "./pages/setting/destroy";
+import OverViewPage from "./pages/billing/overview";
+import HistoryPage from "./pages/billing/history";
+import TopUpPage from "./pages/billing/top-up";
 import Support from "./pages/support";
+import InstanceSetting from "./pages/manage/instanceSetting";
 
 const router = createBrowserRouter([
   {
@@ -21,7 +19,7 @@ const router = createBrowserRouter([
     element: <SignUp />,  
   },
   {
-    path: "/manage", 
+    path: "/Instance", 
     element: <Manage />, 
   },
   {
@@ -29,32 +27,24 @@ const router = createBrowserRouter([
     element: <CreateInstance/>
   },
   {
-    path: "/billing",
-    element: <Billing/>
+    path: "/billing/overview",
+    element: <OverViewPage/>
   },
   {
-    path: "/setting/access",
-    element: <AccessPage/>
+    path: "/billing/history",
+    element: <HistoryPage/>
   },
   {
-    path: "/setting/graphs",
-    element: <GraphsPage/>
-  },
-  {
-    path: "/setting/powers",
-    element: <PowersPage/>
-  },
-  {
-    path: "/setting/networking",
-    element: <NetworkingPage/>
-  },
-  {
-    path: "/setting/destroy",
-    element: <DestroyPage/>
+    path: "/billing/top-up",
+    element: <TopUpPage/>
   },
   {
     path: "/support",
     element: <Support/>
+  },
+  {
+    path: "/instance/:instance_id",
+    element: <InstanceSetting/>
   },
 
 ]);

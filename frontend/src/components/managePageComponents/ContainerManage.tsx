@@ -1,6 +1,8 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 interface Instance {
+    id:string;
     name: string;
     os: string;
     usage: string;
@@ -13,9 +15,11 @@ interface ContainerManageProps {
 }
 
 const ContainerManage: React.FC<ContainerManageProps> = ({ instances}) => {
+    const navigate = useNavigate();
 
     return (
         <>
+        <div className="max-h-[600px] overflow-y-auto">
           {instances.map((instance, index) => (
                 <div key={index} className="grid grid-cols-6 text-black text-md bg-red-300 mt-1 border-b py-2 px-4">
                     <span className="text-center">{instance.name}</span>
@@ -26,11 +30,13 @@ const ContainerManage: React.FC<ContainerManageProps> = ({ instances}) => {
                         {instance.status}
                     </span>
 
-                    <button className=" bg-[#D5C6E0] text-black py-2 rounded-2xl">
+                    <button className=" bg-[#D5C6E0] shadow-md text-black py-2 rounded-2xl"
+                    onClick={() => navigate(`/instance/${instance.id}`)}>
                         View Instance
                     </button>
                 </div>
             ))}
+            </div>
         </>
     );
 };

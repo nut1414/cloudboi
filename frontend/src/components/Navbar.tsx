@@ -8,13 +8,13 @@ const Navbar: React.FC = () => {
         <input
             type="text"
             placeholder="Search by instance name..."
-           className="bg-white text-black  placeholder-black pl-4 pr-20 py-2  rounded-2xl  border-transparent border-[#D5C6E0] border-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+           className="bg-white  text-black  placeholder-black pl-4 pr-20 py-2  rounded-2xl  border-transparent border-[#D5C6E0] border-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         <ul className="flex space-x-4">
           <li>
             <a
               href="/manage/createinstance"
-              className="bg-[#D5C6E0] text-black px-4 py-2  rounded-2xl"
+              className="bg-[#D5C6E0] shadow-md text-black px-4 py-2  rounded-2xl"
             >
               Create 
             </a>
@@ -26,7 +26,7 @@ const Navbar: React.FC = () => {
           <li>
             <a
               href="#"
-              className="bg-[#D5C6E0] text-black px-4 py-2  rounded-2xl ml-2 border-white border-2"
+              className="bg-[#D5C6E0] shadow-md text-black px-4 py-2  rounded-2xl ml-2 border-white border-2"
             >
               User profile
             </a>
