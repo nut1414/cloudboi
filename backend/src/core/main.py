@@ -12,8 +12,6 @@ from .sql.database import session_manager
 def custom_generate_unique_id(route: APIRoute):
     return f"{route.tags}-{route.name}"
 
-# init_db()
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Before startup
