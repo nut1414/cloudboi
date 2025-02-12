@@ -1,10 +1,10 @@
 import React from "react";
 
-import AccessMenu from "./accessMenuComponents/accessMenu";
+import AccessMenu from "./accessMenuComponents/AccessMenu";
 import GraphsMenu from "./graphsMenuComponents/GraphsMenu";
 import PowersMenu from "./powersMenuComponents/PowersMenu";
 import NetworkingMenu from "./networkingMenuComponents/NetworkingMenu";
-import DestroyMenu from "./destroyMenuComponents/destroyMenu";
+import DestroyMenu from "./destroyMenuComponents/DestroyMenu";
 
 interface InstanceSettingComponentProps {
     active: number;

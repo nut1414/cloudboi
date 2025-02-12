@@ -8,6 +8,7 @@ import HistoryPage from "./pages/billing/history";
 import TopUpPage from "./pages/billing/top-up";
 import Support from "./pages/support";
 import InstanceSetting from "./pages/manage/instanceSetting";
+import Billing from "./pages/billing";
 
 const router = createBrowserRouter([
   {
@@ -45,6 +46,10 @@ const router = createBrowserRouter([
   {
     path: "/instance/:instance_id",
     element: <InstanceSetting/>
+  },
+  {
+    path: "/Billing",
+    element: <Billing/>
   },
 
 ]);
