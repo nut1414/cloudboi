@@ -3,9 +3,6 @@ import App from "./App";
 import SignUp from "./pages/signUp";
 import Manage from "./pages/manage/manage";
 import CreateInstance from "./pages/createInstance";
-import OverViewPage from "./pages/billing/overview";
-import HistoryPage from "./pages/billing/history";
-import TopUpPage from "./pages/billing/top-up";
 import Support from "./pages/support";
 import InstanceSetting from "./pages/manage/instanceSetting";
 import Billing from "./pages/billing";
@@ -28,16 +25,8 @@ const router = createBrowserRouter([
     element: <CreateInstance/>
   },
   {
-    path: "/billing/overview",
-    element: <OverViewPage/>
-  },
-  {
-    path: "/billing/history",
-    element: <HistoryPage/>
-  },
-  {
-    path: "/billing/top-up",
-    element: <TopUpPage/>
+    path: "/Billing",
+    element: <Billing/>
   },
   {
     path: "/support",
@@ -47,10 +36,7 @@ const router = createBrowserRouter([
     path: "/instance/:instance_id",
     element: <InstanceSetting/>
   },
-  {
-    path: "/Billing",
-    element: <Billing/>
-  },
+ 
 
 ]);
 
