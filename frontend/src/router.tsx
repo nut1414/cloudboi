@@ -1,11 +1,11 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "./App";
 import SignUp from "./pages/signUp";
-import Manage from "./pages/manage";
+import Manage from "./pages/manage/manage";
 import CreateInstance from "./pages/createInstance";
-import Billing from "./pages/billing";
-import Setting from "./pages/setting";
 import Support from "./pages/support";
+import InstanceSetting from "./pages/manage/instanceSetting";
+import Billing from "./pages/billing";
 
 const router = createBrowserRouter([
   {
@@ -17,7 +17,7 @@ const router = createBrowserRouter([
     element: <SignUp />,  
   },
   {
-    path: "/manage", 
+    path: "/Instance", 
     element: <Manage />, 
   },
   {
@@ -25,17 +25,18 @@ const router = createBrowserRouter([
     element: <CreateInstance/>
   },
   {
-    path: "/billing",
+    path: "/Billing",
     element: <Billing/>
-  },
-  {
-    path: "/setting",
-    element: <Setting/>
   },
   {
     path: "/support",
     element: <Support/>
   },
+  {
+    path: "/instance/:instance_id",
+    element: <InstanceSetting/>
+  },
+ 
 
 ]);
 
