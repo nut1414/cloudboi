@@ -1,11 +1,11 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "./App";
-import SignUp from "./pages/signUp";
-import Manage from "./pages/manage/manage";
-import CreateInstance from "./pages/createInstance";
-import Support from "./pages/support";
-import InstanceSetting from "./pages/manage/instanceSetting";
-import Billing from "./pages/billing";
+import SignUp from "./pages/userPages/signUp";
+import Manage from "./pages/userPages/manage/manage";
+import CreateInstance from "./pages/userPages/createInstance";
+import Support from "./pages/userPages/support";
+import InstanceSetting from "./pages/userPages/manage/instanceSetting";
+import Billing from "./pages/userPages/billing";
 
 const router = createBrowserRouter([
   {

@@ -1,7 +1,7 @@
 import React,{useState} from "react";
 
-import SettingWrapper from "../../components/settingPageComponents/SettingWrapper";
-import InstanceSettingComponent from "../../components/settingPageComponents/InstanceSettingComponent";
+import SettingWrapper from "../../../components/settingPageComponents/SettingWrapper";
+import InstanceSettingComponent from "../../../components/settingPageComponents/InstanceSettingComponent";
 
 const InstanceSetting: React.FC = () => {
     const [activeTab, setActiveTab] = useState(0);

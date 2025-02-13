@@ -1,4 +1,4 @@
-import UnauthenticatedNavbar from "../components/UnauthenticatedNavbar";
+import UnauthenticatedNavbar from "../../components/UnauthenticatedNavbar";
 
 function SignUp() {
   return (

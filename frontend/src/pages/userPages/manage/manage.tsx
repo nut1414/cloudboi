@@ -1,7 +1,7 @@
-import Navbar from "../../components/Navbar";
-import SidebarWrapper from "../../components/sidebar/SidebarWrapper";
-import ColumnName from "../../components/managePageComponents/ColumnName";
-import ContainerManage from "../../components/managePageComponents/ContainerManage";
+import Navbar from "../../../components/Navbar";
+import SidebarWrapper from "../../../components/sidebar/SidebarWrapper";
+import ColumnName from "../../../components/managePageComponents/ColumnName";
+import ContainerManage from "../../../components/managePageComponents/ContainerManage";
 
 function Manage() {
 
@@ -16,7 +16,6 @@ function Manage() {
     { id:"In08",name: "instance_8", os: "Ubuntu xx.xx.xx", usage: "5.15 GBs", type: "Instance Type 1", status: "Stopped" },
     { id:"In09",name: "instance_9", os: "Ubuntu xx.xx.xx", usage: "5.15 GBs", type: "Instance Type 1", status: "Stopped" },
     { id:"In10",name: "instance_10", os: "Ubuntu xx.xx.xx", usage: "5.15 GBs", type: "Instance Type 1", status: "Stopped" },
-  
   
   ];
 
