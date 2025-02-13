@@ -21,7 +21,7 @@ const router = createBrowserRouter([
     element: <Manage />, 
   },
   {
-    path: "/manage/Createinstance",
+    path: "/instance/Createinstance",
     element: <CreateInstance/>
   },
   {

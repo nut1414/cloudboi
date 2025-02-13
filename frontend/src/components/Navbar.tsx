@@ -13,7 +13,7 @@ const Navbar: React.FC = () => {
         <ul className="flex space-x-4">
           <li>
             <a
-              href="/manage/createinstance"
+              href="/instance/createinstance"
               className="bg-[#D5C6E0] shadow-md text-black px-4 py-2  rounded-2xl"
             >
               Create 
