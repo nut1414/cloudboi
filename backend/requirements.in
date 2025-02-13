@@ -1,5 +1,6 @@
 uvicorn[standard]
 fastapi[standard]
-sqlalchemy
+asyncpg
+sqlalchemy[asyncio]
 pylxd
 git+https://github.com/canonical/python-libmaas.git

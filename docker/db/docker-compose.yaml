@@ -6,8 +6,10 @@ services:
       POSTGRES_USER: ${DATABASE_USER:-cloudboi} # Set the PostgreSQL username
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-cloudboi} # Set a strong password
       POSTGRES_DB: ${DATABASE_NAME:-cloudboidb} # Set the default database name
+    ports:
+      - "5432:5432" # Map port 5432 on the host to port 5432 in the container
     volumes:
-      - ./db_data:/var/lib/postgresql/data # Persist data in a volume
+      - postgres-data:/var/lib/postgresql/data
 
   pgadmin:
     image: dpage/pgadmin4:latest # Use the latest official pgAdmin image
@@ -17,6 +19,11 @@ services:
       PGADMIN_DEFAULT_PASSWORD: admin # Set pgAdmin password
     ports:
       - "5050:80" # Map port 5050 on the host to port 80 in the container
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
     depends_on:
       - postgresql # Ensure PostgreSQL starts before pgAdmin
 
+volumes:
+  postgres-data:
+  pgadmin-data:

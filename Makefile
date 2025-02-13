@@ -5,6 +5,9 @@ db-up:
 db-down:
 	docker compose -f ./docker/db/docker-compose.yaml down
 
+kill-backend:
+	pkill -f "uvicorn src.core.main:app" || true
+
 dev-backend-install:
 	cd backend && sh ./install.sh
 

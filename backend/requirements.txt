@@ -19,6 +19,8 @@ anyio==4.6.2.post1
     #   watchfiles
 argcomplete==3.5.1
     # via python-libmaas
+asyncpg==0.30.0
+    # via -r requirements.in
 attrs==24.2.0
     # via aiohttp
 certifi==2024.8.30
@@ -54,6 +56,8 @@ frozenlist==1.5.0
     # via
     #   aiohttp
     #   aiosignal
+greenlet==3.1.1
+    # via sqlalchemy
 h11==0.14.0
     # via
     #   httpcore
