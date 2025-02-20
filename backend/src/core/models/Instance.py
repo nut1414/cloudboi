@@ -17,3 +17,9 @@ class OsType(BaseModel):
 class InstanceDetails(BaseModel):
     instance_package: List[InstanceType]
     os_image: List[OsType]
+
+class InstanceCreate(BaseModel):
+    os_type: OsType
+    instance_type: InstanceType
+    instance_name: str
+    root_password: str
