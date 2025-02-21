@@ -4,7 +4,7 @@ import asyncio
 
 from .validators.instance_validator import InstanceValidator
 from .lxd import LXDService
-from ..models.Instance import InstanceCreate, InstanceDetails
+from ..models.Instance import InstanceCreateRequest, InstanceCreateResponse, InstanceDetails
 from ..sql.operations.instance import InstanceOperation
 
 
@@ -12,7 +12,7 @@ class InstanceService:
     def __init__(
         self,
         instance_opr: InstanceOperation = Depends(),
-        lxd_service: LXDService = Depends()
+        lxd_service: LXDService = Depends(LXDService.get_service)
     ):
         self.instance_opr = instance_opr
         self.lxd_service = lxd_service
@@ -31,7 +31,7 @@ class InstanceService:
             os_image=os_types_task.result()
         )
     
-    async def create_instance(self, instance_create: InstanceCreate):
+    async def create_instance(self, instance_create: InstanceCreateRequest) -> InstanceCreateResponse:
         # Validate instance_create
         async with asyncio.TaskGroup() as tg:
             instance_type_task = tg.create_task(
@@ -46,8 +46,9 @@ class InstanceService:
             raise ValueError("Invalid password format")
         
         # Create instance
-        instance = await self.lxd_service.create_instance(instance_create)
+        instance = self.lxd_service.create_instance(instance_create)
         if not instance:
             raise RuntimeError("Failed to create instance")
-        
+
+        return instance
         # TODO: Add subscription logic here

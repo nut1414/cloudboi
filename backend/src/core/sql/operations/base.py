@@ -1,4 +1,4 @@
-from typing import List, Sequence, Type, TypeVar
+from typing import List, Optional, Sequence, Type, TypeVar, Union
 from fastapi import Depends
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,5 +11,11 @@ class BaseOperation:
     def __init__(self, db: AsyncSession = Depends(get_db_session)):
         self.db = db
     
-    def to_pydantic(self, pydantic_model: Type[PydanticT], orm_objects: Sequence) -> List[PydanticT]:
-        return [pydantic_model.model_validate(obj) for obj in orm_objects]
+    def to_pydantic(self, pydantic_model: Type[PydanticT], orm_objects: Union[Sequence, object, None]) -> Union[List[PydanticT], Optional[PydanticT]]:
+        if orm_objects is None:
+            return None
+            
+        if isinstance(orm_objects, Sequence) and not isinstance(orm_objects, (str, bytes)):
+            return [pydantic_model.model_validate(obj) for obj in orm_objects]
+        else:
+            return pydantic_model.model_validate(orm_objects)

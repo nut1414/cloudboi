@@ -8,8 +8,12 @@ services:
       - "8000:8000"
     volumes:
       - ../../backend:/app
+      - ../../backend/test_certificate/tmp/lxd.crt:/app/certs/lxd.crt:ro
+      - ../../backend/test_certificate/tmp/lxd.key:/app/certs/lxd.key:ro
     environment:
       - DB_HOST=postgresql
+      - LXD_CERT_PATH=/app/certs/lxd.crt
+      - LXD_KEY_PATH=/app/certs/lxd.key
     networks:
       - cloudboi-network
 
