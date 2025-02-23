@@ -2,8 +2,9 @@ from fastapi import Depends
 import asyncio
 
 
+from .clients.base_instance_client import BaseInstanceClient
 from .validators.instance_validator import InstanceValidator
-from .lxd import LXDService
+from .clients.lxd import LXDClient
 from ..models.Instance import InstanceCreateRequest, InstanceCreateResponse, InstanceDetails
 from ..sql.operations.instance import InstanceOperation
 
@@ -12,10 +13,10 @@ class InstanceService:
     def __init__(
         self,
         instance_opr: InstanceOperation = Depends(),
-        lxd_service: LXDService = Depends(LXDService.get_service)
+        lxd_client: BaseInstanceClient = Depends(LXDClient.get_client)
     ):
         self.instance_opr = instance_opr
-        self.lxd_service = lxd_service
+        self.lxd_client = lxd_client
     
     async def get_all_instance_details(self) -> InstanceDetails:
         async with asyncio.TaskGroup() as tg:
@@ -46,7 +47,7 @@ class InstanceService:
             raise ValueError("Invalid password format")
         
         # Create instance
-        instance = self.lxd_service.create_instance(instance_create)
+        instance = self.lxd_client.create_instance(instance_create)
         if not instance:
             raise RuntimeError("Failed to create instance")
 
