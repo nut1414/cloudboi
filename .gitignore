@@ -134,3 +134,4 @@ __pycache__
 .venv
 
 db_data
+certs

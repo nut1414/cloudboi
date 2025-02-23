@@ -10,6 +10,8 @@ services:
       - "5432:5432" # Map port 5432 on the host to port 5432 in the container
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    networks:
+      - cloudboi-network
 
   pgadmin:
     image: dpage/pgadmin4:latest # Use the latest official pgAdmin image
@@ -23,6 +25,12 @@ services:
       - pgadmin-data:/var/lib/pgadmin
     depends_on:
       - postgresql # Ensure PostgreSQL starts before pgAdmin
+    networks:
+      - cloudboi-network
+
+networks:
+  cloudboi-network:
+    name: cloudboi-network
 
 volumes:
   postgres-data:

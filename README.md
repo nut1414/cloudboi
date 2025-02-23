@@ -55,13 +55,22 @@ please create a branch with feature as name then request a pull request review o
 
 # running project
 
+- Make sure to initialize the database first before running the project by using:
+```sh
+make db-up
+```
+- You can run the whole project on your local machine by using:
 ```sh
 make dev
+```
+- You can also start the backend in a Docker container by using:
+```sh
+make backend-up
 ```
 
 # document for backend
 
-fastapi should auto generate schema at localhost:8000/docs
+fastapi should auto generate schema at http://localhost:8000/docs
 
 # generating client for frontend
 
