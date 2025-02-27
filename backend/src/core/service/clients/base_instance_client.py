@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic, Any, Optional
 
+from fastapi import WebSocket
+
 InstanceType = TypeVar('InstanceType')
 
 class BaseInstanceClient(ABC, Generic[InstanceType]):
@@ -61,4 +63,14 @@ class BaseInstanceClient(ABC, Generic[InstanceType]):
         **kwargs: Any
     ) -> bool:
         """Set instance root password"""
+        pass
+
+    @abstractmethod
+    def websocket_session(
+        self, 
+        instance_identifier: Any, 
+        client_ws: WebSocket, 
+        **kwargs: Any
+    ) -> Any:
+        """Start a WebSocket session"""
         pass

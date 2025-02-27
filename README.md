@@ -1,8 +1,8 @@
-# cloudboi
+# Cloudboi
 
 monorepo for cloudboi projects
 
-# prerequisite
+# Prerequisite
 
 for windows, please run everything in WSL
 
@@ -11,7 +11,7 @@ for windows, please run everything in WSL
 - pnpm `npm install --global pnpm`
 - docker
 
-# for ubuntu wsl instruction
+# For ubuntu wsl instruction
 
 - install git
 - Enable WSL Feature in Windows then reboot system
@@ -49,11 +49,11 @@ make install
 
 - then run `make dev` to start the project
 
-# contribution
+# Contribution
 
 please create a branch with feature as name then request a pull request review on that branch
 
-# running project
+# Running project
 
 - Make sure to initialize the database first before running the project by using:
 ```sh
@@ -68,11 +68,26 @@ make dev
 make backend-up
 ```
 
-# document for backend
+# Debugging
+
+#### Frontend
+- TBD
+
+#### Backend
+- run the following command(don't forget to open docker desktop first)
+    ```sh
+    make db-up backend-debug
+    ```
+- click on debug tab on vs code
+<img src="images/vs_code_debug_tab.png" width="400"/>
+- choose `Python Docker: Remote Debug` then click run
+<img src="images/vs_code_debug_run.png" width="400"/>
+
+# Document for backend
 
 fastapi should auto generate schema at http://localhost:8000/docs
 
-# generating client for frontend
+# Generating client for frontend
 
 make sure the project is running and then execute this command in another terminal
 

@@ -1,7 +1,8 @@
 .ONESHELL:
 SHELL := /bin/bash
 
-# Don't use venv paths in Docker
+UVICORN_PARAMS = --host 0.0.0.0 --port 8000 --reload --reload-dir /app/src
+
 ifeq ($(DOCKER),true)
     PYTHON := python
     PIP := pip
@@ -12,6 +13,7 @@ else
     PIP := ./.venv/bin/pip
     PIP_COMPILE := ./.venv/bin/pip-compile
     PIP_SYNC := ./.venv/bin/pip-sync
+	UVICORN_PARAMS = --reload
 endif
 
 create-env:
@@ -32,9 +34,8 @@ sync:
 
 init: install sync
 
-run:
-ifeq ($(DOCKER),true)
-	$(PYTHON) -m uvicorn src.core.main:app --host 0.0.0.0 --port 8000 --reload --reload-dir /app/src
-else
-	$(PYTHON) -m uvicorn src.core.main:app --reload
-endif
+dev:
+	$(PYTHON) -m uvicorn src.core.main:app $(UVICORN_PARAMS)
+
+debug:
+	$(PYTHON) -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m uvicorn src.core.main:app $(UVICORN_PARAMS)

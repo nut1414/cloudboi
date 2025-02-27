@@ -1,4 +1,3 @@
-import logging
 from fastapi import Depends, FastAPI
 from fastapi.routing import APIRoute
 from fastapi.middleware.cors import CORSMiddleware
@@ -7,11 +6,9 @@ from contextlib import asynccontextmanager
 from ..infra.managers.lxd import LXDManager
 from .dependencies import get_token_header
 from .routers import items, users, admin, testapi, instance
-from .websocket.proxy import router as websocket_router
 from .sql.database import session_manager
+from .utils.logging import logger
 
-
-logger = logging.getLogger(__name__)
 
 def custom_generate_unique_id(route: APIRoute):
     return f"{route.tags}-{route.name}"
@@ -62,7 +59,6 @@ app.include_router(
     dependencies=[Depends(get_token_header)],
     # responses={418: {"description": "I'm a teapot"}},
 )
-app.include_router(websocket_router)
 
 
 @app.get("/", tags=["root"])

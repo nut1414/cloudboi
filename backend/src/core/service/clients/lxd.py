@@ -1,27 +1,27 @@
 from datetime import datetime
-from functools import wraps
-from typing import Any, Callable, TypeVar
+from fastapi import WebSocket
 from pylxd import models
 
+from ...commons.exception import create_exception_class
+from .websocket import LXDWebSocketManager, LXDWebSocketSession
 from .base_instance_client import BaseInstanceClient
 from ...models.Instance import InstanceCreateRequest, InstanceCreateResponse
 from ....infra.managers.lxd import LXDManager
+from ...utils.decorator import create_decorator
 
-InstanceIdentifier = str | models.Instance
-F = TypeVar("F", bound=Callable[..., Any])
+LXDClientException = create_exception_class("LXDClient")
 
-def _resolve_instance(func: F) -> F:
-    """Private decorator to resolve instance_identifier into a models.Instance if it's a string."""
-    @wraps(func)
-    def wrapper(self: "LXDClient", instance_identifier: InstanceIdentifier, *args, **kwargs):
-        if isinstance(instance_identifier, str):
-            instance_identifier = self.get_instance(instance_identifier)
-        return func(self, instance_identifier, *args, **kwargs)
-    return wrapper  # type: ignore
+def _resolve_instance_func(self, args, kwargs, *fa, **fk):
+    if isinstance(args[0], str):
+        return ((self.get_instance(args[0]), *args[1:]), kwargs)
+    return args, kwargs
+
+_resolve_instance = create_decorator(_resolve_instance_func)
 
 class LXDClient(BaseInstanceClient[models.Instance]):
     def __init__(self):
         self.lxd_manager = LXDManager.get_manager()
+        self.lxd_ws_manager = LXDWebSocketManager()
     
     def get_instance(self, instance_identifier: str) -> models.Instance:
         return self.lxd_manager.get_container_by_name(instance_identifier)
@@ -38,7 +38,6 @@ class LXDClient(BaseInstanceClient[models.Instance]):
         
         if not is_set_password_success:
             self.delete_instance(container)
-            raise RuntimeError("Failed to set root password")
         
         return InstanceCreateResponse(
             instance_name=container.name,
@@ -46,22 +45,44 @@ class LXDClient(BaseInstanceClient[models.Instance]):
             created_at=self.__format_iso_date(container.created_at)
         )
     
-    @_resolve_instance
+    @_resolve_instance()
     def delete_instance(self, instance_identifier: models.Instance) -> bool:
         return self.lxd_manager.delete_container(instance_identifier)
     
-    @_resolve_instance
+    @_resolve_instance()
     def start_instance(self, instance_identifier: models.Instance) -> bool:
         return self.lxd_manager.start_container(instance_identifier)
 
-    @_resolve_instance  
+    @_resolve_instance()  
     def stop_instance(self, instance_identifier: models.Instance) -> bool:
         return self.lxd_manager.stop_container(instance_identifier)
     
-    @_resolve_instance
+    @_resolve_instance()
     def set_instance_password(self, instance_identifier: models.Instance, password: str) -> bool:
         return self.lxd_manager.set_root_password(instance_identifier, password)
     
+    @_resolve_instance()
+    async def websocket_session(self, instance_identifier: models.Instance, client_ws: WebSocket):
+        try:
+            await client_ws.accept()
+            
+            ws_response = self.lxd_manager.get_interactive_websocket(instance_identifier)
+
+            session: LXDWebSocketSession = await self.lxd_ws_manager.create_session(
+                client_ws=client_ws,
+                instance_name=instance_identifier.name,
+                lxd_ws_url=ws_response.get("ws"),
+                lxd_control_url=ws_response.get("control")
+            )
+
+            async with session:
+                await session.run()
+        except Exception as e:
+            await client_ws.close(code=1011, reason=str(e))
+            raise LXDClientException(f"Error in websocket_session: {str(e)}")
+        finally:
+            await self.lxd_ws_manager.remove_session(instance_identifier.name)
+
     def __to_instance_create_config(self, instance_create: InstanceCreateRequest) -> dict:
         return {
             "device": {
