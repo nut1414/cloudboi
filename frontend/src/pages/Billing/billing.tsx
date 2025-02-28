@@ -1,7 +1,7 @@
-import Navbartest from "../components/Test";
+import Navbartest from "../../components/Navbar/Test";
 
 
-function Setting() {
+function Billing() {
 
 
 
@@ -11,7 +11,7 @@ return (
         <Navbartest />
         <div className="  text-black absolute top-4 left-80 z-0 ">
             <div className="flex flex-col  justify-start items-start">
-                <p className=" text-5xl">Setting</p>
+                <p className=" text-5xl">Billing</p>
             </div>
         </div>
 
@@ -23,4 +23,4 @@ return (
 
 
 
-}export default Setting;
+}export default Billing;

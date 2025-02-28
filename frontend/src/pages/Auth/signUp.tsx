@@ -1,4 +1,4 @@
-import NavbarUnLogin from "../components/NavbarUnLogin";
+import NavbarUnLogin from "../../components/Navbar/NavbarUnLogin";
 
 function SignUp() {
   return (

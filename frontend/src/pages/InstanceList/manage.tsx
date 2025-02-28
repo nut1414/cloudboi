@@ -1,5 +1,5 @@
-import Navbartest from "../components/Test";
-import Navbar from "../components/Navbar";
+import Navbartest from "../../components/Navbar/Test";
+import Navbar from "../../components/Navbar/Navbar";
 
 function Manage() {
 

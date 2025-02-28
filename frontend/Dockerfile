@@ -1,0 +1,20 @@
+# Development Dockerfile for frontend
+FROM node:23-alpine
+
+# Install pnpm
+RUN npm install -g pnpm
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package.json pnpm-lock.yaml ./
+
+# Install dependencies
+RUN pnpm install
+
+# Expose port for Vite dev server
+EXPOSE 3000
+
+# Start development server
+CMD ["pnpm", "dev", "--host", "0.0.0.0"]

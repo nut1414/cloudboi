@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import Navbartest from "../components/Test";
+import Navbartest from "../../components/Navbar/Test";
 
 function CreateInstance() {
     const [selectedVersion, setSelectedVersion] = useState("");
