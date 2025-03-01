@@ -55,18 +55,29 @@ please create a branch with feature as name then request a pull request review o
 
 # Running project
 
-- Make sure to initialize the database first before running the project by using:
-```sh
-make db-up
-```
-- You can run the whole project on your local machine by using:
-```sh
-make dev
-```
-- You can also start the backend in a Docker container by using:
-```sh
-make backend-up
-```
+1.  Initialize the database:
+    ```sh
+    make db-up
+    ```
+2. Run the project:
+
+    - Locally:
+        ```sh
+        make dev
+        ```
+    - In Docker:
+        ```sh
+        make docker-up
+        ```
+3. Run specific services:
+    - Locally:
+        ```sh
+        make dev-service_name # Replace service_name with the service you want to run Ex. make dev-frontend
+        ```
+    - In Docker:
+        ```sh
+        make service_name-up # Replace service_name with the service you want to run Ex. make dev-frontend
+        ```
 
 # Debugging
 

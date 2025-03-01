@@ -153,8 +153,7 @@ class LXDWebSocketSession:
                 buffer += message
                 
                 # Process the buffer to remove echoes and duplicate prompts
-                buffer, should_send = self._process_buffer(buffer)
-                if buffer and should_send:
+                if buffer and self._process_buffer(buffer):
                     await self.client_ws.send_text(buffer)
                 buffer = ""
         except websockets.exceptions.ConnectionClosed:
@@ -174,7 +173,7 @@ class LXDWebSocketSession:
         except Exception as e:
             raise WebSocketException(f"Failed to start tasks: {str(e)}")
     
-    def _process_buffer(self, buffer: str) -> tuple[str, bool]:
+    def _process_buffer(self, buffer: str) -> bool:
         """Process the buffer to remove echoes"""
         should_send = True
 
@@ -185,7 +184,7 @@ class LXDWebSocketSession:
             # Found echo of the last command
             should_send = False
         
-        return buffer, should_send
+        return should_send
 
     async def _handle_resize(self, message: dict):
         """Handle terminal resize events"""

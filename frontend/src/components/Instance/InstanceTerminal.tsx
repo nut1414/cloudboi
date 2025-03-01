@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from 'react'
-import { useTerminal, useWebSocket } from '../../hooks/Instance/useWebsocket'
+import { useTerminal, useWebSocket } from '../../hooks/Instance/useTerminalConnection'
 import 'xterm/css/xterm.css'
 
 interface InstanceTerminalProps {
@@ -61,16 +61,22 @@ const InstanceTerminal: React.FC<InstanceTerminalProps> = ({ instanceName, apiBa
                 <div 
                     ref={terminalRef} 
                     className="h-full w-full"
+                    style={{ textAlign: 'left' }}
                 />
             </div>
         )
     },[connected, error, terminalRef])
 
     return (
-        <div className="container mx-auto p-4">
+        <div className="container p-4">
             <h1 className="text-2xl font-bold mb-4">LXD Terminal</h1>
             <div className="flex flex-col h-screen">
-                <div className="flex-grow border border-gray-300 rounded overflow-hidden shadow-md" style={{ height: 'calc(100vh - 150px)' }}>
+                <div 
+                    className="flex-grow border border-gray-300 rounded overflow-hidden shadow-md"
+                    style={{ 
+                        width: '150ch',   // 80 characters width
+                        height: 'calc(100vh - 150px)',  // Height calculation based on viewport
+                    }} >
                     {Terminal}
                 </div>
             </div>

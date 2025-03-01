@@ -170,7 +170,10 @@ class LXDManager:
             
             shell_options = ["bash", "/bin/bash"]
             for command in shell_options:
-                res = container.raw_interactive_execute([command])
+                res = container.raw_interactive_execute(
+                    commands=[command],
+                    environment={"TERM": "xterm-256color"}
+                )
                 
                 if "ws" in res and "control" in res:
                     ws_url = f"wss://{LXDConfig.LXD_HOST}{res['ws']}"

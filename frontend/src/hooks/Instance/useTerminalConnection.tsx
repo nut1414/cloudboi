@@ -23,9 +23,6 @@ const useTerminal = () => {
               foreground: '#f0f0f0',
             },
             convertEol: true,
-            fontFamily: 'Menlo, Monaco, "Courier New", monospace',
-            fontSize: 14,
-            lineHeight: 1.2,
         })
 
         const fitAddon = new FitAddon()
@@ -34,6 +31,8 @@ const useTerminal = () => {
         if (terminalRef.current) {
             term.open(terminalRef.current)
             fitAddon.fit()
+            term.clear()
+            term.focus()
         }
 
         xtermRef.current = term
@@ -52,11 +51,9 @@ const useTerminal = () => {
 
     // Function to write to terminal
     const writeToTerminal = useCallback((data: string | ArrayBuffer) => {
-        if (xtermRef.current) {
-            xtermRef.current.write(
-                typeof data === 'string' ? data : new Uint8Array(data)
-            )
-        }
+        xtermRef.current?.write(
+            typeof data === 'string' ? data : new Uint8Array(data)
+        );
     }, [])
 
     // Set up data handler with line buffering
@@ -64,26 +61,26 @@ const useTerminal = () => {
         if (xtermRef.current) {
             xtermRef.current.onData((data) => {
                 // Handle special keys and control characters
-                const specialKey = handleSpecialKey(data, inputBufferRef.current, xtermRef.current, handler);
-                if (specialKey) return;
+                const specialKey = handleSpecialKey(data, inputBufferRef.current, xtermRef.current, handler)
+                if (specialKey) return
                 
                 // Add printable characters to the buffer and echo them
                 if (isPrintableChar(data)) {
-                    inputBufferRef.current += data;
+                    inputBufferRef.current += data
                     if (xtermRef.current) {
-                        xtermRef.current.write(data);
+                        xtermRef.current.write(data)
                     }
                 }
-            });
+            })
         }
     }, [])
 
     // Helper functions for terminal input handling
     const isPrintableChar = (char: string): boolean => {
-        return char.length === 1 && char.charCodeAt(0) >= 32;
+        return char.length === 1 && char.charCodeAt(0) >= 32
     }
 
-    
+    // TODO: Add more special key handling
     const handleSpecialKey = (
         key: string, 
         buffer: string, 
@@ -93,67 +90,47 @@ const useTerminal = () => {
         // Return key - process the command
         if (key === '\r') {
             if (term) {
-                term.write('\r\n'); // Add new line locally
-            }
-
-            // Check for 'clear' command
-            if (buffer.trim() === "clear") {
-                term?.clear();
-                inputBufferRef.current = "";
-                return true;
+                term.write('\r\n') // Add new line locally
             }
             
             // Send the complete line
-            handler(buffer + '\n');
-            inputBufferRef.current = ""; // Clear buffer
-            return true;
+            handler(buffer)
+            inputBufferRef.current = "" // Clear buffer
+            return true
         }
         
         // Backspace key
         if (key === '\x7f') {
             if (buffer.length > 0) {
-                inputBufferRef.current = buffer.slice(0, -1);
+                inputBufferRef.current = buffer.slice(0, -1)
                 // Move cursor back, write space, move cursor back again
                 if (term) {
-                    term.write('\b \b');
+                    term.write('\b \b')
                 }
             }
-            return true;
+            return true
         }
         
         // Ctrl+C - send interrupt signal
         if (key === '\x03') {
             if (term) {
-                term.write('^C\r\n');
+                term.write('^C\r\n')
             }
-            handler('\x03');
-            inputBufferRef.current = ""; // Clear buffer
-            return true;
+            handler('\x03')
+            inputBufferRef.current = "" // Clear buffer
+            return true
         }
         
-        // Ctrl+D - send EOF
-        if (key === '\x04') {
-            handler('\x04');
-            return true;
-        }
-        
-        // Arrow keys and other control sequences
-        if (key.startsWith('\x1b[')) {
-            // Terminal escape sequences
-            handler(key);
-            return true;
-        }
-        
-        return false;
+        return false
     }
 
     // Get current terminal dimensions
     const getTerminalDimensions = useCallback(() => {
         if (xtermRef.current && xtermRef.current.rows && xtermRef.current.cols) {
-        return {
-            rows: xtermRef.current.rows,
-            cols: xtermRef.current.cols
-        }
+            return {
+                rows: xtermRef.current.rows,
+                cols: xtermRef.current.cols
+            }
         }
         return { rows: 24, cols: 80 } // Default dimensions
     }, [])
@@ -217,37 +194,30 @@ const useWebSocket = (
     useEffect(() => {
         const connectWebSocket = () => {
             try {
+                // Only attempt new connection if we don't have one already
+                if (wsRef.current && wsRef.current.readyState !== WebSocket.CLOSED) {
+                    return
+                }
+
                 // Create WebSocket connection
                 const ws = new WebSocket(`${apiBaseUrl}/instances/ws/${instanceName}`)
                 wsRef.current = ws
         
                 ws.onopen = () => {
-                    console.log('WebSocket connection established')
                     setConnected(true)
                     setError(null)
                     
                     // Initial terminal size update
                     setTimeout(updateTerminalSize, 500)
                 }
-        
-                ws.onmessage = (event) => {
-                        // Parse message to check if it's a control message or terminal output
-                        try {
-                            const message = JSON.parse(event.data)
-                            if (message.type) {
-                                // Handle control messages here if needed
-                                return
-                            }
-                        } catch (e) {
-                            // Not JSON, treat as raw terminal data
-                        }
-                        
-                        // Pass terminal data to handler
-                        onMessage(event.data)
-                    }
+                
+                ws.binaryType = 'arraybuffer'
+                ws.onmessage = (event: MessageEvent<ArrayBuffer>) => {
+                    // Pass terminal data to handler
+                    onMessage(event.data)
+                }
         
                 ws.onclose = (event) => {
-                    console.log('WebSocket connection closed', event.code, event.reason)
                     setConnected(false)
                     
                     // Try to reconnect unless it was a normal closure
