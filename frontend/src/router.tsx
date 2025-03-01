@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router-dom"
 import { lazy } from "react"
+import DefaultLayout from "./pages/Layout/DefaultLayout"
 
 const App = lazy(() => import("./pages/Landing/App"))
 const SignUp = lazy(() => import("./pages/Auth/signUp"))
@@ -24,6 +25,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/user/:userName",
+    element: <DefaultLayout />,
     children: [
       {
         path: "billing",

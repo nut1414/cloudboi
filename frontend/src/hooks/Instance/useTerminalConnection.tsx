@@ -1,18 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { Terminal } from "xterm"
 import { FitAddon } from "xterm-addon-fit"
-
-// Special message types for control messages
-const MESSAGE_TYPES = {
-    TERMINAL_RESIZE: "TERMINAL_RESIZE",
-    TERMINAL_INPUT: "TERMINAL_INPUT"
-}
+import { MESSAGE_TYPES } from "../../constant/TerminalConstant"
+import { handleSpecialKey, isPrintableChar } from "../../utils/TerminalHelper"
 
 const useTerminal = () => {
     const terminalRef = useRef<HTMLDivElement>(null)
     const xtermRef = useRef<Terminal | null>(null)
     const fitAddonRef = useRef<FitAddon | null>(null)
     const inputBufferRef = useRef<string>("")
+    const cursorPosRef = useRef<number>(0)
+    const historyRef = useRef<string[]>([])
+    const historyPosRef = useRef<number>(-1)
 
     // Initialize terminal
     useEffect(() => {
@@ -53,7 +52,7 @@ const useTerminal = () => {
     const writeToTerminal = useCallback((data: string | ArrayBuffer) => {
         xtermRef.current?.write(
             typeof data === 'string' ? data : new Uint8Array(data)
-        );
+        )
     }, [])
 
     // Set up data handler with line buffering
@@ -61,68 +60,51 @@ const useTerminal = () => {
         if (xtermRef.current) {
             xtermRef.current.onData((data) => {
                 // Handle special keys and control characters
-                const specialKey = handleSpecialKey(data, inputBufferRef.current, xtermRef.current, handler)
+                const specialKey = handleSpecialKey(
+                    data, 
+                    inputBufferRef.current,
+                    cursorPosRef.current,
+                    xtermRef.current, 
+                    handler,
+                    historyRef,
+                    historyPosRef,
+                    inputBufferRef,
+                    cursorPosRef
+                )
                 if (specialKey) return
                 
                 // Add printable characters to the buffer and echo them
-                if (isPrintableChar(data)) {
-                    inputBufferRef.current += data
-                    if (xtermRef.current) {
+                if (isPrintableChar(data) && xtermRef.current) {
+                    if (cursorPosRef.current === inputBufferRef.current.length) {
+                        // Append at the end
+                        inputBufferRef.current += data
+                        cursorPosRef.current++
                         xtermRef.current.write(data)
+                    } else {
+                        // Insert in the middle
+                        const newBuffer = 
+                            inputBufferRef.current.substring(0, cursorPosRef.current) + 
+                            data + 
+                            inputBufferRef.current.substring(cursorPosRef.current)
+                        
+                        inputBufferRef.current = newBuffer
+                        cursorPosRef.current++
+                        
+                        // Clear line from cursor to end and write remaining text
+                        xtermRef.current.write(data + 
+                            inputBufferRef.current.substring(cursorPosRef.current))
+                        
+                        // Move cursor back to the right position
+                        if (cursorPosRef.current < inputBufferRef.current.length) {
+                            xtermRef.current.write(
+                                `\x1b[${inputBufferRef.current.length - cursorPosRef.current}D`
+                            )
+                        }
                     }
                 }
             })
         }
     }, [])
-
-    // Helper functions for terminal input handling
-    const isPrintableChar = (char: string): boolean => {
-        return char.length === 1 && char.charCodeAt(0) >= 32
-    }
-
-    // TODO: Add more special key handling
-    const handleSpecialKey = (
-        key: string, 
-        buffer: string, 
-        term: Terminal | null,
-        handler: (data: string) => void
-    ): boolean => {
-        // Return key - process the command
-        if (key === '\r') {
-            if (term) {
-                term.write('\r\n') // Add new line locally
-            }
-            
-            // Send the complete line
-            handler(buffer)
-            inputBufferRef.current = "" // Clear buffer
-            return true
-        }
-        
-        // Backspace key
-        if (key === '\x7f') {
-            if (buffer.length > 0) {
-                inputBufferRef.current = buffer.slice(0, -1)
-                // Move cursor back, write space, move cursor back again
-                if (term) {
-                    term.write('\b \b')
-                }
-            }
-            return true
-        }
-        
-        // Ctrl+C - send interrupt signal
-        if (key === '\x03') {
-            if (term) {
-                term.write('^C\r\n')
-            }
-            handler('\x03')
-            inputBufferRef.current = "" // Clear buffer
-            return true
-        }
-        
-        return false
-    }
 
     // Get current terminal dimensions
     const getTerminalDimensions = useCallback(() => {
@@ -132,7 +114,6 @@ const useTerminal = () => {
                 cols: xtermRef.current.cols
             }
         }
-        return { rows: 24, cols: 80 } // Default dimensions
     }, [])
 
     // Handle window resize
@@ -170,7 +151,7 @@ const useWebSocket = (
     // Send terminal dimensions through WebSocket as control message
     const updateTerminalSize = useCallback(() => {
         if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-            const dimensions = getTerminalDimensions()
+            const dimensions = getTerminalDimensions() ?? { rows: 24, cols: 80 }
             const message = {
                 type: MESSAGE_TYPES.TERMINAL_RESIZE,
                 payload: dimensions

@@ -1,5 +1,5 @@
-import Navbartest from "../../components/Navbar/Test";
-import Navbar from "../../components/Navbar/Navbar";
+import React from "react";
+import TopNavbar from "../../components/Navbar/TopNavbar"
 
 function Manage() {
 
@@ -10,15 +10,14 @@ function Manage() {
 
   return (
     <>
-      <Navbartest />
-      <Navbar />
+      <TopNavbar />
       <p className="text-black  pt-20 pl-0 mr-96"> Displaying xx items</p>
       {/* Large Square Content */}
-      <div className="mr-0 ml-60 mt-[5vh]  justify-center h-[900px] w-[900px] bg-[#F5E6E8] rounded-2xl">
+      <div className="mr-0 ml-60 mt-[5vh]  justify-center h-[900px] w-[900px] bg-[#F5E6E8] rounded-2xl text-center">
 
 
         {/* Header Row */}
-        <div className="  justify-center grid grid-cols-6 text-black text-lg pt-4 pb-6  font-semibold ">
+        <div className="justify-center grid grid-cols-6 text-black text-lg pt-4 pb-6  font-semibold">
           <span>Name</span>
           <span>OS</span>
           <span>Usage</span>
@@ -31,11 +30,11 @@ function Manage() {
         {/* Data Rows */}
         {instances.map((instance, index) => (
           <div key={index} className="grid grid-cols-6 text-black text-md bg-red-300 mt-1 border-b py-2 px-4">
-            <span className="text-center">{instance.name}</span>
-            <span className="text-center">{instance.os}</span>
-            <span className="text-center">{instance.usage}</span>
-            <span className="text-center">{instance.type}</span>
-            <span className={`ml-8 text-center font-semibold ${instance.status === "Running" ? "text-green-500" : "text-red-500"}`}>
+            <span>{instance.name}</span>
+            <span>{instance.os}</span>
+            <span>{instance.usage}</span>
+            <span>{instance.type}</span>
+            <span className={`ml-8 font-semibold ${instance.status === "Running" ? "text-green-500" : "text-red-500"}`}>
               {instance.status}
             </span>
 
@@ -49,4 +48,4 @@ function Manage() {
   );
 }
 
-export default Manage;
+export default React.memo(Manage);

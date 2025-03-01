@@ -6,7 +6,8 @@ import router from "./router.tsx"
 import { client } from "./client/services.gen.ts"
 import { API_CONFIG } from "./config/api.ts"
 
-// You might want to create a nicer loading component
+// Need to add a global loading fallback component and error boundary
+// to handle loading states and errors in the application
 const GlobalLoadingFallback = () => (
     <div className="flex h-screen w-screen items-center justify-center">
       <div className="text-lg">Loading...</div>
