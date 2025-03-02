@@ -2,16 +2,11 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { Terminal } from "xterm"
 import { FitAddon } from "xterm-addon-fit"
 import { MESSAGE_TYPES } from "../../constant/TerminalConstant"
-import { handleSpecialKey, isPrintableChar } from "../../utils/TerminalHelper"
 
 const useTerminal = () => {
     const terminalRef = useRef<HTMLDivElement>(null)
     const xtermRef = useRef<Terminal | null>(null)
     const fitAddonRef = useRef<FitAddon | null>(null)
-    const inputBufferRef = useRef<string>("")
-    const cursorPosRef = useRef<number>(0)
-    const historyRef = useRef<string[]>([])
-    const historyPosRef = useRef<number>(-1)
 
     // Initialize terminal
     useEffect(() => {
@@ -30,8 +25,6 @@ const useTerminal = () => {
         if (terminalRef.current) {
             term.open(terminalRef.current)
             fitAddon.fit()
-            term.clear()
-            term.focus()
         }
 
         xtermRef.current = term
@@ -55,53 +48,10 @@ const useTerminal = () => {
         )
     }, [])
 
-    // Set up data handler with line buffering
-    const setTerminalDataHandler = useCallback((handler: (data: string) => void) => {
+    const setTerminalDataHandlerV2 = useCallback((handler: (data: string) => void) => {
         if (xtermRef.current) {
             xtermRef.current.onData((data) => {
-                // Handle special keys and control characters
-                const specialKey = handleSpecialKey(
-                    data, 
-                    inputBufferRef.current,
-                    cursorPosRef.current,
-                    xtermRef.current, 
-                    handler,
-                    historyRef,
-                    historyPosRef,
-                    inputBufferRef,
-                    cursorPosRef
-                )
-                if (specialKey) return
-                
-                // Add printable characters to the buffer and echo them
-                if (isPrintableChar(data) && xtermRef.current) {
-                    if (cursorPosRef.current === inputBufferRef.current.length) {
-                        // Append at the end
-                        inputBufferRef.current += data
-                        cursorPosRef.current++
-                        xtermRef.current.write(data)
-                    } else {
-                        // Insert in the middle
-                        const newBuffer = 
-                            inputBufferRef.current.substring(0, cursorPosRef.current) + 
-                            data + 
-                            inputBufferRef.current.substring(cursorPosRef.current)
-                        
-                        inputBufferRef.current = newBuffer
-                        cursorPosRef.current++
-                        
-                        // Clear line from cursor to end and write remaining text
-                        xtermRef.current.write(data + 
-                            inputBufferRef.current.substring(cursorPosRef.current))
-                        
-                        // Move cursor back to the right position
-                        if (cursorPosRef.current < inputBufferRef.current.length) {
-                            xtermRef.current.write(
-                                `\x1b[${inputBufferRef.current.length - cursorPosRef.current}D`
-                            )
-                        }
-                    }
-                }
+                handler(data)
             })
         }
     }, [])
@@ -110,8 +60,8 @@ const useTerminal = () => {
     const getTerminalDimensions = useCallback(() => {
         if (xtermRef.current && xtermRef.current.rows && xtermRef.current.cols) {
             return {
-                rows: xtermRef.current.rows,
-                cols: xtermRef.current.cols
+                rows: xtermRef.current.rows.toString(),
+                cols: xtermRef.current.cols.toString()
             }
         }
     }, [])
@@ -131,7 +81,7 @@ const useTerminal = () => {
     return {
         terminalRef,
         writeToTerminal,
-        setTerminalDataHandler,
+        setTerminalDataHandlerV2,
         fitTerminal,
         getTerminalDimensions
     }
@@ -142,16 +92,17 @@ const useWebSocket = (
     apiBaseUrl: string,
     instanceName: string,
     onMessage: (data: string | ArrayBuffer) => void,
-    getTerminalDimensions: () => { rows: number; cols: number }
+    getTerminalDimensions: () => { rows: string; cols: string } | undefined
   ) => {
     const wsRef = useRef<WebSocket | null>(null)
     const [connected, setConnected] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const textEncoder = new TextEncoder();
   
     // Send terminal dimensions through WebSocket as control message
     const updateTerminalSize = useCallback(() => {
         if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-            const dimensions = getTerminalDimensions() ?? { rows: 24, cols: 80 }
+            const dimensions = getTerminalDimensions() ?? { rows: "24", cols: "80" }
             const message = {
                 type: MESSAGE_TYPES.TERMINAL_RESIZE,
                 payload: dimensions
@@ -168,6 +119,12 @@ const useWebSocket = (
                 payload: data
             }
             wsRef.current.send(JSON.stringify(message))
+        }
+    }, [])
+
+    const sendDataV2 = useCallback((data: string) => {
+        if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+            wsRef.current.send(textEncoder.encode(data))
         }
     }, [])
   
@@ -234,6 +191,7 @@ const useWebSocket = (
         connected,
         error,
         sendData,
+        sendDataV2,
         updateTerminalSize
     }
 }

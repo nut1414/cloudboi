@@ -1,9 +1,7 @@
 import asyncio
 import json
-import re
 import ssl
-import time
-from typing import List, Optional, Any
+from typing import List, Optional, Any, Union
 from fastapi import WebSocket, WebSocketDisconnect
 import websockets
 
@@ -32,16 +30,9 @@ class LXDWebSocketSession:
         self.lxd_ws_url = lxd_ws_url
         self.lxd_control_url = lxd_control_url
         self.lxd_ws: Optional[Any] = None
-        self.lxd_control: Optional[Any] = None # For sending control messages, Ex. terminal resize
+        self.lxd_control: Optional[Any] = None
         self._running = False
         self._tasks: List[asyncio.Task] = []
-
-        # Simplified command tracking (just the last command)
-        self._last_command = ""
-        self._last_command_time = 0
-        
-        # Command expiration timeout
-        self._command_timeout = 0.5
     
     async def __aenter__(self):
         await self.connect()
@@ -96,66 +87,43 @@ class LXDWebSocketSession:
         try:
             while self._running:
                 message = await self.client_ws.receive_text()
-                
-                # Try to parse as JSON to check if it's a control message
                 try:
-                    data = json.loads(message)
-                    
-                    # Check if it's a structured message with type
-                    if isinstance(data, dict) and 'type' in data:
-                        message_type = data.get('type')
-                        payload = data.get('payload')
-                        
-                        # Handle different message types
-                        if message_type == MESSAGE_TYPES["TERMINAL_RESIZE"]:
+                    message_data = json.loads(message)
+                    if isinstance(message_data, dict) and 'type' in message_data:
+                        message_type = message_data['type']
+                        payload = message_data.get('payload', {})
+                        if message_type == MESSAGE_TYPES['TERMINAL_RESIZE']:
                             await self._handle_resize(payload)
                             continue
-                        elif message_type == MESSAGE_TYPES["TERMINAL_INPUT"]:
-                            # Extract terminal input from the payload
-                            message = payload
+                        elif message_type == MESSAGE_TYPES['TERMINAL_INPUT']:
+                            data_to_send = payload
                         else:
-                            # Unknown message type, log it
-                            logger.warning(f"Unknown message type: {message_type}")
-                            continue
+                            raise WebSocketException(f"Invalid message type: {message_type}")
                 except json.JSONDecodeError:
-                    # Not JSON, treat as regular terminal input
-                    pass
-                
-                # Ensure the message ends with carriage return for terminal input
-                if not message.endswith("\r"):
-                    message += "\r"
-
-                # Update the last command info
-                self._last_command = message.strip()
-                self._last_command_time = time.time()
-                
-                # Send to LXD
-                binary_message = message.encode('utf-8')
-                await self.lxd_ws.send(binary_message)
+                    # Normal string input
+                    data_to_send = message
+                bytearray_data = self._to_uint8_array(data_to_send)
+                await self.lxd_ws.send(bytearray_data)
         except WebSocketDisconnect:
             logger.info(f"Client disconnected from instance {self.instance_name}")
         except Exception as e:
             raise WebSocketException(f"Error in client_to_lxd: {str(e)}")
-    
+
     async def _lxd_to_client(self):
         """Handle messages from LXD to the client"""
         try:
-            # Use a small fixed buffer size to limit memory usage
-            buffer = ""
-            
             while self._running:
+                # Receive data from LXD
                 message = await self.lxd_ws.recv()
-
+                
+                # If it's already bytes, send directly, otherwise encode
                 if isinstance(message, bytes):
-                    message = message.decode('utf-8', 'replace')
-                
-                # Add to buffer
-                buffer += message
-                
-                # Process the buffer to remove echoes and duplicate prompts
-                if buffer and self._process_buffer(buffer):
-                    await self.client_ws.send_text(buffer)
-                buffer = ""
+                    await self.client_ws.send_bytes(message)
+                else:
+                    # Convert to binary data for the frontend's expected format
+                    binary_data = message.encode('utf-8')
+                    await self.client_ws.send_bytes(binary_data)
+                    
         except websockets.exceptions.ConnectionClosed:
             logger.info(f"LXD connection closed for instance {self.instance_name}")
         except Exception as e:
@@ -173,27 +141,27 @@ class LXDWebSocketSession:
         except Exception as e:
             raise WebSocketException(f"Failed to start tasks: {str(e)}")
     
-    def _process_buffer(self, buffer: str) -> bool:
-        """Process the buffer to remove echoes"""
-        should_send = True
+    def _to_uint8_array(self, data: Union[str, dict]) -> bytearray:
+        """Convert a string or dictionary to a Uint8Array"""
+        if isinstance(data, dict):
+            data = json.dumps(data)
+        elif not isinstance(data, str):
+            data = str(data)
+        return bytearray(data.encode('utf-8'))
 
-        # Check if the last command is still valid (not expired)
-        current_time = time.time()
-        if (self._last_command and (current_time - self._last_command_time <= self._command_timeout) 
-            and buffer.startswith(self._last_command)):
-            # Found echo of the last command
-            should_send = False
-        
-        return should_send
-
-    async def _handle_resize(self, message: dict):
+    async def _handle_resize(self, resize_args: dict):
         """Handle terminal resize events"""
         try:
+            # Extract width and height from frontend format
+            width = resize_args.get('width', '80')
+            height = resize_args.get('height', '24')
+            
+            # Create resize data for LXD
             resize_data = {
                 'command': 'window-resize',
                 'args': {
-                    'width': message.get('cols', 80),
-                    'height': message.get('rows', 24)
+                    'width': width,
+                    'height': height
                 }
             }
             await self.lxd_control.send(json.dumps(resize_data))

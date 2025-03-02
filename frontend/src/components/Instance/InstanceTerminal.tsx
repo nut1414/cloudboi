@@ -12,7 +12,7 @@ const InstanceTerminal: React.FC<InstanceTerminalProps> = ({ instanceName, apiBa
     const {
         terminalRef,
         writeToTerminal,
-        setTerminalDataHandler,
+        setTerminalDataHandlerV2,
         fitTerminal,
         getTerminalDimensions
     } = useTerminal()
@@ -32,8 +32,8 @@ const InstanceTerminal: React.FC<InstanceTerminalProps> = ({ instanceName, apiBa
 
     // Connect terminal data events to WebSocket
     useEffect(() => {
-        setTerminalDataHandler(sendData)
-    }, [sendData, setTerminalDataHandler])
+        setTerminalDataHandlerV2(sendData)
+    }, [sendData, setTerminalDataHandlerV2])
 
     // Fit terminal when needed
     useEffect(() => {
@@ -71,12 +71,7 @@ const InstanceTerminal: React.FC<InstanceTerminalProps> = ({ instanceName, apiBa
         <div className="container p-4">
             <h1 className="text-2xl font-bold mb-4">LXD Terminal</h1>
             <div className="flex flex-col h-screen">
-                <div 
-                    className="flex-grow border border-gray-300 rounded overflow-hidden shadow-md"
-                    style={{ 
-                        width: '150ch',   // 80 characters width
-                        height: 'calc(100vh - 150px)',  // Height calculation based on viewport
-                    }} >
+                <div className="flex-grow border border-gray-300 rounded overflow-hidden shadow-md">
                     {Terminal}
                 </div>
             </div>
