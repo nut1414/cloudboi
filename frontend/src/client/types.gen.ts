@@ -4,9 +4,42 @@ export type HTTPValidationError = {
     detail?: Array<ValidationError>;
 };
 
+export type InstanceCreateRequest = {
+    os_type: OsType;
+    instance_type: InstanceType;
+    instance_name: string;
+    root_password: string;
+};
+
+export type InstanceCreateResponse = {
+    instance_name: string;
+    instance_status: string;
+    created_at: string;
+};
+
+export type InstanceDetails = {
+    instance_package: Array<InstanceType>;
+    os_image: Array<OsType>;
+};
+
+export type InstanceType = {
+    instance_type_id: number;
+    instance_package_name: string;
+    vcpu_amount: number;
+    ram_amount: number;
+    storage_amount: number;
+    cost_hour: number;
+};
+
 export type Item = {
     name: string;
     price: number;
+};
+
+export type OsType = {
+    os_type_id: number;
+    os_image_name: string;
+    os_image_version: string;
 };
 
 export type ResponseMessage = {
@@ -38,9 +71,17 @@ export type AdminAdminUpdateAdminResponse = (ResponseMessage);
 
 export type AdminAdminUpdateAdminError = (HTTPValidationError);
 
-export type GetResponse = (unknown);
+export type InstancesInstanceDetailsResponse = (InstanceDetails);
 
-export type GetError = unknown;
+export type InstancesInstanceDetailsError = unknown;
+
+export type InstancesCreateInstanceData = {
+    body: InstanceCreateRequest;
+};
+
+export type InstancesCreateInstanceResponse = (InstanceCreateResponse);
+
+export type InstancesCreateInstanceError = (HTTPValidationError);
 
 export type ItemsItemsReadItemsData = {
     headers: {

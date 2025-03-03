@@ -1,6 +1,4 @@
-import { useState } from "react";
-
-import Navbartest from "../components/Test";
+import React, { useState } from "react";
 
 function CreateInstance() {
     const [selectedVersion, setSelectedVersion] = useState("");
@@ -8,7 +6,6 @@ function CreateInstance() {
 
     return (
         <>
-            <Navbartest />
             <div className="  text-black absolute top-4 left-80 z-0 ">
                 <div className="flex flex-col  justify-start items-start">
 
@@ -119,4 +116,4 @@ function CreateInstance() {
     );
 }
 
-export default CreateInstance;
+export default React.memo(CreateInstance);

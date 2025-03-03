@@ -1,8 +1,8 @@
-# cloudboi
+# Cloudboi
 
 monorepo for cloudboi projects
 
-# prerequisite
+# Prerequisite
 
 for windows, please run everything in WSL
 
@@ -11,7 +11,7 @@ for windows, please run everything in WSL
 - pnpm `npm install --global pnpm`
 - docker
 
-# for ubuntu wsl instruction
+# For ubuntu wsl instruction
 
 - install git
 - Enable WSL Feature in Windows then reboot system
@@ -49,30 +49,56 @@ make install
 
 - then run `make dev` to start the project
 
-# contribution
+# Contribution
 
 please create a branch with feature as name then request a pull request review on that branch
 
-# running project
+# Running project
 
-- Make sure to initialize the database first before running the project by using:
-```sh
-make db-up
-```
-- You can run the whole project on your local machine by using:
-```sh
-make dev
-```
-- You can also start the backend in a Docker container by using:
-```sh
-make backend-up
-```
+1.  Initialize the database:
+    ```sh
+    make db-up
+    ```
+2. Run the project:
 
-# document for backend
+    - Locally:
+        ```sh
+        make dev
+        ```
+    - In Docker:
+        ```sh
+        make docker-up
+        ```
+3. Run specific services:
+    - Locally:
+        ```sh
+        make dev-service_name # Replace service_name with the service you want to run Ex. make dev-frontend
+        ```
+    - In Docker:
+        ```sh
+        make service_name-up # Replace service_name with the service you want to run Ex. make dev-frontend
+        ```
+
+# Debugging
+
+#### Frontend
+- TBD
+
+#### Backend
+- run the following command(don't forget to open docker desktop first)
+    ```sh
+    make db-up backend-debug
+    ```
+- click on debug tab on vs code
+<img src="images/vs_code_debug_tab.png" width="400"/>
+- choose `Python Docker: Remote Debug` then click run
+<img src="images/vs_code_debug_run.png" width="400"/>
+
+# Document for backend
 
 fastapi should auto generate schema at http://localhost:8000/docs
 
-# generating client for frontend
+# Generating client for frontend
 
 make sure the project is running and then execute this command in another terminal
 

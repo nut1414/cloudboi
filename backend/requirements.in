@@ -3,4 +3,5 @@ fastapi[standard]
 asyncpg
 sqlalchemy[asyncio]
 pylxd
+debugpy
 git+https://github.com/canonical/python-libmaas.git

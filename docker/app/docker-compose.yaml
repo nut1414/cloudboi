@@ -6,6 +6,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
+      - "5678:5678"
     volumes:
       - ../../backend:/app
       - ../../backend/test_certificate/tmp/lxd.crt:/app/certs/lxd.crt:ro
@@ -14,6 +15,23 @@ services:
       - DB_HOST=postgresql
       - LXD_CERT_PATH=/app/certs/lxd.crt
       - LXD_KEY_PATH=/app/certs/lxd.key
+      - MODE=${MODE:-dev}
+      - DOCKER=true
+    networks:
+      - cloudboi-network
+  frontend:
+    build:
+      context: ../../frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../../frontend:/app
+      - /app/node_modules
+    environment:
+      - API_URL=http://localhost:8000
+    depends_on:
+      - backend
     networks:
       - cloudboi-network
 

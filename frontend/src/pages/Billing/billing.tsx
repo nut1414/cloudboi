@@ -1,26 +1,13 @@
-import Navbartest from "../components/Test";
-
+import React from "react"
 
 function Billing() {
-
-
-
-
-return (
-<>
-        <Navbartest />
+    return (
         <div className="  text-black absolute top-4 left-80 z-0 ">
             <div className="flex flex-col  justify-start items-start">
                 <p className=" text-5xl">Billing</p>
             </div>
         </div>
+    )
+}
 
-    
-    
-    
-    
-</>)
-
-
-
-}export default Billing;
+export default React.memo(Billing)
