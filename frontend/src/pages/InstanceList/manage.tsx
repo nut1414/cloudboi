@@ -1,49 +1,35 @@
 import React from "react";
 import TopNavbar from "../../components/Navbar/TopNavbar"
+import ColumnName from "../../components/ManagePage/ColumnName";
+import ContainerManage from "../../components/ManagePage/ContainerManage";
 
 function Manage() {
 
   const instances = [
-    { name: "instance_01", os: "Debian xx.xx.xx", usage: "8.23 GBs", type: "Instance Type 1", status: "Running" },
-    { name: "instance_02", os: "Ubuntu xx.xx.xx", usage: "5.15 GBs", type: "Instance Type 1", status: "Stopped" },
+    { id:"In01",name: "instance_1", os: "Debian xx.xx.xx", usage: "8.23 GBs", type: "Instance Type 1", status: "Running" },
+    { id:"In02",name: "instance_2", os: "Ubuntu xx.xx.xx", usage: "5.15 GBs", type: "Instance Type 1", status: "Stopped" },
+    { id:"In03",name: "instance_3", os: "Ubuntu xx.xx.xx", usage: "5.15 GBs", type: "Instance Type 1", status: "Stopped" },
+    { id:"In04",name: "instance_4", os: "Ubuntu xx.xx.xx", usage: "5.15 GBs", type: "Instance Type 1", status: "Stopped" },
+    { id:"In05",name: "instance_5", os: "Ubuntu xx.xx.xx", usage: "5.15 GBs", type: "Instance Type 1", status: "Stopped" },
+    { id:"In06",name: "instance_6", os: "Ubuntu xx.xx.xx", usage: "5.15 GBs", type: "Instance Type 1", status: "Stopped" },
+    { id:"In07",name: "instance_7", os: "Ubuntu xx.xx.xx", usage: "5.15 GBs", type: "Instance Type 1", status: "Stopped" },
+    { id:"In08",name: "instance_8", os: "Ubuntu xx.xx.xx", usage: "5.15 GBs", type: "Instance Type 1", status: "Stopped" },
+    { id:"In09",name: "instance_9", os: "Ubuntu xx.xx.xx", usage: "5.15 GBs", type: "Instance Type 1", status: "Stopped" },
+    { id:"In10",name: "instance_10", os: "Ubuntu xx.xx.xx", usage: "5.15 GBs", type: "Instance Type 1", status: "Stopped" },
+  
   ];
 
   return (
     <>
       <TopNavbar />
       <p className="text-black  pt-20 pl-0 mr-96"> Displaying xx items</p>
-      {/* Large Square Content */}
-      <div className="mr-0 ml-60 mt-[5vh]  justify-center h-[900px] w-[900px] bg-[#F5E6E8] rounded-2xl text-center">
-
-
-        {/* Header Row */}
-        <div className="justify-center grid grid-cols-6 text-black text-lg pt-4 pb-6  font-semibold">
-          <span>Name</span>
-          <span>OS</span>
-          <span>Usage</span>
-          <span>Instance Type</span>
-          <span>Status</span>
-          <span></span>
-
+     
+       {/* Large Square Content */}
+       <div className="mr-0 ml-60 mt-[5vh] pb-16 shadow-md justify-center  w-[900px] bg-[#F5E6E8] rounded-2xl">
+          <ColumnName />
+          {/* Data Rows */}
+          <ContainerManage instances={instances} />
         </div>
-
-        {/* Data Rows */}
-        {instances.map((instance, index) => (
-          <div key={index} className="grid grid-cols-6 text-black text-md bg-red-300 mt-1 border-b py-2 px-4">
-            <span>{instance.name}</span>
-            <span>{instance.os}</span>
-            <span>{instance.usage}</span>
-            <span>{instance.type}</span>
-            <span className={`ml-8 font-semibold ${instance.status === "Running" ? "text-green-500" : "text-red-500"}`}>
-              {instance.status}
-            </span>
-
-            <button className=" bg-[#D5C6E0] text-black  py-2 rounded-2xl ">View Instance</button>
-
-          </div>
-        ))}
-
-      </div>
     </>
   );
 }
