@@ -23,6 +23,10 @@ asyncpg==0.30.0
     # via -r requirements.in
 attrs==24.2.0
     # via aiohttp
+bcrypt==4.0.1
+    # via
+    #   -r requirements.in
+    #   passlib
 certifi==2024.8.30
     # via
     #   httpcore
@@ -41,13 +45,17 @@ click==8.1.7
 colorclass==2.2.2
     # via python-libmaas
 cryptography==43.0.3
-    # via pylxd
+    # via
+    #   pylxd
+    #   python-jose
 debugpy==1.8.12
     # via -r requirements.in
 dnspython==2.7.0
     # via
     #   email-validator
     #   pymongo
+ecdsa==0.19.0
+    # via python-jose
 email-validator==2.2.0
     # via fastapi
 fastapi==0.115.4
@@ -95,10 +103,16 @@ oauthlib==3.2.2
     # via python-libmaas
 packaging==24.2
     # via python-libmaas
+passlib==1.7.4
+    # via -r requirements.in
 propcache==0.2.0
     # via yarl
 protobuf==5.28.3
     # via macaroonbakery
+pyasn1==0.4.8
+    # via
+    #   python-jose
+    #   rsa
 pycparser==2.22
     # via cffi
 pydantic==2.9.2
@@ -123,6 +137,8 @@ python-dateutil==2.9.0.post0
     # via pylxd
 python-dotenv==1.0.1
     # via uvicorn
+python-jose==3.4.0
+    # via -r requirements.in
 python-libmaas @ git+https://github.com/canonical/python-libmaas.git
     # via -r requirements.in
 python-multipart==0.0.17
@@ -144,10 +160,13 @@ requests-toolbelt==1.0.0
     # via pylxd
 rich==13.9.4
     # via typer
+rsa==4.9
+    # via python-jose
 shellingham==1.5.4
     # via typer
 six==1.16.0
     # via
+    #   ecdsa
     #   macaroonbakery
     #   pymacaroons
     #   python-dateutil
