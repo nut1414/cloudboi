@@ -1,4 +1,5 @@
 import os
+import secrets
 
 class DatabaseConfig:
     DB_URL = os.environ.get(
@@ -15,4 +16,14 @@ class DatabaseConfig:
         "echo": True, # Enable logging
     }
 
-# Can add more configurations here
+class TokenConfig:
+    ENV = os.environ.get("ENV", "development")
+    SECRET_KEY = os.environ.get("SECRET_KEY", secrets.token_hex(32))
+    ALGORITHM = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES = 30
+    REFRESH_TOKEN_EXPIRE_DAYS = 7
+    ISSUER = os.environ.get("TOKEN_ISSUER", "cloudboi")
+    AUDIENCE = os.environ.get("TOKEN_AUDIENCE", "cloudboi-users")
+
+    # HTTPS only in production
+    SECURE_COOKIES = ENV == "production"

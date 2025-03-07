@@ -1,13 +1,13 @@
-from fastapi import Depends, FastAPI
+from fastapi import FastAPI
 from fastapi.routing import APIRoute
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 from ..infra.managers.lxd import LXDManager
-from .dependencies import get_token_header
-from .routers import items, users, admin, testapi, instance
+from .routers import user, instance
 from .sql.database import session_manager
 from .utils.logging import logger
+from .sql.init_data import initialize_data
 
 
 def custom_generate_unique_id(route: APIRoute):
@@ -16,9 +16,10 @@ def custom_generate_unique_id(route: APIRoute):
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Before startup
-    # Initialize the database tables
+    # Initialize the database
     try:
         await session_manager.create_all()
+        await initialize_data()
         logger.info("Database initialized successfully")
     except Exception as e:
         logger.error(f"Failed to initialize database: {str(e)}")
@@ -48,17 +49,8 @@ app.add_middleware(
 )
 
 
-app.include_router(testapi.router)
-app.include_router(users.router)
-app.include_router(items.router)
+app.include_router(user.router)
 app.include_router(instance.router)
-app.include_router(
-    admin.router,
-    prefix="/admin",
-    tags=["admin"],
-    dependencies=[Depends(get_token_header)],
-    # responses={418: {"description": "I'm a teapot"}},
-)
 
 
 @app.get("/", tags=["root"])

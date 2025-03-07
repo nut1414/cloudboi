@@ -4,16 +4,18 @@ from ..utils.logging import logger
 from ..service.clients.base_instance_client import BaseInstanceClient
 from ..service.clients.lxd import LXDClient
 from ..service.instance import InstanceService
-from ..models.Instance import InstanceDetails, InstanceCreateRequest, InstanceCreateResponse
+from ..models.instance import InstanceDetails, InstanceCreateRequest, InstanceCreateResponse
+from ..utils.dependencies import get_current_user
 
 
 router = APIRouter(
-    prefix="/instances",
-    tags=["instances"],
+    prefix="/instance",
+    tags=["instance"],
+    dependencies=[Depends(get_current_user)]
 )
 
 @router.get(
-    "/",
+    "/details",
     response_model=InstanceDetails,
 )
 async def instance_details(

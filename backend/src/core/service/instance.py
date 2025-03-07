@@ -5,7 +5,7 @@ import asyncio
 from .clients.base_instance_client import BaseInstanceClient
 from .validators.instance_validator import InstanceValidator
 from .clients.lxd import LXDClient
-from ..models.Instance import InstanceCreateRequest, InstanceCreateResponse, InstanceDetails
+from ..models.instance import InstanceCreateRequest, InstanceCreateResponse, InstanceDetails
 from ..sql.operations.instance import InstanceOperation
 
 
