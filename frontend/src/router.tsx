@@ -4,10 +4,12 @@ import DefaultLayout from "./pages/Layout/DefaultLayout"
 
 const App = lazy(() => import("./pages/Landing/App"))
 const SignUp = lazy(() => import("./pages/Auth/signUp"))
+const SignIn = lazy(() => import("./pages/Auth/signIn"))
 const Manage = lazy(() => import("./pages/InstanceList/manage"))
-const CreateInstance = lazy(() => import("./pages/InstanceCreate/createInstance"))
-const Billing = lazy(() => import("./pages/Billing/billing"))
-const Setting = lazy(() => import("./pages/InstanceSetting/setting"))
+const CreateInstance = lazy(() => import("./pages/Instance/Create/createInstance"))
+const Billing = lazy(() => import("./pages/User/Billing/billing"))
+// const Setting = lazy(() => import("./pages/InstanceSetting/setting"))
+const InstanceSetting = lazy(() => import("./pages/InstanceSetting/InstanceSetting"))
 const Support = lazy(() => import("./pages/User/support"))
 
 // TODO:
@@ -22,6 +24,10 @@ const router = createBrowserRouter([
   {
     path: "/signup", 
     element: <SignUp />,  
+  },
+  {
+    path: "/signin", 
+    element: <SignIn />,  
   },
   {
     path: "/user/:userName",
@@ -55,7 +61,7 @@ const router = createBrowserRouter([
             children: [
               {
                 index: true,
-                element: <Setting />,
+                element: <InstanceSetting />,
               }
             ]
           }
