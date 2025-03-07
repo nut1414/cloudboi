@@ -1,9 +1,9 @@
-import Footer from "../../components/InstanceCreatePage/Footer";
-import ChooseImageVersion from "../../components/InstanceCreatePage/ChooseImageVersion";
-import ChooseSizeCpu from "../../components/InstanceCreatePage/ChooseSizeCpu";
-import ChooseAuthenMethod from "../../components/InstanceCreatePage/ChooseAuthenMethod";
-import FinalizeDetails from "../../components/InstanceCreatePage/FinalizeDetails";
-import BillSummary from "../../components/InstanceCreatePage/BillSummary";
+import Footer from "../../components/Instance/Create/Footer";
+import ChooseImageVersion from "../../components/Instance/Create/ChooseImageVersion";
+import ChooseSizeCpu from "../../components/Instance/Create/ChooseSizeCpu";
+import ChooseAuthenMethod from "../../components/Instance/Create/ChooseAuthenMethod";
+import FinalizeDetails from "../../components/Instance/Create/FinalizeDetails";
+import BillSummary from "../../components/Instance/Create/BillSummary";
 
 function CreateInstance() {
    

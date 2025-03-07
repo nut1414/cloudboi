@@ -2,16 +2,17 @@ import React from "react";
 
 import PrivateNetwork from "./PrivateNetwork";
 import PublicNetwork from "./PublicNetwork";
+import MenuContainer from "../Menucontainer";
 
 
 const NetworkingMenu: React.FC = () => {
 
     return (
         <>
-            <div className="mt-8 bg-red-300 mb-10 shadow-md h-[550px] w-[780px] rounded-2xl flex flex-col  justify-start items-start ">
-                        <PrivateNetwork />
-                        <PublicNetwork />
-            </div>
+            <MenuContainer style="bg-red-300 mt-8 h-[580px] w-[780px] mb-20 ">
+                <PrivateNetwork />
+                <PublicNetwork />
+            </MenuContainer>
         </>
     );
 };

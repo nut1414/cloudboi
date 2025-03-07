@@ -1,7 +1,7 @@
 import React,{useState} from "react";
 
-import BillingWrapper from "../../../components/User/BillingPage/BillingWrapper";
-import BillingComponent from "../../../components/User/BillingPage/BillingComponent";
+import BillingWrapper from "../../../components/User/Billing/BillingWrapper";
+import BillingComponent from "../../../components/User/Billing/BillingComponent";
 
 const Billing: React.FC = () => {
     const [activeTab, setActiveTab] = useState(0);
