@@ -1,6 +1,6 @@
 import React from "react"
 
-import InstanceTerminal from "../../components/Instance/InstanceTerminal"
+import InstanceTerminal from "../../../components/Instance/InstanceTerminal"
 import { useParams } from "react-router-dom"
 
 
