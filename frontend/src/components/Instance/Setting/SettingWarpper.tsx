@@ -4,8 +4,8 @@ import SlidebarSetting from "./SlidebarSetting/SlidebarSetting";
 
 interface ComponentWithChildren {
     children?: React.ReactNode;
-    active:number;
-    setActive: (value: number) => void;
+    active:string;
+    setActive: (value: string) => void;
 }
 
 const SettingWrapper: React.FC<ComponentWithChildren> = ({ children ,active, setActive}) => {
