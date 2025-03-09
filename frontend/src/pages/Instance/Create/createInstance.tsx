@@ -1,6 +1,5 @@
 // CreateInstance.tsx
-import React, { useState, useEffect } from "react";
-import Footer from "../../../components/Instance/Create/Footer";
+import  { useState, useEffect } from "react";
 import ChooseImageVersion from "../../../components/Instance/Create/ChooseImageVersion";
 import ChooseSizeCpu from "../../../components/Instance/Create/ChooseSizeCpu";
 import ChooseAuthenMethod from "../../../components/Instance/Create/ChooseAuthenMethod";
@@ -120,7 +119,7 @@ function CreateInstance() {
                     )}
                 </div>
             </div>
-            <Footer />
+            
         </>
     );
 }

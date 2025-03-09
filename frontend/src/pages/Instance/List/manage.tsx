@@ -1,7 +1,7 @@
 import React from "react";
-import TopNavbar from "../../components/Navbar/TopNavbar"
-import ColumnName from "../../components/Instance/List/ColumnName";
-import ContainerManage from "../../components/Instance/List/ContainerManage";
+import TopNavbar from "../../../components/Navbar/TopNavbar";
+import ColumnName from "../../../components/Instance/List/ColumnName";
+import ContainerManage from "../../../components/Instance/List/ContainerManage";
 
 function Manage() {
 
