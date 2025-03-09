@@ -1,6 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi import APIRouter, Depends, Request, Response
 
-from ..utils.logging import logger
 from ..service.user import UserService
 from ..models.user import UserCreateRequest, UserCreateResponse, UserLoginRequest, UserLoginResponse, UserSessionResponse
 
@@ -17,15 +16,7 @@ async def create_user(
     user_create: UserCreateRequest,
     user_service: UserService = Depends()
 ):
-    try:
-        user = await user_service.create_user(user_create)
-        return user
-    except HTTPException as e:
-        logger.error(f"Error creating user: {e}")
-        raise e
-    except Exception as e:
-        logger.error(f"Error creating user: {e}")
-        raise HTTPException(status_code=500, detail="Failed to create user")
+    return await user_service.create_user(user_create)
 
 @router.post(
     "/login",
@@ -36,14 +27,7 @@ async def login_user(
     response: Response,
     user_service: UserService = Depends()
 ):
-    try:
-        return await user_service.login_user(user_login, response)
-    except HTTPException as e:
-        logger.error(f"Error logging in user: {e}")
-        raise e
-    except Exception as e:
-        logger.error(f"Error logging in user: {e}")
-        raise HTTPException(status_code=500, detail="Failed to login user")
+    return await user_service.login_user(user_login, response)
 
 @router.get(
     "/session",
@@ -53,14 +37,7 @@ async def get_user_session(
     request: Request,
     user_service: UserService = Depends()
 ):
-    try:
-        return await user_service.get_user_session(request)
-    except HTTPException as e:
-        logger.error(f"Error getting user session: {e}")
-        raise e
-    except Exception as e:
-        logger.error(f"Error getting user session: {e}")
-        raise HTTPException(status_code=500, detail="Failed to get user session")
+    return await user_service.get_user_session(request)
 
 @router.post(
     "/logout",
@@ -70,11 +47,4 @@ async def logout_user(
     response: Response,
     user_service: UserService = Depends()
 ):
-    try:
-        return await user_service.logout_user(response)
-    except HTTPException as e:
-        logger.error(f"Error logging out user: {e}")
-        raise e
-    except Exception as e:
-        logger.error(f"Error logging out user: {e}")
-        raise HTTPException(status_code=500, detail="Failed to logout user")
+    return await user_service.logout_user(response)

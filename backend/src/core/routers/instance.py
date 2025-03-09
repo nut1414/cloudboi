@@ -21,11 +21,7 @@ router = APIRouter(
 async def instance_details(
     instance_service: InstanceService = Depends()
 ):
-    try:
-        return await instance_service.get_all_instance_details()
-    except Exception as e:
-        logger.error(f"Failed to get instance details: {str(e)}")
-        raise HTTPException(status_code=500, detail="Failed to get instance details")
+    return await instance_service.get_all_instance_details()
 
 @router.post(
     "/create",
@@ -35,11 +31,7 @@ async def create_instance(
     instance_create: InstanceCreateRequest,
     instance_service: InstanceService = Depends()
 ):
-    try:
-        return await instance_service.create_instance(instance_create)
-    except Exception as e:
-        logger.error(f"Failed to create instance: {str(e)}")
-        raise HTTPException(status_code=500, detail="Failed to create instance")
+    return await instance_service.create_instance(instance_create)
 
 @router.websocket("/ws/{instance_name}")
 async def websocket_instance(

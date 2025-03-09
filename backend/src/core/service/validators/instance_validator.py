@@ -1,17 +1,28 @@
+from .base_validator import BaseValidator, ValidationRule
+
+
 class InstanceValidator:
+    """Instance-related validators."""
+    
     @staticmethod
-    def validate_password(password: str) -> bool:
+    def validate_password(password: str) -> None:
         """
         Validates the root password based on basic security rules:
         - Must be at least 8 characters long.
         - Should include at least 3 of the following: uppercase letter, lowercase letter, digit, special character.
         """
-        if len(password) < 8:
-            return False
+        def check_complexity(pwd: str) -> bool:
+            has_upper = any(c.isupper() for c in pwd)
+            has_lower = any(c.islower() for c in pwd)
+            has_digit = any(c.isdigit() for c in pwd)
+            has_special = any(not c.isalnum() for c in pwd)
+            return sum([has_upper, has_lower, has_digit, has_special]) >= 3
         
-        has_upper = any(c.isupper() for c in password)
-        has_lower = any(c.islower() for c in password)
-        has_digit = any(c.isdigit() for c in password)
-        has_special = any(not c.isalnum() for c in password)
+        validator = BaseValidator([
+            ValidationRule(lambda pwd: len(pwd) >= 8, 
+                          "Password must be at least 8 characters long"),
+            ValidationRule(check_complexity,
+                          "Password should include at least 3 of: uppercase letter, lowercase letter, digit, special character")
+        ])
         
-        return sum([has_upper, has_lower, has_digit, has_special]) >= 3
+        validator.validate(password)

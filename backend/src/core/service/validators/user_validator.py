@@ -1,40 +1,42 @@
 import re
-from fastapi import HTTPException
+from .base_validator import BaseValidator, ValidationRule
 
 
 class UserValidator:
-    """Validator for user input."""
+    """Validator for user input with predefined validators."""
     
     @staticmethod
     def validate_email(email: str) -> None:
         """Validate email format."""
-        # Basic email validation pattern
-        pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
-        if not re.match(pattern, email):
-            raise HTTPException(status_code=400, detail="Invalid email format")
-
+        validator = BaseValidator([
+            ValidationRule(
+                lambda e: bool(re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", e)),
+                "Invalid email format"
+            )
+        ])
+        validator.validate(email)
+    
     @staticmethod
     def validate_password(password: str) -> None:
         """Validate password strength."""
-        if len(password) < 8:
-            raise HTTPException(status_code=400, detail="Password must be at least 8 characters long")
-        
-        # Check for at least one uppercase, one lowercase, and one digit
-        if not re.search(r"[A-Z]", password):
-            raise HTTPException(status_code=400, detail="Password must contain at least one uppercase letter")
-        
-        if not re.search(r"[a-z]", password):
-            raise HTTPException(status_code=400, detail="Password must contain at least one lowercase letter")
-        
-        if not re.search(r"\d", password):
-            raise HTTPException(status_code=400, detail="Password must contain at least one digit")
-
+        validator = BaseValidator([
+            ValidationRule(lambda pwd: len(pwd) >= 8, "Password must be at least 8 characters long"),
+            ValidationRule(lambda pwd: bool(re.search(r"[A-Z]", pwd)), 
+                          "Password must contain at least one uppercase letter"),
+            ValidationRule(lambda pwd: bool(re.search(r"[a-z]", pwd)), 
+                          "Password must contain at least one lowercase letter"),
+            ValidationRule(lambda pwd: bool(re.search(r"\d", pwd)), 
+                          "Password must contain at least one digit")
+        ])
+        validator.validate(password)
+    
     @staticmethod
     def validate_username(username: str) -> None:
         """Validate username format."""
-        if len(username) < 3 or len(username) > 20:
-            raise HTTPException(status_code=400, detail="Username must be between 3 and 20 characters")
-        
-        # Allow only letters, numbers, underscores, and hyphens
-        if not re.match(r"^[a-zA-Z0-9_-]+$", username):
-            raise HTTPException(status_code=400, detail="Username can only contain letters, numbers, underscores, and hyphens")
+        validator = BaseValidator([
+            ValidationRule(lambda u: 3 <= len(u) <= 20, 
+                          "Username must be between 3 and 20 characters"),
+            ValidationRule(lambda u: bool(re.match(r"^[a-zA-Z0-9_-]+$", u)),
+                          "Username can only contain letters, numbers, underscores, and hyphens")
+        ])
+        validator.validate(username)
