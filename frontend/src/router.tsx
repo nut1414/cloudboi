@@ -9,11 +9,11 @@ const App = lazy(() => import("./pages/Landing/App"))
 const Login = lazy(() => import("./pages/Auth/Login"))
 const SignUp = lazy(() => import("./pages/Auth/signUp"))
 const SignIn = lazy(() => import("./pages/Auth/signIn"))
-const Manage = lazy(() => import("./pages/InstanceList/manage"))
+const Manage = lazy(() => import("./pages/Instance/List/manage"))
 const CreateInstance = lazy(() => import("./pages/Instance/Create/createInstance"))
 const Billing = lazy(() => import("./pages/User/Billing/billing"))
 // const Setting = lazy(() => import("./pages/InstanceSetting/setting"))
-const InstanceSetting = lazy(() => import("./pages/InstanceSetting/InstanceSetting"))
+const InstanceSetting = lazy(() => import("./pages/Instance/Setting/InstanceSetting"))
 const Support = lazy(() => import("./pages/User/support"))
 
 /**
