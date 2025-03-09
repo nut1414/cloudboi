@@ -5,9 +5,10 @@ from pylxd import models
 from ...commons.exception import create_exception_class
 from .websocket import LXDWebSocketManager, LXDWebSocketSession
 from .base_instance_client import BaseInstanceClient
-from ...models.Instance import InstanceCreateRequest, InstanceCreateResponse
+from ...models.instance import InstanceCreateRequest, InstanceCreateResponse
 from ....infra.managers.lxd import LXDManager
 from ...utils.decorator import create_decorator
+from ...utils.datetime import DateTimeUtils
 
 LXDClientException = create_exception_class("LXDClient")
 
@@ -42,7 +43,7 @@ class LXDClient(BaseInstanceClient[models.Instance]):
         return InstanceCreateResponse(
             instance_name=container.name,
             instance_status=container.status,
-            created_at=self.__format_iso_date(container.created_at)
+            created_at=DateTimeUtils.now()
         )
     
     @_resolve_instance()
@@ -122,11 +123,3 @@ class LXDClient(BaseInstanceClient[models.Instance]):
         if os_image_name == "ubuntu":
             return "https://cloud-images.ubuntu.com/releases"
         return "https://images.lxd.canonical.com/"
-    
-    def __format_iso_date(self, iso_date_string: datetime) -> str:
-        try:
-            dt = datetime.fromisoformat(iso_date_string.replace('Z', '+00:00'))
-            return dt.strftime("%d %B %Y, %H:%M:%S")  # Example: "21 February 2025, 09:47:59"
-        except (ValueError, TypeError):
-            return iso_date_string
-        

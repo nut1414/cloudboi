@@ -31,28 +31,38 @@ export type InstanceType = {
     cost_hour: number;
 };
 
-export type Item = {
-    name: string;
-    price: number;
-};
-
 export type OsType = {
     os_type_id: number;
     os_image_name: string;
     os_image_version: string;
 };
 
-export type ResponseMessage = {
+export type UserCreateRequest = {
+    username: string;
+    email: string;
+    password: string;
+};
+
+export type UserCreateResponse = {
+    username: string;
+    email: string;
+    created_at: string;
+};
+
+export type UserLoginRequest = {
+    username: string;
+    password: string;
+};
+
+export type UserLoginResponse = {
     message: string;
 };
 
-export type TestModel = {
-    test_response: number;
-    test_response2: number;
-};
-
-export type User = {
+export type UserSessionResponse = {
+    is_authenticated: boolean;
     username: string;
+    email: string;
+    role: string;
 };
 
 export type ValidationError = {
@@ -61,92 +71,42 @@ export type ValidationError = {
     type: string;
 };
 
-export type AdminAdminUpdateAdminData = {
-    headers: {
-        'x-token': string;
-    };
-};
+export type InstanceInstanceDetailsResponse = (InstanceDetails);
 
-export type AdminAdminUpdateAdminResponse = (ResponseMessage);
+export type InstanceInstanceDetailsError = unknown;
 
-export type AdminAdminUpdateAdminError = (HTTPValidationError);
-
-export type InstancesInstanceDetailsResponse = (InstanceDetails);
-
-export type InstancesInstanceDetailsError = unknown;
-
-export type InstancesCreateInstanceData = {
+export type InstanceCreateInstanceData = {
     body: InstanceCreateRequest;
 };
 
-export type InstancesCreateInstanceResponse = (InstanceCreateResponse);
+export type InstanceCreateInstanceResponse = (InstanceCreateResponse);
 
-export type InstancesCreateInstanceError = (HTTPValidationError);
-
-export type ItemsItemsReadItemsData = {
-    headers: {
-        'x-token': string;
-    };
-};
-
-export type ItemsItemsReadItemsResponse = (Array<Item>);
-
-export type ItemsItemsReadItemsError = (unknown | HTTPValidationError);
-
-export type ItemsItemsReadItemData = {
-    headers: {
-        'x-token': string;
-    };
-    path: {
-        item_id: string;
-    };
-};
-
-export type ItemsItemsReadItemResponse = (Item);
-
-export type ItemsItemsReadItemError = (unknown | HTTPValidationError);
-
-export type ItemsItemsUpdateItemData = {
-    headers: {
-        'x-token': string;
-    };
-    path: {
-        item_id: string;
-    };
-};
-
-export type ItemsItemsUpdateItemResponse = (ResponseMessage);
-
-export type ItemsItemsUpdateItemError = (unknown | HTTPValidationError);
+export type InstanceCreateInstanceError = (HTTPValidationError);
 
 export type RootRootResponse = (unknown);
 
 export type RootRootError = unknown;
 
-export type TestapiReadTestapiData = {
-    path: {
-        item: number;
-    };
+export type UserCreateUserData = {
+    body: UserCreateRequest;
 };
 
-export type TestapiReadTestapiResponse = (TestModel);
+export type UserCreateUserResponse = (UserCreateResponse);
 
-export type TestapiReadTestapiError = (HTTPValidationError);
+export type UserCreateUserError = (HTTPValidationError);
 
-export type UsersReadUsersResponse = (Array<User>);
-
-export type UsersReadUsersError = unknown;
-
-export type UsersReadUserMeResponse = (User);
-
-export type UsersReadUserMeError = unknown;
-
-export type UsersReadUserData = {
-    path: {
-        username: string;
-    };
+export type UserLoginUserData = {
+    body: UserLoginRequest;
 };
 
-export type UsersReadUserResponse = (User);
+export type UserLoginUserResponse = (UserLoginResponse);
 
-export type UsersReadUserError = (HTTPValidationError);
+export type UserLoginUserError = (HTTPValidationError);
+
+export type UserGetUserSessionResponse = (UserSessionResponse);
+
+export type UserGetUserSessionError = unknown;
+
+export type UserLogoutUserResponse = (UserLoginResponse);
+
+export type UserLogoutUserError = unknown;

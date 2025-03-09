@@ -5,7 +5,7 @@ import asyncio
 from .clients.base_instance_client import BaseInstanceClient
 from .validators.instance_validator import InstanceValidator
 from .clients.lxd import LXDClient
-from ..models.Instance import InstanceCreateRequest, InstanceCreateResponse, InstanceDetails
+from ..models.instance import InstanceCreateRequest, InstanceCreateResponse, InstanceDetails
 from ..sql.operations.instance import InstanceOperation
 
 
@@ -43,8 +43,7 @@ class InstanceService:
             )
         if not instance_type_task.result() or not os_type_task.result():
             raise ValueError("Invalid instance type or os type")
-        if not InstanceValidator.validate_password(instance_create.root_password):
-            raise ValueError("Invalid password format")
+        InstanceValidator.validate_password(instance_create.root_password)
         
         # Create instance
         instance = self.lxd_client.create_instance(instance_create)

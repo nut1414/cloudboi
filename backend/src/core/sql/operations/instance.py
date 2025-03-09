@@ -2,7 +2,7 @@ from typing import List
 from .base import BaseOperation
 from ..tables.instance_type import InstanceType
 from ..tables.os_type import OsType
-from ...models.Instance import InstanceType as InstanceTypeModel, OsType as OsTypeModel
+from ...models.instance import InstanceType as InstanceTypeModel, OsType as OsTypeModel
 from sqlalchemy import select
 
 

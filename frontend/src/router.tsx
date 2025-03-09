@@ -1,8 +1,12 @@
 import { createBrowserRouter } from "react-router-dom"
 import { lazy } from "react"
-import DefaultLayout from "./pages/Layout/DefaultLayout"
+import { publicOnlyGuard, userRouteGuard } from "./guard"
+import { client } from "./client"
+import { API_CONFIG } from "./config/api"
 
+const DefaultLayout = lazy(() => import("./pages/Layout/DefaultLayout"))
 const App = lazy(() => import("./pages/Landing/App"))
+const Login = lazy(() => import("./pages/Auth/Login"))
 const SignUp = lazy(() => import("./pages/Auth/signUp"))
 const Manage = lazy(() => import("./pages/InstanceList/manage"))
 const CreateInstance = lazy(() => import("./pages/InstanceCreate/createInstance"))
@@ -10,22 +14,31 @@ const Billing = lazy(() => import("./pages/Billing/billing"))
 const Setting = lazy(() => import("./pages/InstanceSetting/setting"))
 const Support = lazy(() => import("./pages/User/support"))
 
-// TODO:
-// - Need to put page layout to element of parent path
-// - Update navigation path in all components
-
-const router = createBrowserRouter([
+/**
+ * Route configuration with authentication guards
+ * 
+ * These guards run before the route renders and handle redirects
+ * while working with our existing UserContext
+ */
+const routes = [
   {
     index: true,
     element: <App />,
   },
   {
-    path: "/signup", 
-    element: <SignUp />,  
+    path: "/login",
+    element: <Login />,
+    loader: publicOnlyGuard,
+  },
+  {
+    path: "/signup",
+    element: <SignUp />,
+    loader: publicOnlyGuard,
   },
   {
     path: "/user/:userName",
     element: <DefaultLayout />,
+    loader: userRouteGuard,
     children: [
       {
         path: "billing",
@@ -33,11 +46,11 @@ const router = createBrowserRouter([
       },
       {
         path: "support",
-        element: <Support />
+        element: <Support />,
       },
       {
         path: "setting",
-        element: <>{/* User setting page */}</>
+        element: <>{/* User setting page */}</>,
       },
       {
         path: "instance",
@@ -56,14 +69,17 @@ const router = createBrowserRouter([
               {
                 index: true,
                 element: <Setting />,
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  }
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+];
 
-])
+client.setConfig(API_CONFIG)
 
-export default router
+const router = createBrowserRouter(routes);
+
+export default router;

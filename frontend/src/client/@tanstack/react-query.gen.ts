@@ -2,9 +2,9 @@
 
 import type { Options } from '@hey-api/client-axios';
 import { queryOptions, type UseMutationOptions } from '@tanstack/react-query';
-import type { AdminAdminUpdateAdminData, AdminAdminUpdateAdminError, AdminAdminUpdateAdminResponse, InstancesCreateInstanceData, InstancesCreateInstanceError, InstancesCreateInstanceResponse, ItemsItemsReadItemsData, ItemsItemsReadItemData, ItemsItemsUpdateItemData, ItemsItemsUpdateItemError, ItemsItemsUpdateItemResponse, TestapiReadTestapiData, UsersReadUserData } from '../types.gen';
+import { client, InstanceService, RootService, UserService } from '../services.gen';
+import type { InstanceCreateInstanceData, InstanceCreateInstanceError, InstanceCreateInstanceResponse, UserCreateUserData, UserCreateUserError, UserCreateUserResponse, UserLoginUserData, UserLoginUserError, UserLoginUserResponse, UserLogoutUserError, UserLogoutUserResponse } from '../types.gen';
 import type { AxiosError } from 'axios';
-import { client, AdminService, InstancesService, ItemsService, RootService, TestapiService, UsersService } from '../services.gen';
 
 type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseURL' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -33,14 +33,14 @@ const createQueryKey = <TOptions extends Options>(id: string, options?: TOptions
     return params;
 };
 
-export const adminAdminUpdateAdminQueryKey = (options: Options<AdminAdminUpdateAdminData>) => [
-    createQueryKey('adminAdminUpdateAdmin', options)
+export const instanceInstanceDetailsQueryKey = (options?: Options) => [
+    createQueryKey('instanceInstanceDetails', options)
 ];
 
-export const adminAdminUpdateAdminOptions = (options: Options<AdminAdminUpdateAdminData>) => {
+export const instanceInstanceDetailsOptions = (options?: Options) => {
     return queryOptions({
         queryFn: async ({ queryKey, signal }) => {
-            const { data } = await AdminService.adminAdminUpdateAdmin({
+            const { data } = await InstanceService.instanceInstanceDetails({
                 ...options,
                 ...queryKey[0],
                 signal,
@@ -48,118 +48,33 @@ export const adminAdminUpdateAdminOptions = (options: Options<AdminAdminUpdateAd
             });
             return data;
         },
-        queryKey: adminAdminUpdateAdminQueryKey(options)
+        queryKey: instanceInstanceDetailsQueryKey(options)
     });
 };
 
-export const adminAdminUpdateAdminMutation = (options?: Partial<Options<AdminAdminUpdateAdminData>>) => {
-    const mutationOptions: UseMutationOptions<AdminAdminUpdateAdminResponse, AxiosError<AdminAdminUpdateAdminError>, Options<AdminAdminUpdateAdminData>> = {
+export const instanceCreateInstanceQueryKey = (options: Options<InstanceCreateInstanceData>) => [
+    createQueryKey('instanceCreateInstance', options)
+];
+
+export const instanceCreateInstanceOptions = (options: Options<InstanceCreateInstanceData>) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await InstanceService.instanceCreateInstance({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: instanceCreateInstanceQueryKey(options)
+    });
+};
+
+export const instanceCreateInstanceMutation = (options?: Partial<Options<InstanceCreateInstanceData>>) => {
+    const mutationOptions: UseMutationOptions<InstanceCreateInstanceResponse, AxiosError<InstanceCreateInstanceError>, Options<InstanceCreateInstanceData>> = {
         mutationFn: async (localOptions) => {
-            const { data } = await AdminService.adminAdminUpdateAdmin({
-                ...options,
-                ...localOptions,
-                throwOnError: true
-            });
-            return data;
-        }
-    };
-    return mutationOptions;
-};
-
-export const instancesInstanceDetailsQueryKey = (options?: Options) => [
-    createQueryKey('instancesInstanceDetails', options)
-];
-
-export const instancesInstanceDetailsOptions = (options?: Options) => {
-    return queryOptions({
-        queryFn: async ({ queryKey, signal }) => {
-            const { data } = await InstancesService.instancesInstanceDetails({
-                ...options,
-                ...queryKey[0],
-                signal,
-                throwOnError: true
-            });
-            return data;
-        },
-        queryKey: instancesInstanceDetailsQueryKey(options)
-    });
-};
-
-export const instancesCreateInstanceQueryKey = (options: Options<InstancesCreateInstanceData>) => [
-    createQueryKey('instancesCreateInstance', options)
-];
-
-export const instancesCreateInstanceOptions = (options: Options<InstancesCreateInstanceData>) => {
-    return queryOptions({
-        queryFn: async ({ queryKey, signal }) => {
-            const { data } = await InstancesService.instancesCreateInstance({
-                ...options,
-                ...queryKey[0],
-                signal,
-                throwOnError: true
-            });
-            return data;
-        },
-        queryKey: instancesCreateInstanceQueryKey(options)
-    });
-};
-
-export const instancesCreateInstanceMutation = (options?: Partial<Options<InstancesCreateInstanceData>>) => {
-    const mutationOptions: UseMutationOptions<InstancesCreateInstanceResponse, AxiosError<InstancesCreateInstanceError>, Options<InstancesCreateInstanceData>> = {
-        mutationFn: async (localOptions) => {
-            const { data } = await InstancesService.instancesCreateInstance({
-                ...options,
-                ...localOptions,
-                throwOnError: true
-            });
-            return data;
-        }
-    };
-    return mutationOptions;
-};
-
-export const itemsItemsReadItemsQueryKey = (options: Options<ItemsItemsReadItemsData>) => [
-    createQueryKey('itemsItemsReadItems', options)
-];
-
-export const itemsItemsReadItemsOptions = (options: Options<ItemsItemsReadItemsData>) => {
-    return queryOptions({
-        queryFn: async ({ queryKey, signal }) => {
-            const { data } = await ItemsService.itemsItemsReadItems({
-                ...options,
-                ...queryKey[0],
-                signal,
-                throwOnError: true
-            });
-            return data;
-        },
-        queryKey: itemsItemsReadItemsQueryKey(options)
-    });
-};
-
-export const itemsItemsReadItemQueryKey = (options: Options<ItemsItemsReadItemData>) => [
-    createQueryKey('itemsItemsReadItem', options)
-];
-
-export const itemsItemsReadItemOptions = (options: Options<ItemsItemsReadItemData>) => {
-    return queryOptions({
-        queryFn: async ({ queryKey, signal }) => {
-            const { data } = await ItemsService.itemsItemsReadItem({
-                ...options,
-                ...queryKey[0],
-                signal,
-                throwOnError: true
-            });
-            return data;
-        },
-        queryKey: itemsItemsReadItemQueryKey(options)
-    });
-};
-
-export const itemsItemsUpdateItemMutation = (options?: Partial<Options<ItemsItemsUpdateItemData>>) => {
-    const mutationOptions: UseMutationOptions<ItemsItemsUpdateItemResponse, AxiosError<ItemsItemsUpdateItemError>, Options<ItemsItemsUpdateItemData>> = {
-        mutationFn: async (localOptions) => {
-            const { data } = await ItemsService.itemsItemsUpdateItem({
+            const { data } = await InstanceService.instanceCreateInstance({
                 ...options,
                 ...localOptions,
                 throwOnError: true
@@ -189,14 +104,14 @@ export const rootRootOptions = (options?: Options) => {
     });
 };
 
-export const testapiReadTestapiQueryKey = (options: Options<TestapiReadTestapiData>) => [
-    createQueryKey('testapiReadTestapi', options)
+export const userCreateUserQueryKey = (options: Options<UserCreateUserData>) => [
+    createQueryKey('userCreateUser', options)
 ];
 
-export const testapiReadTestapiOptions = (options: Options<TestapiReadTestapiData>) => {
+export const userCreateUserOptions = (options: Options<UserCreateUserData>) => {
     return queryOptions({
         queryFn: async ({ queryKey, signal }) => {
-            const { data } = await TestapiService.testapiReadTestapi({
+            const { data } = await UserService.userCreateUser({
                 ...options,
                 ...queryKey[0],
                 signal,
@@ -204,18 +119,32 @@ export const testapiReadTestapiOptions = (options: Options<TestapiReadTestapiDat
             });
             return data;
         },
-        queryKey: testapiReadTestapiQueryKey(options)
+        queryKey: userCreateUserQueryKey(options)
     });
 };
 
-export const usersReadUsersQueryKey = (options?: Options) => [
-    createQueryKey('usersReadUsers', options)
+export const userCreateUserMutation = (options?: Partial<Options<UserCreateUserData>>) => {
+    const mutationOptions: UseMutationOptions<UserCreateUserResponse, AxiosError<UserCreateUserError>, Options<UserCreateUserData>> = {
+        mutationFn: async (localOptions) => {
+            const { data } = await UserService.userCreateUser({
+                ...options,
+                ...localOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const userLoginUserQueryKey = (options: Options<UserLoginUserData>) => [
+    createQueryKey('userLoginUser', options)
 ];
 
-export const usersReadUsersOptions = (options?: Options) => {
+export const userLoginUserOptions = (options: Options<UserLoginUserData>) => {
     return queryOptions({
         queryFn: async ({ queryKey, signal }) => {
-            const { data } = await UsersService.usersReadUsers({
+            const { data } = await UserService.userLoginUser({
                 ...options,
                 ...queryKey[0],
                 signal,
@@ -223,18 +152,32 @@ export const usersReadUsersOptions = (options?: Options) => {
             });
             return data;
         },
-        queryKey: usersReadUsersQueryKey(options)
+        queryKey: userLoginUserQueryKey(options)
     });
 };
 
-export const usersReadUserMeQueryKey = (options?: Options) => [
-    createQueryKey('usersReadUserMe', options)
+export const userLoginUserMutation = (options?: Partial<Options<UserLoginUserData>>) => {
+    const mutationOptions: UseMutationOptions<UserLoginUserResponse, AxiosError<UserLoginUserError>, Options<UserLoginUserData>> = {
+        mutationFn: async (localOptions) => {
+            const { data } = await UserService.userLoginUser({
+                ...options,
+                ...localOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const userGetUserSessionQueryKey = (options?: Options) => [
+    createQueryKey('userGetUserSession', options)
 ];
 
-export const usersReadUserMeOptions = (options?: Options) => {
+export const userGetUserSessionOptions = (options?: Options) => {
     return queryOptions({
         queryFn: async ({ queryKey, signal }) => {
-            const { data } = await UsersService.usersReadUserMe({
+            const { data } = await UserService.userGetUserSession({
                 ...options,
                 ...queryKey[0],
                 signal,
@@ -242,18 +185,18 @@ export const usersReadUserMeOptions = (options?: Options) => {
             });
             return data;
         },
-        queryKey: usersReadUserMeQueryKey(options)
+        queryKey: userGetUserSessionQueryKey(options)
     });
 };
 
-export const usersReadUserQueryKey = (options: Options<UsersReadUserData>) => [
-    createQueryKey('usersReadUser', options)
+export const userLogoutUserQueryKey = (options?: Options) => [
+    createQueryKey('userLogoutUser', options)
 ];
 
-export const usersReadUserOptions = (options: Options<UsersReadUserData>) => {
+export const userLogoutUserOptions = (options?: Options) => {
     return queryOptions({
         queryFn: async ({ queryKey, signal }) => {
-            const { data } = await UsersService.usersReadUser({
+            const { data } = await UserService.userLogoutUser({
                 ...options,
                 ...queryKey[0],
                 signal,
@@ -261,6 +204,20 @@ export const usersReadUserOptions = (options: Options<UsersReadUserData>) => {
             });
             return data;
         },
-        queryKey: usersReadUserQueryKey(options)
+        queryKey: userLogoutUserQueryKey(options)
     });
+};
+
+export const userLogoutUserMutation = (options?: Partial<Options>) => {
+    const mutationOptions: UseMutationOptions<UserLogoutUserResponse, AxiosError<UserLogoutUserError>, Options> = {
+        mutationFn: async (localOptions) => {
+            const { data } = await UserService.userLogoutUser({
+                ...options,
+                ...localOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
 };
