@@ -4,26 +4,24 @@ from ..utils.logging import logger
 from ..service.clients.base_instance_client import BaseInstanceClient
 from ..service.clients.lxd import LXDClient
 from ..service.instance import InstanceService
-from ..models.Instance import InstanceDetails, InstanceCreateRequest, InstanceCreateResponse
+from ..models.instance import InstanceDetails, InstanceCreateRequest, InstanceCreateResponse
+from ..utils.dependencies import get_current_user
 
 
 router = APIRouter(
-    prefix="/instances",
-    tags=["instances"],
+    prefix="/instance",
+    tags=["instance"],
+    dependencies=[Depends(get_current_user)]
 )
 
 @router.get(
-    "/",
+    "/details",
     response_model=InstanceDetails,
 )
 async def instance_details(
     instance_service: InstanceService = Depends()
 ):
-    try:
-        return await instance_service.get_all_instance_details()
-    except Exception as e:
-        logger.error(f"Failed to get instance details: {str(e)}")
-        raise HTTPException(status_code=500, detail="Failed to get instance details")
+    return await instance_service.get_all_instance_details()
 
 @router.post(
     "/create",
@@ -33,11 +31,7 @@ async def create_instance(
     instance_create: InstanceCreateRequest,
     instance_service: InstanceService = Depends()
 ):
-    try:
-        return await instance_service.create_instance(instance_create)
-    except Exception as e:
-        logger.error(f"Failed to create instance: {str(e)}")
-        raise HTTPException(status_code=500, detail="Failed to create instance")
+    return await instance_service.create_instance(instance_create)
 
 @router.websocket("/ws/{instance_name}")
 async def websocket_instance(

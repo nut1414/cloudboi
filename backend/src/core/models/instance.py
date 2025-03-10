@@ -1,5 +1,5 @@
 from typing import List
-from .BaseModel import BaseModel
+from .base_model import BaseModel
 
 class InstanceType(BaseModel):
     instance_type_id: int

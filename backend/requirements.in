@@ -2,6 +2,8 @@ uvicorn[standard]
 fastapi[standard]
 asyncpg
 sqlalchemy[asyncio]
+bcrypt
+python-jose[cryptography]
 pylxd
 debugpy
 git+https://github.com/canonical/python-libmaas.git
