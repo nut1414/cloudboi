@@ -53,11 +53,11 @@ const ChooseAuthenMethod: React.FC<ChooseAuthenMethodProps> = ({
                         value={password}
                         onChange={(e) => validatePassword(e.target.value)}
                         placeholder="Enter password..."
-                        className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full p-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <button 
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-3 text-gray-500"
+                        className="absolute right-3 top-2 text-gray-500"
                     >
                         {showPassword ? "Hide" : "Show"}
                     </button>
