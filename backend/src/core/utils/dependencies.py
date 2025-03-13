@@ -1,8 +1,12 @@
-from typing import Annotated
+from typing import Annotated, Optional
 from fastapi import Depends, HTTPException, Request, status
+from contextvars import ContextVar
 
-from ..models.user import UserSessionResponse
+from ..models.user import UserSessionResponse, UserInDB
 from ..service.user import UserService
+
+# Context variable to store the current user session
+user_session_ctx: ContextVar[Optional[UserInDB]] = ContextVar("user_session", default=None)
 
 # Define a dependency that gets the current user
 async def get_current_user(
@@ -16,6 +20,8 @@ async def get_current_user(
             detail="Not authenticated",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    # Store the user session in the context
+    user_session_ctx.set(await user_service.user_opr.get_user_by_username(user_session.username))
     return user_session
 
 # Use the previous dependency for admin check

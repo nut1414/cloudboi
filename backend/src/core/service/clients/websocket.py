@@ -7,15 +7,10 @@ import websockets
 
 from ...utils.logging import logger
 from ...commons.exception import create_exception_class
+from ...constants.websocket_const import MessageType
 
 
 WebSocketException = create_exception_class("WebSocket")
-
-# Message types that match the front-end constants
-MESSAGE_TYPES = {
-    "TERMINAL_RESIZE": "TERMINAL_RESIZE",
-    "TERMINAL_INPUT": "TERMINAL_INPUT"
-}
 
 class LXDWebSocketSession:
     def __init__(
@@ -92,10 +87,10 @@ class LXDWebSocketSession:
                     if isinstance(message_data, dict) and 'type' in message_data:
                         message_type = message_data['type']
                         payload = message_data.get('payload', {})
-                        if message_type == MESSAGE_TYPES['TERMINAL_RESIZE']:
+                        if message_type == MessageType.TERMINAL_RESIZE:
                             await self._handle_resize(payload)
                             continue
-                        elif message_type == MESSAGE_TYPES['TERMINAL_INPUT']:
+                        elif message_type == MessageType.TERMINAL_INPUT:
                             data_to_send = payload
                         else:
                             raise WebSocketException(f"Invalid message type: {message_type}")

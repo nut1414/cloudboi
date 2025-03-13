@@ -1,4 +1,4 @@
-from fastapi import Response
+from fastapi import Response, WebSocket
 from jose import jwt
 from datetime import datetime, timedelta
 import secrets
@@ -11,7 +11,7 @@ class TokenUtils:
     def _generate_token(cls, data: dict, expires_delta: timedelta):
         """Generate a JWT token."""
         to_encode = data.copy()
-        now = DateTimeUtils.from_string(DateTimeUtils.now())
+        now = DateTimeUtils.now_dt()
 
         to_encode.update({
             "exp": now + expires_delta,
@@ -62,3 +62,14 @@ class TokenUtils:
             )
         except Exception as e:
             return None
+    
+    @classmethod
+    def get_websocket_cookie(cls, websocket: WebSocket) -> dict:
+        """Extract cookies from websocket headers."""
+        cookies = {}
+        for header in websocket.headers.getlist("cookie"):
+            pairs = header.split("; ")
+            for pair in pairs:
+                key, value = pair.split("=", 1)
+                cookies[key] = value
+        return cookies

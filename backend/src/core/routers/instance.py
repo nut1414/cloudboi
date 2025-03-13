@@ -37,10 +37,10 @@ async def create_instance(
 async def websocket_instance(
     websocket: WebSocket,
     instance_name: str,
-    lxd_client: BaseInstanceClient = Depends(LXDClient.get_client)
+    instance_service: InstanceService = Depends(),
 ):
     try:
-        await lxd_client.websocket_session(instance_name, websocket)
+        await instance_service.websocket_session(instance_name, websocket)
     except Exception as e:
         logger.error(f"Failed to create websocket session: {str(e)}")
         await websocket.close(code=1011, reason=str(e))

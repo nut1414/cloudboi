@@ -5,7 +5,7 @@ from pylxd import models
 from ...commons.exception import create_exception_class
 from .websocket import LXDWebSocketManager, LXDWebSocketSession
 from .base_instance_client import BaseInstanceClient
-from ...models.instance import InstanceCreateRequest, InstanceCreateResponse
+from ...models.instance import InstanceCreateRequest, InstanceCreateResponse, UserInstance
 from ....infra.managers.lxd import LXDManager
 from ...utils.decorator import create_decorator
 from ...utils.datetime import DateTimeUtils
@@ -27,7 +27,7 @@ class LXDClient(BaseInstanceClient[models.Instance]):
     def get_instance(self, instance_identifier: str) -> models.Instance:
         return self.lxd_manager.get_container_by_name(instance_identifier)
     
-    def create_instance(self, instance_config: InstanceCreateRequest) -> InstanceCreateResponse:
+    def create_instance(self, instance_config: InstanceCreateRequest) -> UserInstance:
         container = self.lxd_manager.create_container(
             self.__to_instance_create_config(instance_config)
         )
@@ -40,10 +40,14 @@ class LXDClient(BaseInstanceClient[models.Instance]):
         if not is_set_password_success:
             self.delete_instance(container)
         
-        return InstanceCreateResponse(
-            instance_name=container.name,
-            instance_status=container.status,
-            created_at=DateTimeUtils.now()
+        return UserInstance(
+            instance_plan_id=instance_config.instance_plan.instance_plan_id,
+            os_type_id=instance_config.os_type.os_type_id,
+            hostname=container.name,
+            lxd_node_name=container.location,
+            status=container.status,
+            created_at=DateTimeUtils.now_dt(),
+            last_updated_at=DateTimeUtils.now_dt()
         )
     
     @_resolve_instance()
@@ -90,7 +94,7 @@ class LXDClient(BaseInstanceClient[models.Instance]):
                 "root": {
                     "path": "/",
                     "pool": "default",
-                    "size": f"{instance_create.instance_type.storage_amount}GB",
+                    "size": f"{instance_create.instance_plan.storage_amount}GB",
                     "type": "disk"
                 }
             },
@@ -108,8 +112,8 @@ class LXDClient(BaseInstanceClient[models.Instance]):
             },
             "type": "container",
             "config": {
-                "limits.cpu": f"{instance_create.instance_type.vcpu_amount}",
-                "limits.memory": f"{instance_create.instance_type.ram_amount}GB",
+                "limits.cpu": f"{instance_create.instance_plan.vcpu_amount}",
+                "limits.memory": f"{instance_create.instance_plan.ram_amount}GB",
                 "limits.memory.enforce": "hard"
             }
         }

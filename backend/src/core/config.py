@@ -27,3 +27,10 @@ class TokenConfig:
 
     # HTTPS only in production
     SECURE_COOKIES = ENV == "production"
+
+class BillingConfig:
+    # Check for overdue subscriptions every 30 minutes
+    OVERDUE_CHECK_INTERVAL_MINUTES = 30
+    
+    # Check for expired subscriptions every 60 minutes
+    EXPIRE_CHECK_INTERVAL_MINUTES = 60

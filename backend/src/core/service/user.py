@@ -1,7 +1,7 @@
 from typing import Annotated
-from fastapi import Depends, Request, Response, HTTPException
+from fastapi import Depends, Request, Response, HTTPException, WebSocket
 
-from ..models.user import UserCreateRequest, UserCreateResponse, UserLoginRequest, UserLoginResponse, UserSessionResponse, UserInDB
+from ..models.user import UserCreateRequest, UserCreateResponse, UserLoginRequest, UserLoginResponse, UserSessionResponse, UserInDB, UserWallet
 from ..utils.datetime import DateTimeUtils
 from ..sql.operations.user import UserOperation
 from .validators.user_validator import UserValidator
@@ -9,7 +9,7 @@ from ..utils.token import TokenUtils
 from .helpers.user_helper import UserHelper
 
 
-class UserService():
+class UserService:
     def __init__(
         self,
         user_opr: UserOperation = Depends()
@@ -32,21 +32,29 @@ class UserService():
         if existing_email:
             raise HTTPException(status_code=400, detail="Email already existed")
         
-        # Create user with hashed password
+        # Create user with hashed password and store in database
         user_create_in_db = UserInDB(
             username=user_create.username,
             email=user_create.email,
-            password_hash=UserHelper.hash_password(user_create.password)
+            password_hash=UserHelper.hash_password(user_create.password),
+            last_updated_at=DateTimeUtils.now_dt()
         )
+        created_user = await self.user_opr.upsert_user(user_create_in_db)
 
-        # Save user to database
-        created_user = await self.user_opr.create_user(user_create_in_db)
+        # Create user wallet with initial balance of 0.0 and store in database
+        user_wallet_create_in_db = UserWallet(
+            user_id=created_user.user_id,
+            balance=0.0,
+            last_updated_at=DateTimeUtils.now_dt()
+        )
+        created_user_wallet = await self.user_opr.upsert_user_wallet(user_wallet_create_in_db)
         
         # Return user info with created_at timestamp
         return UserCreateResponse(
             username=created_user.username,
             email=created_user.email,
-            created_at=DateTimeUtils.now()
+            balance=created_user_wallet.balance,
+            created_at=created_user.last_updated_at
         )
 
     async def login_user(self, user_login: UserLoginRequest, response: Response = None) -> UserLoginResponse:
@@ -71,18 +79,16 @@ class UserService():
             TokenUtils.set_secure_cookie(response, refresh_token, "refresh")
         
         return UserLoginResponse(message="Login successful")
-
-    async def get_user_session(self, request: Request) -> UserSessionResponse:
-        """Get current user session information."""
+    
+    async def get_user_session_from_token(self, access_token: str) -> UserSessionResponse:
+        """Get user session from an access token."""
         unauthenticated_response = UserSessionResponse(
             is_authenticated=False,
-            username="",
-            email="",
-            role=""
+            username=None,
+            email=None,
+            role=None
         )
-
-        # Get access token from cookies
-        access_token = request.cookies.get("access_token")
+        
         if not access_token:
             return unauthenticated_response
         
@@ -106,6 +112,17 @@ class UserService():
             email=user.email,
             role=user_role.role_name
         )
+
+    async def get_user_session(self, request: Request) -> UserSessionResponse:
+        """Get current user session information from HTTP request."""
+        access_token = request.cookies.get("access_token")
+        return await self.get_user_session_from_token(access_token)
+
+    async def get_user_session_websocket(self, websocket: WebSocket) -> UserSessionResponse:
+        """Get current user session information from websocket."""
+        cookies = TokenUtils.get_websocket_cookie(websocket)
+        access_token = cookies.get("access_token")
+        return await self.get_user_session_from_token(access_token)
 
     async def logout_user(self, response: Response) -> UserLoginResponse:
         """Log out a user by clearing cookies."""

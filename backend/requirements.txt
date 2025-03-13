@@ -17,6 +17,8 @@ anyio==4.6.2.post1
     #   httpx
     #   starlette
     #   watchfiles
+apscheduler==3.11.0
+    # via -r requirements.in
 argcomplete==3.5.1
     # via python-libmaas
 asyncpg==0.30.0
@@ -185,6 +187,8 @@ typing-extensions==4.12.2
     #   pydantic-core
     #   sqlalchemy
     #   typer
+tzlocal==5.3.1
+    # via apscheduler
 urllib3==2.2.3
     # via requests
 uvicorn==0.32.0

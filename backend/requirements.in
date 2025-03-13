@@ -6,4 +6,5 @@ bcrypt
 python-jose[cryptography]
 pylxd
 debugpy
+apscheduler
 git+https://github.com/canonical/python-libmaas.git
