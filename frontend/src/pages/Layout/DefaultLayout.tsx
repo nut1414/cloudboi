@@ -1,7 +1,7 @@
 import React from "react"
 import { Outlet } from "react-router-dom"
 // import SideNavbar from "../../components/Navbar/SideNavbar"
-import VerticalSidebar from "../../components/Navbar/sidebar/VerticalSidebar"
+import VerticalSidebar from "../../components/Navbar/Sidebar/VerticalSidebar"
 const DefaultLayout: React.FC = () => {
     return (
         <div className="flex min-h-screen">

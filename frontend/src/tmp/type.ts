@@ -53,3 +53,19 @@ export interface BillingItem extends BaseModel {
     description: string;
     amount: string;
 }
+
+
+
+//*****admin ******
+
+
+// PackageData can also live here if it's related to your instance/domain
+export interface PackageData extends BaseModel {
+    id: string;
+    name: string;
+    type: number;
+    price: number;
+    cpu: number;
+    ram: number;
+    storage: number;
+  }
