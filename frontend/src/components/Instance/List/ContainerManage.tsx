@@ -1,29 +1,19 @@
 import React from "react";
-import { useNavigate,useLocation } from "react-router-dom";
-
-interface Instance {
-    id:string;
-    name: string;
-    os: string;
-    usage: string;
-    type: string;
-    status: string;
-}
+import { useNavigate, useLocation } from "react-router-dom";
+import { Instance } from "../../../tmp/type";
 
 interface ContainerManageProps {
     instances: Instance[];
 }
 
-const ContainerManage: React.FC<ContainerManageProps> = ({ instances}) => {
+const ContainerManage: React.FC<ContainerManageProps> = ({ instances }) => {
     const navigate = useNavigate();
     const location = useLocation();
-     
 
     return (
-        <>
         <div className="max-h-[600px] overflow-y-auto">
-          {instances.map((instance, index) => (
-                <div key={index} className="grid grid-cols-6 text-black text-md bg-red-300 mt-1 border-b py-2 px-4">
+            {instances.map(instance => (
+                <div key={instance.id} className="grid grid-cols-6 text-black bg-red-300 mt-1 border-b py-2 px-4">
                     <span className="text-center">{instance.name}</span>
                     <span className="text-center">{instance.os}</span>
                     <span className="text-center">{instance.usage}</span>
@@ -32,14 +22,16 @@ const ContainerManage: React.FC<ContainerManageProps> = ({ instances}) => {
                         {instance.status}
                     </span>
 
-                    <button className=" bg-[#D5C6E0] shadow-md text-black py-2 rounded-2xl"
-                    onClick={() => navigate(`${location.pathname}/${instance.id}`)}>
+                    <button
+                        className="bg-[#D5C6E0] shadow-md text-black py-2 rounded-2xl"
+                        onClick={() => navigate(`${location.pathname}/${instance.id}`)}
+                    >
                         View Instance
                     </button>
                 </div>
             ))}
-            </div>
-        </>
+        </div>
     );
 };
+
 export default ContainerManage;
