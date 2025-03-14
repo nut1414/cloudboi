@@ -28,15 +28,16 @@ const VerticalSidebar: React.FC = () => {
           {/* role user  */}
           {userRole === "user" && (
             <>
-              <ContainerSidebar userName={userName} currentPath={currentPath} pathName={"instance"} showDiv={showDiv} name={"Manage"} />
-              <ContainerSidebar userName={userName} currentPath={currentPath} pathName={"billing"} showDiv={showDiv} name={"Billing"} />
-              <ContainerSidebar userName={userName} currentPath={currentPath} pathName={"support"} showDiv={showDiv} name={"Support"} />
-              <ContainerSidebar userName={userName} currentPath={currentPath} pathName={"setting/access"} showDiv={showDiv} name={"Setting"} />
+              <ContainerSidebar role={userRole} userName={userName} currentPath={currentPath} pathName={"instance"} showDiv={showDiv} name={"Manage"} />
+              <ContainerSidebar role={userRole} userName={userName} currentPath={currentPath} pathName={"billing"} showDiv={showDiv} name={"Billing"} />
+              <ContainerSidebar role={userRole} userName={userName} currentPath={currentPath} pathName={"support"} showDiv={showDiv} name={"Support"} />
+              <ContainerSidebar role={userRole} userName={userName} currentPath={currentPath} pathName={"setting/access"} showDiv={showDiv} name={"Setting"} />
             </>)}
           {/* role admin */}
           {userRole === "admin" && (
             <>
-              <ContainerSidebar userName={userName} currentPath={currentPath} pathName={"package"} showDiv={showDiv} name={"package"} />
+              <ContainerSidebar role={userRole} userName={userName} currentPath={currentPath} pathName={"billing"} showDiv={showDiv} name={"Billing"} />
+              <ContainerSidebar role={userRole} userName={userName} currentPath={currentPath} pathName={"package"} showDiv={showDiv} name={"Package"} />
             </>)}
         </ul>
       </ul>
