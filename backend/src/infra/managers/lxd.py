@@ -1,5 +1,6 @@
 from pylxd import Client, exceptions, models
 from typing import Dict, List, Optional, Tuple
+import base64, json
 
 from ...core.commons.exception import create_exception_class
 from ..config import LXDConfig
@@ -230,3 +231,62 @@ class LXDManager:
                     return next((group for group in member.groups if "resource" in group), None)
         except exceptions.LXDAPIException as e:
             raise LXDManagerException(f"Failed to get cluster group name: {str(e)}")
+    
+    @_ensure_connected()
+    def create_cluster_join_token(self, server_name: str) -> str:
+        try:
+            server = { 
+                server_name 
+            }
+            token_request = self.client.api.cluster.members.post(
+                json=server
+            )
+
+            # Response from calling the API consist of raw data that needed to be turn into base64
+            # Response structure: https://documentation.ubuntu.com/lxd/en/latest/api/#/cluster/cluster_members_post
+            # Join token structure: https://github.com/canonical/lxd/blob/main/shared/api/cluster.go#L108
+            response = token_request.json().metadata
+
+            join_token_object = {
+                "addresses": response["addresses"],
+                "expiresAt": response["expiresAt"],
+                "fingerprint": response["fingerprint"],
+                "secret": response["secret"],
+                "serverName": response["serverName"]
+            }
+            
+            join_token_json = json.dumps(join_token_object)
+            join_token_base64 = base64.b64encode(join_token_json) 
+            
+            return join_token_base64
+        except exceptions.LXDAPIException as e:
+            raise LXDManagerException(f"Failed to create cluster join token: {str(e)}")
+    
+    @_ensure_connected()
+    def add_member_to_cluster_group(self, server_name: str, group: str = "resource") -> bool:
+        try:
+            # Check if server exists
+            all_members = self.get_all_cluster_members()
+            
+            if not any(member.server_name == server_name for member in all_members):
+                raise LXDManagerException(f"Server '{server_name}' not found in cluster members")
+          
+            # Get current group configuration
+            current_group_request = self.client.api.cluster.group[group].get()
+            current_group = current_group_request.json().metadata
+            
+            updated_group = {
+              "description": current_group["description"],
+              "servers": list(set(current_group["members"] + [server_name]))
+            }
+            
+            # Can only update the entire config of the group
+            # https://documentation.ubuntu.com/lxd/en/latest/api/#/cluster-groups/cluster_group_patch
+            
+            updated_group_request = self.client.api.cluster.group[group].put(
+                json=updated_group
+            )
+            
+            return updated_group_request.json()['status_code'] == 200
+        except exceptions.LXDAPIException as e:
+            raise LXDManagerException(f"Failed to add member '{server_name}' to cluster group: {str(e)}")
