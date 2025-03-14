@@ -1,34 +1,21 @@
 import React from "react";
-
 import OverviewMenu from "./OverviewMenu/OverviewMenu";
 import HistoryMenu from "./HistoryMenu/HistoryMenu";
 import TopUpMenu from "./TopUpMenu/TopUpMenu";
 
 interface BillingComponentProps {
-    active: number;
+    active: string;
 }
 
-const BillingComponent: React.FC<BillingComponentProps> = ({ active }) => {
-
-    return (
-        <>
-         {active === 0 &&
-                (<>
-                   <OverviewMenu/>
-                </>)
-            }
-          {active === 1 &&
-                (<>
-                   <HistoryMenu/>
-                </>)
-            }
-              {active === 2 &&
-                (<>
-                   <TopUpMenu/>
-                </>)
-            }
-
-        </>
-    );
+const menus: { [key: string]: React.ComponentType } = {
+    OverviewMenu,
+    HistoryMenu,
+    TopUpMenu
 };
+
+const BillingComponent: React.FC<BillingComponentProps> = ({ active }) => {
+    const ActiveMenu = menus[active] || null;
+    return ActiveMenu ? <ActiveMenu /> : null;
+};
+
 export default BillingComponent;

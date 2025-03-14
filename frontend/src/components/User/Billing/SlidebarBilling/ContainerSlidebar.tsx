@@ -2,11 +2,11 @@ import React from "react";
 import { twMerge } from 'tailwind-merge';
 
 interface ContainerSlidebarProps {
-    menu: number;
+    menu: string;
     name: string;
     showDiv: boolean;
-    active:number;
-    setActive: (value: number) => void;
+    active:string;
+    setActive: (value: string) => void;
 }
 
 const ContainerSlidebar: React.FC<ContainerSlidebarProps> = ({ showDiv, menu, name, active, setActive }) => {
