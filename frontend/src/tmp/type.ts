@@ -1,6 +1,8 @@
 // src/types/instance.ts
 export interface BaseModel {}
 
+export type InstanceStatus = "Running" | "Stopped"; // Define allowed statuses
+
 export interface InstanceType extends BaseModel {
     instance_type_id: number;
     instance_package_name: string;
@@ -32,4 +34,22 @@ export interface InstanceCreateResponse extends BaseModel {
     instance_name: string;
     instance_status: string;
     created_at: string;
+}
+
+
+// New: Instance model for Manage page
+export interface Instance extends BaseModel {
+    id: string;
+    name: string;
+    os: string;
+    usage: string;
+    type: string;
+    status: InstanceStatus;
+}
+
+
+export interface BillingItem extends BaseModel {
+    date: string;
+    description: string;
+    amount: string;
 }

@@ -4,8 +4,8 @@ import SlidebarBilling from "./SlidebarBilling/SlidebarBilling";
 
 interface ComponentWithChildren {
     children?: React.ReactNode
-    active:number;
-    setActive: (value: number) => void;
+    active:string;
+    setActive: (value: string) => void;
 }
 
 
