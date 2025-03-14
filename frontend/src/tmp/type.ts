@@ -69,3 +69,18 @@ export interface PackageData extends BaseModel {
     ram: number;
     storage: number;
   }
+
+
+
+  // New: Transaction type for Billing Admin
+
+  export type TransactionStatus = "success" | "cancel" | "pending";
+
+  export interface BillingTransaction extends BaseModel {
+    id: string;
+    date: string;
+    username: string;
+    type: string;
+    status: TransactionStatus;
+    amount: number; 
+  }
