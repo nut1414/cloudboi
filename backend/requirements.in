@@ -7,4 +7,5 @@ python-jose[cryptography]
 pylxd
 debugpy
 apscheduler
+dependency-injector
 git+https://github.com/canonical/python-libmaas.git

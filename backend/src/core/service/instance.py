@@ -1,24 +1,24 @@
 from typing import Optional
 import uuid
-from fastapi import Depends, WebSocket
+from fastapi import WebSocket
 import asyncio
 
-from . import SubscriptionService, UserService
+from .user import UserService
+from .subscription import SubscriptionService
 from .clients.base_instance_client import BaseInstanceClient
 from .validators.instance_validator import InstanceValidator
-from .clients.lxd import LXDClient
 from ..models.instance import InstanceCreateRequest, InstanceCreateResponse, InstanceDetails
-from ..sql.operations.instance import InstanceOperation
+from ..sql.operations import InstanceOperation
 from ..utils.dependencies import user_session_ctx
 
 
 class InstanceService:
     def __init__(
         self,
-        user_service: UserService = Depends(),
-        subscription_service: SubscriptionService = Depends(),
-        instance_opr: InstanceOperation = Depends(),
-        lxd_client: BaseInstanceClient = Depends(LXDClient.get_client)
+        user_service: UserService,
+        subscription_service: SubscriptionService,
+        instance_opr: InstanceOperation,
+        lxd_client: BaseInstanceClient
     ):
         self.user_service = user_service
         self.subscription_service = subscription_service
@@ -48,9 +48,15 @@ class InstanceService:
             os_type_task = tg.create_task(
                 self.instance_opr.get_os_type_by_id(instance_create.os_type.os_type_id)
             )
-        if not instance_plan_task.result() or not os_type_task.result():
+        instance_plan_create = instance_plan_task.result()
+        os_type_create = os_type_task.result()
+        if not instance_plan_create or not os_type_create:
             raise ValueError("Invalid instance plan or os type")
-        InstanceValidator.validate_password(instance_create.root_password)
+        InstanceValidator.validate_instance_create_request(
+            instance_create=instance_create,
+            instance_plan_db=instance_plan_create,
+            os_type_db=os_type_create
+        )
         
         # Create instance in LXD
         instance = self.lxd_client.create_instance(instance_create)
@@ -64,7 +70,7 @@ class InstanceService:
         await self.subscription_service.create_subscription(
             user_id=user_session_ctx.get().user_id,
             instance_id=created_instance.instance_id,
-            instance_plan=instance_plan_task.result()
+            instance_plan=instance_plan_create
         )
 
         return InstanceCreateResponse(
@@ -100,7 +106,7 @@ class InstanceService:
     async def websocket_session(self, instance_name: str, client_ws: WebSocket):
         # Validate if user has access to instance
         user = await self.user_service.get_user_session_websocket(client_ws)
-        instance = await self.instance_opr.get_user_instance_by_name(user.username, instance_name)
+        instance = await self.instance_opr.get_user_instance(user.username, instance_name)
 
         if not instance:
             raise ValueError("Instance not found")

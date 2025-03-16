@@ -1,14 +1,11 @@
 from typing import List, Optional, Sequence, Type, TypeVar, Union
-from fastapi import Depends
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..database import get_db_session
-
 PydanticT = TypeVar("PydanticT", bound=BaseModel)
 
-class BaseOperation():
-    def __init__(self, db: AsyncSession = Depends(get_db_session)):
+class BaseOperation:
+    def __init__(self, db: AsyncSession):
         self.db = db
     
     def to_pydantic(self, pydantic_model: Type[PydanticT], orm_objects: Union[Sequence, object, None]) -> Union[List[PydanticT], Optional[PydanticT]]:

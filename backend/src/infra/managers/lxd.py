@@ -7,9 +7,12 @@ from ...core.utils.decorator import create_decorator
 
 LXDManagerException = create_exception_class("LXDManager")
 
-def _ensure_connected_func(self, args, kwargs, *_, **__):
+def _ensure_connected_func(self: "LXDManager", args, kwargs, *_, **__):
     if not self._is_connected or not self.client:
-        raise LXDManagerException("LXDManager not connected")
+        # Auto-connect if not connected
+        self.connect()
+        if not self._is_connected:
+            raise LXDManagerException("LXDManager not connected")
     
     return args, kwargs
 
@@ -27,12 +30,6 @@ class LXDManager:
         if not cls._instance:
             cls._instance = cls()
             cls._instance.connect()
-        return cls._instance
-    
-    @classmethod
-    def get_manager(cls) -> "LXDManager":
-        if not cls._instance:
-            raise LXDManagerException("LXDManager not initialized")
         return cls._instance
     
     def connect(self) -> bool:

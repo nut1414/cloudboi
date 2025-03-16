@@ -12,7 +12,7 @@ from ...utils.datetime import DateTimeUtils
 
 LXDClientException = create_exception_class("LXDClient")
 
-def _resolve_instance_func(self, args, kwargs, *fa, **fk):
+def _resolve_instance_func(self: "LXDClient", args, kwargs, *fa, **fk):
     if isinstance(args[0], str):
         return ((self.get_instance(args[0]), *args[1:]), kwargs)
     return args, kwargs
@@ -20,9 +20,13 @@ def _resolve_instance_func(self, args, kwargs, *fa, **fk):
 _resolve_instance = create_decorator(_resolve_instance_func)
 
 class LXDClient(BaseInstanceClient[models.Instance]):
-    def __init__(self):
-        self.lxd_manager = LXDManager.get_manager()
-        self.lxd_ws_manager = LXDWebSocketManager()
+    def __init__(
+            self,
+            lxd_manager: LXDManager,
+            lxd_ws_manager: LXDWebSocketManager
+        ):
+        self.lxd_manager = lxd_manager
+        self.lxd_ws_manager = lxd_ws_manager
     
     def get_instance(self, instance_identifier: str) -> models.Instance:
         return self.lxd_manager.get_container_by_name(instance_identifier)

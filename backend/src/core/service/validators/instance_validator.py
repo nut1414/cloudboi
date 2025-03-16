@@ -1,4 +1,5 @@
-from .base_validator import BaseValidator, ValidationRule
+from ...models.instance import InstanceCreateRequest, InstancePlan, OsType
+from .base_validator import BaseValidator, ValidationRule, validate_model_match
 
 
 class InstanceValidator:
@@ -26,3 +27,10 @@ class InstanceValidator:
         ])
         
         validator.validate(password)
+    
+    @staticmethod
+    def validate_instance_create_request(instance_create: InstanceCreateRequest, instance_plan_db: InstancePlan, os_type_db: OsType) -> None:
+        """Validate the instance creation request."""
+        validate_model_match(instance_create.os_type, os_type_db)
+        validate_model_match(instance_create.instance_plan, instance_plan_db)
+        InstanceValidator.validate_password(instance_create.root_password)

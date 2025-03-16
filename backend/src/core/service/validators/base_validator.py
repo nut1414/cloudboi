@@ -1,7 +1,8 @@
-from typing import Callable, List, Optional, Tuple
-
+from typing import Callable, List, Optional, Tuple, TypeVar
 from fastapi import HTTPException
 
+from ...models.base_model import BaseModel
+from ...utils.logging import logger
 
 class ValidationRule:
     """Class representing a validation rule with test function and error message."""
@@ -43,3 +44,40 @@ class BaseValidator:
             raise self.exception_class(status_code=self.status_code, detail=detail)
             
         return is_valid, errors
+
+T = TypeVar('T', bound=BaseModel)
+    
+def validate_model_match(request_model: T, db_model: T) -> None:
+    """
+    Validates that fields in request model match the database model.
+    Uses the model's class name for error messages automatically.
+    
+    Args:
+        request_model: The pydantic model from the user's request
+        db_model: The pydantic model from the database
+    """
+    model_name = request_model.__class__.__name__
+    # Get all fields from the model
+    for field in request_model.model_fields:
+        # Skip None values in request
+        if getattr(request_model, field, None) is None:
+            continue
+            
+        req_value = getattr(request_model, field)
+        db_value = getattr(db_model, field)
+        
+        # Handle case-insensitive comparison for strings
+        if isinstance(req_value, str) and isinstance(db_value, str):
+            if req_value.lower() != db_value.lower():
+                logger.error(f"{model_name} field '{field}' mismatch: expected '{db_value}'")
+                # Make http exception more generic, so no business logic is leaked
+                raise HTTPException(
+                    status_code=400,
+                    detail="Invalid request data"
+                )
+        elif req_value != db_value:
+            logger.error(f"{model_name} field '{field}' mismatch: expected '{db_value}'")
+            raise HTTPException(
+                status_code=400,
+                detail="Invalid request data"
+            )

@@ -4,8 +4,11 @@ from fastapi.routing import APIRoute
 from fastapi.middleware.cors import CORSMiddleware
 
 from .routers import user, instance
+from .service.subscription import SubscriptionService
 from .utils.logging import logger
 from .startup import lifespan
+from .container import AppContainer
+from .utils.dependencies import configure_auth
 
 
 def custom_generate_unique_id(route: APIRoute):
@@ -15,6 +18,23 @@ app = FastAPI(
   generate_unique_id_function=custom_generate_unique_id,
   lifespan=lifespan
 )
+
+container = AppContainer()
+app.state.container = container
+
+modules = [
+    # Router modules
+    user,
+    instance,
+
+    # Service modules
+    SubscriptionService
+]
+for module in modules:
+    container.wire(modules=[module])
+
+# Configure auth system with a provider function that returns the user service
+configure_auth(lambda: container.user_service())
 
 # Add error handling middleware
 @app.middleware("http")

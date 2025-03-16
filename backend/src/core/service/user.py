@@ -3,7 +3,7 @@ from fastapi import Depends, Request, Response, HTTPException, WebSocket
 
 from ..models.user import UserCreateRequest, UserCreateResponse, UserLoginRequest, UserLoginResponse, UserSessionResponse, UserInDB, UserWallet
 from ..utils.datetime import DateTimeUtils
-from ..sql.operations.user import UserOperation
+from ..sql.operations import UserOperation
 from .validators.user_validator import UserValidator
 from ..utils.token import TokenUtils
 from .helpers.user_helper import UserHelper
@@ -12,7 +12,7 @@ from .helpers.user_helper import UserHelper
 class UserService:
     def __init__(
         self,
-        user_opr: UserOperation = Depends()
+        user_opr: UserOperation
     ):
         self.user_opr = user_opr
 

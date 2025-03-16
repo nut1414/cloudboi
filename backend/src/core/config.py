@@ -13,7 +13,7 @@ class DatabaseConfig:
         )
     )
     DB_CONFIG = {
-        "echo": True, # Enable logging
+        "echo": False, # Enable logging
     }
 
 class TokenConfig:
@@ -30,7 +30,7 @@ class TokenConfig:
 
 class BillingConfig:
     # Check for overdue subscriptions every 30 minutes
-    OVERDUE_CHECK_INTERVAL_MINUTES = 30
+    OVERDUE_CHECK_INTERVAL_MINUTES = 1
     
     # Check for expired subscriptions every 60 minutes
-    EXPIRE_CHECK_INTERVAL_MINUTES = 60
+    EXPIRE_CHECK_INTERVAL_MINUTES = 1

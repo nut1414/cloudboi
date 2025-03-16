@@ -1,5 +1,5 @@
 from typing import Optional
-from sqlalchemy import select, insert, update
+from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 import uuid
@@ -8,7 +8,6 @@ from .base import BaseOperation
 from ..tables.user import User
 from ..tables.user_wallet import UserWallet
 from ...models.user import UserInDB as UserModel, UserRole as UserRoleModel, UserWallet as UserWalletModel
-from ...utils.datetime import DateTimeUtils
 
 
 class UserOperation(BaseOperation):

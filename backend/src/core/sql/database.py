@@ -1,4 +1,4 @@
-from typing import Any, AsyncIterator, Dict, List, Type
+from typing import Any, AsyncIterator, Dict, List, Optional, Type
 from contextlib import asynccontextmanager
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import (
@@ -18,9 +18,21 @@ DatabaseException = create_exception_class("PostgresDatabase")
 
 # Reference: https://github.com/ThomasAitken/demo-fastapi-async-sqlalchemy/blob/main/backend/app/database.py
 class DatabaseSessionManager:
+    _instance: Optional["DatabaseSessionManager"] = None
+
     def __init__(self, host: str, engine_kwargs: dict[str, Any] = {}):
         self._engine = create_async_engine(host, **engine_kwargs)
         self._sessionmaker = async_sessionmaker(autocommit=False, bind=self._engine, expire_on_commit=False)
+
+    @classmethod
+    def get_instance(cls) -> "DatabaseSessionManager":
+        """Get the singleton instance of DatabaseSessionManager"""
+        if cls._instance is None:
+            cls._instance = cls(
+                host=DatabaseConfig.DB_URL, 
+                engine_kwargs=DatabaseConfig.DB_CONFIG
+            )
+        return cls._instance
 
     async def close(self):
         if self._engine is None:
@@ -64,10 +76,12 @@ class DatabaseSessionManager:
         async with self.connect() as connection:
             await connection.run_sync(Base.metadata.drop_all)
 
-session_manager = DatabaseSessionManager(DatabaseConfig.DB_URL, DatabaseConfig.DB_CONFIG)
+def get_db_manager() -> DatabaseSessionManager:
+    return DatabaseSessionManager.get_instance()
 
 async def get_db_session():
-    async with session_manager.session() as session:
+    db_manager = get_db_manager()
+    async with db_manager.session() as session:
         yield session
 
 class DataInitializer:
@@ -89,7 +103,7 @@ class DataInitializer:
     
     async def execute(self):
         """Execute all registered data initializations with conditional insertion"""
-        async with session_manager.session() as session:
+        async with get_db_manager().session() as session:
             try:
                 for model, data_list in self.initial_data.items():
                     unique_keys = self.unique_keys[model]

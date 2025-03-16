@@ -1,12 +1,8 @@
-from typing import List
-import asyncio
 from fastapi import Depends
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
-from datetime import timedelta
 
 from ..service.subscription import SubscriptionService
-from ..service.instance import InstanceService
 from ..utils.logging import logger
 from ..config import BillingConfig
 
@@ -14,11 +10,15 @@ from ..config import BillingConfig
 class BillingWorker:
     def __init__(
         self,
-        subscription_service: SubscriptionService = Depends()
+        subscription_service: SubscriptionService
     ):
         self.subscription_service = subscription_service
         self.scheduler = AsyncIOScheduler()
         self._is_running = False
+    
+    @property
+    def is_running(self):
+        return self._is_running
 
     async def overdue_subscriptions_job(self):
         """Process all overdue subscriptions by attempting to bill them again."""
