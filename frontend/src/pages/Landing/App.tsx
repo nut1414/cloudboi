@@ -1,6 +1,6 @@
 import "./App.css";
 // import Nav from "./components/Nav";
-import NavbarUnLogin from "../../components/Navbar/NavbarUnLogin";
+import NavbarUnLogin from "../../components/Navbar/UnauthenticatedNavbar";
 
 function App() {
   return (

@@ -6,13 +6,22 @@ import { API_CONFIG } from "./config/api"
 
 const DefaultLayout = lazy(() => import("./pages/Layout/DefaultLayout"))
 const App = lazy(() => import("./pages/Landing/App"))
-const Login = lazy(() => import("./pages/Auth/Login"))
+// const Login = lazy(() => import("./pages/Auth/Login"))
 const SignUp = lazy(() => import("./pages/Auth/signUp"))
-const Manage = lazy(() => import("./pages/InstanceList/manage"))
-const CreateInstance = lazy(() => import("./pages/InstanceCreate/createInstance"))
-const Billing = lazy(() => import("./pages/Billing/billing"))
-const Setting = lazy(() => import("./pages/InstanceSetting/setting"))
+const SignIn = lazy(() => import("./pages/Auth/signIn"))
+const Manage = lazy(() => import("./pages/Instance/List/manage"))
+const CreateInstance = lazy(() => import("./pages/Instance/Create/createInstance"))
+const Billing = lazy(() => import("./pages/User/Billing/billing"))
+// const Setting = lazy(() => import("./pages/InstanceSetting/setting"))
+const InstanceSetting = lazy(() => import("./pages/Instance/Setting/InstanceSetting"))
 const Support = lazy(() => import("./pages/User/support"))
+
+
+//admin
+const Package = lazy(() => import("./pages/Admin/Package/package"))
+const CreatePackage = lazy(() => import("./pages/Admin/Package/createPackage"))
+const EditPackage = lazy(() => import("./pages/Admin/Package/editPackage"))
+const BillingAdmin = lazy(() => import("./pages/Admin/Billing/billing"))
 
 /**
  * Route configuration with authentication guards
@@ -27,11 +36,11 @@ const routes = [
   },
   {
     path: "/login",
-    element: <Login />,
+    element: <SignIn />,
     loader: publicOnlyGuard,
   },
   {
-    path: "/signup",
+    path: "/register",
     element: <SignUp />,
     loader: publicOnlyGuard,
   },
@@ -60,17 +69,42 @@ const routes = [
             element: <Manage />,
           },
           {
+            path: ":instanceId",
+            element: <InstanceSetting />,
+          },
+          {
             path: "create",
             element: <CreateInstance />,
           },
+        ],
+      },
+    ],
+  },
+
+  //admin
+  {
+    path: "/admin/:userName",
+    element: <DefaultLayout />,
+    loader: userRouteGuard,
+    children: [
+      {
+        path: "billing",
+        element: <BillingAdmin />,
+      },
+      {
+        path: "package",
+        children: [
           {
-            path: ":instanceName",
-            children: [
-              {
-                index: true,
-                element: <Setting />,
-              },
-            ],
+            index: true,
+            element: <Package />,
+          },
+          {
+            path: "create",
+            element: <CreatePackage />,
+          },
+          {
+            path: "edit",
+            element: <EditPackage />,
           },
         ],
       },
