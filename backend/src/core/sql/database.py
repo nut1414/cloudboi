@@ -79,11 +79,6 @@ class DatabaseSessionManager:
 def get_db_manager() -> DatabaseSessionManager:
     return DatabaseSessionManager.get_instance()
 
-async def get_db_session():
-    db_manager = get_db_manager()
-    async with db_manager.session() as session:
-        yield session
-
 class DataInitializer:
     def __init__(self):
         self.initial_data = {}

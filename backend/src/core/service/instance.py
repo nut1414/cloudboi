@@ -3,7 +3,6 @@ import uuid
 from fastapi import WebSocket
 import asyncio
 
-from .user import UserService
 from .subscription import SubscriptionService
 from .clients.base_instance_client import BaseInstanceClient
 from .validators.instance_validator import InstanceValidator
@@ -15,12 +14,10 @@ from ..utils.dependencies import user_session_ctx
 class InstanceService:
     def __init__(
         self,
-        user_service: UserService,
         subscription_service: SubscriptionService,
         instance_opr: InstanceOperation,
         lxd_client: BaseInstanceClient
     ):
-        self.user_service = user_service
         self.subscription_service = subscription_service
         self.instance_opr = instance_opr
         self.lxd_client = lxd_client
@@ -105,10 +102,12 @@ class InstanceService:
     
     async def websocket_session(self, instance_name: str, client_ws: WebSocket):
         # Validate if user has access to instance
-        user = await self.user_service.get_user_session_websocket(client_ws)
-        instance = await self.instance_opr.get_user_instance(user.username, instance_name)
+        instance = await self.instance_opr.get_user_instance(
+            username=user_session_ctx.get().username,
+            instance_name=instance_name
+        )
 
         if not instance:
             raise ValueError("Instance not found")
         
-        await self.lxd_client.websocket_session(instance, client_ws)
+        await self.lxd_client.websocket_session(instance_name, client_ws)

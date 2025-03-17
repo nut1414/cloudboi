@@ -14,57 +14,63 @@ from ..tables.user import User
 
 class InstanceOperation(BaseOperation):
     async def get_all_instance_plans(self) -> List[InstancePlanModel]:
-        stmt = select(InstancePlan)
-        result = (await self.db.execute(stmt)).scalars().all()
-        return self.to_pydantic(InstancePlanModel, result)
+        async with self.session() as db:
+            stmt = select(InstancePlan)
+            result = (await db.execute(stmt)).scalars().all()
+            return self.to_pydantic(InstancePlanModel, result)
     
     async def get_instance_plan_by_id(self, instance_plan_id: int) -> InstancePlanModel:
-        stmt = select(InstancePlan).where(InstancePlan.instance_plan_id == instance_plan_id)
-        result = (await self.db.execute(stmt)).scalar_one_or_none()
-        return self.to_pydantic(InstancePlanModel, result)
+        async with self.session() as db:
+            stmt = select(InstancePlan).where(InstancePlan.instance_plan_id == instance_plan_id)
+            result = (await db.execute(stmt)).scalar_one_or_none()
+            return self.to_pydantic(InstancePlanModel, result)
     
     async def get_all_os_types(self) -> List[OsTypeModel]:
-        stmt = select(OsType)
-        result = (await self.db.execute(stmt)).scalars().all()
-        return self.to_pydantic(OsTypeModel, result)
+        async with self.session() as db:
+            stmt = select(OsType)
+            result = (await db.execute(stmt)).scalars().all()
+            return self.to_pydantic(OsTypeModel, result)
     
     async def get_os_type_by_id(self, os_type_id: int) -> OsTypeModel:
-        stmt = select(OsType).where(OsType.os_type_id == os_type_id)
-        result = (await self.db.execute(stmt)).scalar_one_or_none()
-        return self.to_pydantic(OsTypeModel, result)
+        async with self.session() as db:
+            stmt = select(OsType).where(OsType.os_type_id == os_type_id)
+            result = (await db.execute(stmt)).scalar_one_or_none()
+            return self.to_pydantic(OsTypeModel, result)
     
     async def upsert_user_instance(self, user_instance: UserInstanceModel) -> UserInstanceModel:
-        if user_instance.instance_id is None:
-            user_instance.instance_id = uuid.uuid4()
-        
-        stmt = pg_insert(UserInstance).values(
-            instance_id=user_instance.instance_id,
-            user_id=user_instance.user_id,
-            instance_plan_id=user_instance.instance_plan_id,
-            os_type_id=user_instance.os_type_id,
-            hostname=user_instance.hostname,
-            lxd_node_name=user_instance.lxd_node_name,
-            status=user_instance.status,
-            created_at=user_instance.created_at,
-            last_updated_at=user_instance.last_updated_at
-        ).on_conflict_do_update(
-            index_elements=['instance_id'],
-            set_={
-                'instance_plan_id': user_instance.instance_plan_id,
-                'os_type_id': user_instance.os_type_id,
-                'hostname': user_instance.hostname,
-                'lxd_node_name': user_instance.lxd_node_name,
-                'status': user_instance.status,
-                'created_at': user_instance.created_at,
-                'last_updated_at': user_instance.last_updated_at
-            }
-        ).returning(UserInstance)
-        result = (await self.db.execute(stmt)).scalar()
-        return self.to_pydantic(UserInstanceModel, result)
+        async with self.session() as db:
+            if user_instance.instance_id is None:
+                user_instance.instance_id = uuid.uuid4()
+            
+            stmt = pg_insert(UserInstance).values(
+                instance_id=user_instance.instance_id,
+                user_id=user_instance.user_id,
+                instance_plan_id=user_instance.instance_plan_id,
+                os_type_id=user_instance.os_type_id,
+                hostname=user_instance.hostname,
+                lxd_node_name=user_instance.lxd_node_name,
+                status=user_instance.status,
+                created_at=user_instance.created_at,
+                last_updated_at=user_instance.last_updated_at
+            ).on_conflict_do_update(
+                index_elements=['instance_id'],
+                set_={
+                    'instance_plan_id': user_instance.instance_plan_id,
+                    'os_type_id': user_instance.os_type_id,
+                    'hostname': user_instance.hostname,
+                    'lxd_node_name': user_instance.lxd_node_name,
+                    'status': user_instance.status,
+                    'created_at': user_instance.created_at,
+                    'last_updated_at': user_instance.last_updated_at
+                }
+            ).returning(UserInstance)
+            result = (await db.execute(stmt)).scalar()
+            return self.to_pydantic(UserInstanceModel, result)
     
     async def delete_user_instance(self, instance_id: uuid.UUID) -> None:
-        stmt = delete(UserInstance).where(UserInstance.instance_id == instance_id)
-        await self.db.execute(stmt)
+        async with self.session() as db:
+            stmt = delete(UserInstance).where(UserInstance.instance_id == instance_id)
+            await db.execute(stmt)
 
     async def get_user_instance(
         self, 
@@ -73,19 +79,21 @@ class InstanceOperation(BaseOperation):
         user_id: Optional[uuid.UUID] = None, 
         username: Optional[str] = None
     ) -> UserInstanceModel:
-        stmt = select(UserInstance)
-        if instance_id is not None:
-            stmt = stmt.where(UserInstance.instance_id == instance_id)
-        elif instance_name is not None:
-            if user_id is not None:
-                stmt = stmt.where(UserInstance.user_id == user_id)
-            elif username is not None:
-                stmt = stmt.join(User).where(User.username == username)
-            stmt = stmt.where(UserInstance.hostname == instance_name)
-        result = (await self.db.execute(stmt)).scalar_one_or_none()
-        return self.to_pydantic(UserInstanceModel, result)
+        async with self.session() as db:
+            stmt = select(UserInstance)
+            if instance_id is not None:
+                stmt = stmt.where(UserInstance.instance_id == instance_id)
+            elif instance_name is not None:
+                if user_id is not None:
+                    stmt = stmt.where(UserInstance.user_id == user_id)
+                elif username is not None:
+                    stmt = stmt.join(User).where(User.username == username)
+                stmt = stmt.where(UserInstance.hostname == instance_name)
+            result = (await db.execute(stmt)).scalar_one_or_none()
+            return self.to_pydantic(UserInstanceModel, result)
     
     async def get_all_user_instances(self, username: str) -> List[UserInstanceModel]:
-        stmt = select(UserInstance).join(User).where(User.username == username)
-        result = (await self.db.execute(stmt)).scalars().all()
-        return self.to_pydantic(UserInstanceModel, result)
+        async with self.session() as db:
+            stmt = select(UserInstance).join(User).where(User.username == username)
+            result = (await db.execute(stmt)).scalars().all()
+            return self.to_pydantic(UserInstanceModel, result)

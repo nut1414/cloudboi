@@ -138,7 +138,7 @@ const useWebSocket = (
                 }
 
                 // Create WebSocket connection
-                const ws = new WebSocket(`${apiBaseUrl}/instances/ws/${instanceName}`)
+                const ws = new WebSocket(`${apiBaseUrl}/instance/ws/${instanceName}`)
                 wsRef.current = ws
         
                 ws.onopen = () => {

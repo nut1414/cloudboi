@@ -1,6 +1,6 @@
 from dependency_injector import containers, providers
 
-from .sql.database import get_db_session, get_db_manager
+from .sql.database import get_db_manager
 from .service.clients.lxd import LXDClient
 from .service.clients.websocket import LXDWebSocketManager
 from ..infra.managers.lxd import LXDManager
@@ -16,7 +16,9 @@ class AppContainer(containers.DeclarativeContainer):
 
     # Database Session
     db_manager = providers.Singleton(get_db_manager)
-    db = providers.Resource(get_db_session)
+    db_session = providers.Factory(
+        lambda: get_db_manager().session
+    )
 
     # Infrastructure
     lxd_manager = providers.Singleton(LXDManager)
@@ -28,10 +30,10 @@ class AppContainer(containers.DeclarativeContainer):
     )
 
     # Database Operations
-    instance_opr = providers.Factory(InstanceOperation, db=db)
-    subscription_opr = providers.Factory(SubscriptionOperation, db=db)
-    transaction_opr = providers.Factory(TransactionOperation, db=db)
-    user_opr = providers.Factory(UserOperation, db=db)
+    instance_opr = providers.Factory(InstanceOperation, db_session=db_session)
+    subscription_opr = providers.Factory(SubscriptionOperation, db_session=db_session)
+    transaction_opr = providers.Factory(TransactionOperation, db_session=db_session)
+    user_opr = providers.Factory(UserOperation, db_session=db_session)
 
     # Services
     user_service = providers.Factory(
@@ -46,7 +48,6 @@ class AppContainer(containers.DeclarativeContainer):
     )
     instance_service = providers.Factory(
         InstanceService,
-        user_service=user_service,
         subscription_service=subscription_service,
         instance_opr=instance_opr,
         lxd_client=lxd_client

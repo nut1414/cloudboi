@@ -1,5 +1,4 @@
-from typing import Annotated
-from fastapi import Depends, Request, Response, HTTPException, WebSocket
+from fastapi import Request, Response, HTTPException, WebSocket
 
 from ..models.user import UserCreateRequest, UserCreateResponse, UserLoginRequest, UserLoginResponse, UserSessionResponse, UserInDB, UserWallet
 from ..utils.datetime import DateTimeUtils
@@ -120,8 +119,7 @@ class UserService:
 
     async def get_user_session_websocket(self, websocket: WebSocket) -> UserSessionResponse:
         """Get current user session information from websocket."""
-        cookies = TokenUtils.get_websocket_cookie(websocket)
-        access_token = cookies.get("access_token")
+        access_token = websocket.cookies.get("access_token")
         return await self.get_user_session_from_token(access_token)
 
     async def logout_user(self, response: Response) -> UserLoginResponse:

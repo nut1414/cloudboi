@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .routers import user, instance
 from .service.subscription import SubscriptionService
-from .utils.logging import logger
+from .utils.logging import logger, configure_logging
 from .startup import lifespan
 from .container import AppContainer
 from .utils.dependencies import configure_auth
@@ -35,6 +35,8 @@ for module in modules:
 
 # Configure auth system with a provider function that returns the user service
 configure_auth(lambda: container.user_service())
+
+configure_logging()
 
 # Add error handling middleware
 @app.middleware("http")
@@ -69,10 +71,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 app.include_router(user.router)
 app.include_router(instance.router)
-
 
 @app.get("/", tags=["root"])
 async def root():

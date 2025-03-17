@@ -15,35 +15,40 @@ from ...models.subscription import UserSubscription as UserSubscriptionModel
 
 class SubscriptionOperation(BaseOperation):
     async def upsert_subscription(self, instance_id: uuid.UUID, next_payment_date: datetime, next_expire_date: datetime) -> UserSubscriptionModel:
-        stmt = pg_insert(UserSubscription).values(
-            instance_id=instance_id,
-            next_payment_date=next_payment_date,
-            next_expire_date=next_expire_date
-        ).on_conflict_do_update(
-            index_elements=['instance_id'],
-            set_={
-                'next_payment_date': next_payment_date,
-                'next_expire_date': next_expire_date
-            }
-        ).returning(UserSubscription)
-        result = (await self.db.execute(stmt)).scalar()
-        return self.to_pydantic(UserSubscriptionModel, result)
+        async with self.session() as db:
+            stmt = pg_insert(UserSubscription).values(
+                instance_id=instance_id,
+                next_payment_date=next_payment_date,
+                next_expire_date=next_expire_date
+            ).on_conflict_do_update(
+                index_elements=['instance_id'],
+                set_={
+                    'next_payment_date': next_payment_date,
+                    'next_expire_date': next_expire_date
+                }
+            ).returning(UserSubscription)
+            result = (await db.execute(stmt)).scalar()
+            return self.to_pydantic(UserSubscriptionModel, result)
     
     async def delete_subscription(self, subscription_id: int) -> None:
-        stmt = delete(UserSubscription).where(UserSubscription.subscription_id == subscription_id)
-        await self.db.execute(stmt)
+        async with self.session() as db:
+            stmt = delete(UserSubscription).where(UserSubscription.subscription_id == subscription_id)
+            await db.execute(stmt)
     
     async def get_subscription_by_id(self, subscription_id: int) -> UserSubscriptionModel:
-        stmt = select(UserSubscription).where(UserSubscription.subscription_id == subscription_id)
-        result = (await self.db.execute(stmt)).scalar()
-        return self.to_pydantic(UserSubscriptionModel, result)
+        async with self.session() as db:
+            stmt = select(UserSubscription).where(UserSubscription.subscription_id == subscription_id)
+            result = (await db.execute(stmt)).scalar()
+            return self.to_pydantic(UserSubscriptionModel, result)
     
     async def get_overdue_subscriptions(self, given_date: datetime) -> List[UserSubscriptionModel]:
-        stmt = select(UserSubscription).where(UserSubscription.next_payment_date < given_date)
-        result = (await self.db.execute(stmt)).scalars().all()
-        return self.to_pydantic(UserSubscriptionModel, result)
+        async with self.session() as db:
+            stmt = select(UserSubscription).where(UserSubscription.next_payment_date < given_date)
+            result = (await db.execute(stmt)).scalars().all()
+            return self.to_pydantic(UserSubscriptionModel, result)
     
     async def get_expired_subscriptions(self, given_date: datetime) -> List[UserSubscriptionModel]:
-        stmt = select(UserSubscription).where(UserSubscription.next_expire_date < given_date)
-        result = (await self.db.execute(stmt)).scalars().all()
-        return self.to_pydantic(UserSubscriptionModel, result)
+        async with self.session() as db:
+            stmt = select(UserSubscription).where(UserSubscription.next_expire_date < given_date)
+            result = (await db.execute(stmt)).scalars().all()
+            return self.to_pydantic(UserSubscriptionModel, result)

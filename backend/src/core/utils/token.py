@@ -62,14 +62,3 @@ class TokenUtils:
             )
         except Exception as e:
             return None
-    
-    @classmethod
-    def get_websocket_cookie(cls, websocket: WebSocket) -> dict:
-        """Extract cookies from websocket headers."""
-        cookies = {}
-        for header in websocket.headers.getlist("cookie"):
-            pairs = header.split("; ")
-            for pair in pairs:
-                key, value = pair.split("=", 1)
-                cookies[key] = value
-        return cookies

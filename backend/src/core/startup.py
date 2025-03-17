@@ -33,7 +33,7 @@ class AppStartupManager:
     async def start_billing_worker(self):
         """Initialize and start the billing worker."""
         try:
-            billing_worker = await self.container.billing_worker()
+            billing_worker = self.container.billing_worker()
             billing_worker.start()
             logger.info("Billing worker started successfully")
         except Exception as e:
@@ -48,7 +48,7 @@ class AppStartupManager:
     async def shutdown(self):
         """Clean up resources and stop services."""
         # Stop the billing worker
-        billing_worker = await self.container.billing_worker()
+        billing_worker = self.container.billing_worker()
         if billing_worker.is_running:
             billing_worker.stop()
             logger.info("Billing worker stopped")

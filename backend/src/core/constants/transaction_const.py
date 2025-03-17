@@ -2,16 +2,16 @@ from enum import Enum
 
 
 class TransactionType(str, Enum):
-    SUBSCRIPTION_PAYMENT = "subscription_payment"
-    TOP_UP = "top_up"
+    SUBSCRIPTION_PAYMENT = "SUBSCRIPTION_PAYMENT"
+    TOP_UP = "TOP_UP"
     
 class TransactionStatus(str, Enum):
     # Top-up transaction statuses
-    PENDING = "pending"
-    FAILED = "failed"
-    SUCCESS = "success"
+    PENDING = "PENDING"
+    FAILED = "FAILED"
+    SUCCESS = "SUCCESS"
     # Subscription payment transaction statuses
-    SCHEDULED = "scheduled"
-    PAID = "paid"
-    OVERDUE = "overdue"
-    EXPIRED = "expired"
+    SCHEDULED = "SCHEDULED"
+    PAID = "PAID"
+    OVERDUE = "OVERDUE"
+    EXPIRED = "EXPIRED"

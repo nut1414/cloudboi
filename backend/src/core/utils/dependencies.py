@@ -1,5 +1,5 @@
 from typing import Callable, Optional
-from fastapi import Depends, HTTPException, Request, status
+from fastapi import Depends, HTTPException, Request, WebSocket, status
 from contextvars import ContextVar
 
 from ..models.user import UserSessionResponse, UserInDB
@@ -18,8 +18,7 @@ async def get_current_user(
     if _user_service_provider is None:
         raise RuntimeError("Auth system not initialized. Call configure_auth() before using authentication.")
     
-    user_service: UserService = await _user_service_provider()
-
+    user_service: UserService = _user_service_provider()
     user_session = await user_service.get_user_session(request)
     if not user_session.is_authenticated:
         raise HTTPException(
@@ -27,6 +26,25 @@ async def get_current_user(
             detail="Not authenticated",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    # Store the user session in the context
+    user_session_ctx.set(await user_service.user_opr.get_user_by_username(user_session.username))
+    return user_session
+
+async def get_current_user_ws(
+    websocket: WebSocket
+) -> UserSessionResponse:
+    if _user_service_provider is None:
+        raise RuntimeError("Auth system not initialized. Call configure_auth() before using authentication.")
+    
+    user_service: UserService = _user_service_provider()
+    user_session = await user_service.get_user_session_websocket(websocket)
+    if not user_session.is_authenticated:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
     # Store the user session in the context
     user_session_ctx.set(await user_service.user_opr.get_user_by_username(user_session.username))
     return user_session

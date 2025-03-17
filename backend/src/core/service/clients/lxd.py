@@ -5,10 +5,11 @@ from pylxd import models
 from ...commons.exception import create_exception_class
 from .websocket import LXDWebSocketManager, LXDWebSocketSession
 from .base_instance_client import BaseInstanceClient
-from ...models.instance import InstanceCreateRequest, InstanceCreateResponse, UserInstance
+from ...models.instance import InstanceCreateRequest, UserInstance
 from ....infra.managers.lxd import LXDManager
 from ...utils.decorator import create_decorator
 from ...utils.datetime import DateTimeUtils
+from ...utils.dependencies import user_session_ctx
 
 LXDClientException = create_exception_class("LXDClient")
 
@@ -45,6 +46,7 @@ class LXDClient(BaseInstanceClient[models.Instance]):
             self.delete_instance(container)
         
         return UserInstance(
+            user_id=user_session_ctx.get().user_id,
             instance_plan_id=instance_config.instance_plan.instance_plan_id,
             os_type_id=instance_config.os_type.os_type_id,
             hostname=container.name,
@@ -53,6 +55,7 @@ class LXDClient(BaseInstanceClient[models.Instance]):
             created_at=DateTimeUtils.now_dt(),
             last_updated_at=DateTimeUtils.now_dt()
         )
+
     
     @_resolve_instance()
     def delete_instance(self, instance_identifier: models.Instance) -> bool:
@@ -87,7 +90,6 @@ class LXDClient(BaseInstanceClient[models.Instance]):
             async with session:
                 await session.run()
         except Exception as e:
-            await client_ws.close(code=1011, reason=str(e))
             raise LXDClientException(f"Error in websocket_session: {str(e)}")
         finally:
             await self.lxd_ws_manager.remove_session(instance_identifier.name)
