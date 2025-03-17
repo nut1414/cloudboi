@@ -40,18 +40,18 @@ function SignUp() {
       <UnauthenticatedNavbar>
       <ul className="flex space-x-4 items-center">
         <p>Already have an account?</p>
-        <a href="signin" className="text-white underline">Sign In</a>
+        <a href="login" className="text-white underline">Login</a>
       </ul>
       </UnauthenticatedNavbar>
       <AuthForm
-        title="Sign Up"
+        title="Register"
         fields={[
           { name: "username", type: "text", label: "Username" },
           { name: "email", type: "text", label: "Email" },
           { name: "password", type: "password", label: "Password" },
           { name: "confirmPassword", type: "password", label: "Confirm Password" }
         ]}
-        buttonLabel="Sign Up"
+        buttonLabel="Register"
         onChange={handleChange}
         onSubmit={handleSubmit}
         error={formData.error}
