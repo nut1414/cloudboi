@@ -3,7 +3,6 @@ from typing import Callable, List, Optional, Tuple, AsyncContextManager
 from sqlalchemy import select, update
 from sqlalchemy.orm import selectinload
 from sqlalchemy.dialects.postgresql import insert as pg_insert
-from sqlalchemy.ext.asyncio import AsyncSession
 import uuid
 
 from .base import BaseOperation
@@ -14,19 +13,9 @@ from ..tables.transaction import Transaction
 from ...models.user import UserInDB as UserModel, UserWallet as UserWalletModel
 from ...models.transaction import Transaction as TransactionModel
 from ...constants.transaction_const import TransactionStatus, TransactionType
-from .user import UserOperation
 
 
 class TransactionOperation(BaseOperation):
-    def __init__(
-            self,
-            db_session: Callable[[], AsyncContextManager[AsyncSession]],
-            user_opr: UserOperation
-    ):
-        super().__init__(db_session)
-        self.user_opr = user_opr
-            
-
     async def upsert_transaction(self, transaction: TransactionModel) -> TransactionModel:
         async with self.session() as db:
             if transaction.transaction_id is None:
