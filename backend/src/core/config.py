@@ -29,8 +29,10 @@ class TokenConfig:
     SECURE_COOKIES = ENV == "production"
 
 class BillingConfig:
-    # Check for overdue subscriptions every 30 minutes
+    # Check for overdue subscriptions every x minutes
     OVERDUE_CHECK_INTERVAL_MINUTES = 1
+    OVERDUE_MAX_INSTANCES = 2
     
-    # Check for expired subscriptions every 60 minutes
+    # Check for expired subscriptions every x minutes
     EXPIRE_CHECK_INTERVAL_MINUTES = 1
+    EXPIRE_MAX_INSTANCES = 2

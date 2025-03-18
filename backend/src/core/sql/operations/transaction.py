@@ -1,8 +1,9 @@
 from datetime import datetime
-from typing import List, Optional
-from sqlalchemy import select, insert
+from typing import Callable, List, Optional, Tuple, AsyncContextManager
+from sqlalchemy import select, update
 from sqlalchemy.orm import selectinload
 from sqlalchemy.dialects.postgresql import insert as pg_insert
+from sqlalchemy.ext.asyncio import AsyncSession
 import uuid
 
 from .base import BaseOperation
@@ -12,10 +13,20 @@ from ..tables.user_subscription import UserSubscription
 from ..tables.transaction import Transaction
 from ...models.user import UserInDB as UserModel, UserWallet as UserWalletModel
 from ...models.transaction import Transaction as TransactionModel
-from ...utils.datetime import DateTimeUtils
 from ...constants.transaction_const import TransactionStatus, TransactionType
+from .user import UserOperation
+
 
 class TransactionOperation(BaseOperation):
+    def __init__(
+            self,
+            db_session: Callable[[], AsyncContextManager[AsyncSession]],
+            user_opr: UserOperation
+    ):
+        super().__init__(db_session)
+        self.user_opr = user_opr
+            
+
     async def upsert_transaction(self, transaction: TransactionModel) -> TransactionModel:
         async with self.session() as db:
             if transaction.transaction_id is None:
@@ -44,6 +55,43 @@ class TransactionOperation(BaseOperation):
             ).returning(Transaction)
             result = (await db.execute(stmt)).scalar()
             return self.to_pydantic(TransactionModel, result)
+    
+    async def update_transaction_and_user_wallet(
+            self,
+            transaction: TransactionModel,
+            update_balance_func: Callable[[UserWalletModel, TransactionModel], Tuple[UserWalletModel, TransactionModel]]
+    ) -> Tuple[UserWalletModel, TransactionModel]:
+        async with self.session() as db, db.begin():
+            wallet_stmt = select(UserWallet).where(UserWallet.user_id == transaction.user_id).with_for_update()
+            wallet = (await db.execute(wallet_stmt)).scalar_one()
+
+            updated_wallet, updated_transaction = update_balance_func(
+                self.to_pydantic(UserWalletModel, wallet),
+                transaction
+            )
+
+            # Update wallet directly in the current session
+            wallet_update = update(UserWallet).where(
+                UserWallet.user_id == updated_wallet.user_id
+            ).values(
+                balance=updated_wallet.balance,
+                last_updated_at=updated_wallet.last_updated_at
+            ).returning(UserWallet)
+            result_wallet = (await db.execute(wallet_update)).scalar_one()
+            
+            # Update transaction directly in the current session
+            transaction_update = update(Transaction).where(
+                Transaction.transaction_id == updated_transaction.transaction_id
+            ).values(
+                transaction_status=updated_transaction.transaction_status,
+                last_updated_at=updated_transaction.last_updated_at
+            ).returning(Transaction)
+            result_transaction = (await db.execute(transaction_update)).scalar_one()
+            
+            return (
+                self.to_pydantic(UserWalletModel, result_wallet),
+                self.to_pydantic(TransactionModel, result_transaction)
+            )
     
     async def get_all_user_transactions(self, username: str) -> List[TransactionModel]:
         async with self.session() as db:

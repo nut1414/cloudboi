@@ -4,7 +4,6 @@ from fastapi.routing import APIRoute
 from fastapi.middleware.cors import CORSMiddleware
 
 from .routers import user, instance
-from .service.subscription import SubscriptionService
 from .utils.logging import logger, configure_logging
 from .startup import lifespan
 from .container import AppContainer
@@ -25,10 +24,7 @@ app.state.container = container
 modules = [
     # Router modules
     user,
-    instance,
-
-    # Service modules
-    SubscriptionService
+    instance
 ]
 for module in modules:
     container.wire(modules=[module])

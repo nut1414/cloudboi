@@ -57,7 +57,8 @@ class BillingWorker:
                 self.overdue_subscriptions_job,
                 trigger=IntervalTrigger(minutes=BillingConfig.OVERDUE_CHECK_INTERVAL_MINUTES),
                 id="overdue_subscriptions_job",
-                max_instances=1,
+                misfire_grace_time=5,
+                max_instances=BillingConfig.OVERDUE_MAX_INSTANCES,
                 replace_existing=True
             )
 
@@ -66,7 +67,8 @@ class BillingWorker:
                 self.expired_subscriptions_job,
                 trigger=IntervalTrigger(minutes=BillingConfig.EXPIRE_CHECK_INTERVAL_MINUTES),
                 id="expired_subscriptions_job",
-                max_instances=1,
+                misfire_grace_time=5,
+                max_instances=BillingConfig.EXPIRE_MAX_INSTANCES,
                 replace_existing=True
             )
 

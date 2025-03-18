@@ -37,6 +37,12 @@ class InstanceOperation(BaseOperation):
             result = (await db.execute(stmt)).scalar_one_or_none()
             return self.to_pydantic(OsTypeModel, result)
     
+    async def get_instance_by_name(self, instance_name: str) -> UserInstanceModel:
+        async with self.session() as db:
+            stmt = select(UserInstance).where(UserInstance.hostname == instance_name)
+            result = (await db.execute(stmt)).scalar_one_or_none()
+            return self.to_pydantic(UserInstanceModel, result)
+    
     async def upsert_user_instance(self, user_instance: UserInstanceModel) -> UserInstanceModel:
         async with self.session() as db:
             if user_instance.instance_id is None:

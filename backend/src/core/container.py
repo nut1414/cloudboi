@@ -32,8 +32,8 @@ class AppContainer(containers.DeclarativeContainer):
     # Database Operations
     instance_opr = providers.Factory(InstanceOperation, db_session=db_session)
     subscription_opr = providers.Factory(SubscriptionOperation, db_session=db_session)
-    transaction_opr = providers.Factory(TransactionOperation, db_session=db_session)
     user_opr = providers.Factory(UserOperation, db_session=db_session)
+    transaction_opr = providers.Factory(TransactionOperation, db_session=db_session, user_opr=user_opr)
 
     # Services
     user_service = providers.Factory(

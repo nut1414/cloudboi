@@ -5,7 +5,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 import uuid
 
 from .base import Base
-from ...utils.datetime import BkkDateTime
+from ...utils.datetime import UTCDateTime
 
 if TYPE_CHECKING:
     from .user_wallet import UserWallet
@@ -21,7 +21,7 @@ class User(Base):
     email: Mapped[str] = mapped_column(nullable=False, unique=True)
     role_id: Mapped[int] = mapped_column(ForeignKey('user_roles.role_id'), nullable=False, default=1)
     password_hash: Mapped[str] = mapped_column(nullable=False)
-    last_updated_at: Mapped[datetime] = mapped_column(BkkDateTime, nullable=False)
+    last_updated_at: Mapped[datetime] = mapped_column(UTCDateTime, nullable=False)
 
     role: Mapped['UserRole'] = relationship('UserRole', back_populates='users')
     wallet: Mapped['UserWallet'] = relationship('UserWallet', back_populates='user')

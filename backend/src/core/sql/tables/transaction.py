@@ -6,7 +6,7 @@ import uuid
 
 from .base import Base
 from ...constants.transaction_const import TransactionType, TransactionStatus
-from ...utils.datetime import BkkDateTime
+from ...utils.datetime import UTCDateTime
 
 if TYPE_CHECKING:
     from .user import User
@@ -20,7 +20,7 @@ class Transaction(Base):
     transaction_type: Mapped[TransactionType] = mapped_column(Enum(TransactionType), nullable=False)
     transaction_status: Mapped[TransactionStatus] = mapped_column(Enum(TransactionStatus), nullable=False)
     amount: Mapped[float] = mapped_column(nullable=False)
-    created_at: Mapped[datetime] = mapped_column(BkkDateTime, nullable=False)
-    last_updated_at: Mapped[datetime] = mapped_column(BkkDateTime, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, nullable=False)
+    last_updated_at: Mapped[datetime] = mapped_column(UTCDateTime, nullable=False)
 
     user: Mapped['User'] = relationship('User', back_populates='transactions')

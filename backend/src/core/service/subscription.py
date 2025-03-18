@@ -1,7 +1,5 @@
 from typing import List
-from fastapi import Depends
 import uuid
-from dependency_injector.wiring import Provide, inject
 
 from ..sql.operations import TransactionOperation, SubscriptionOperation, UserOperation
 from ..models.subscription import UserSubscription
@@ -49,7 +47,7 @@ class SubscriptionService:
     
     async def next_subscription(self, transaction_old: Transaction) -> None:
         """Schedule the next subscription payment after a successful payment."""
-        subscription_id = transaction_old.reference_id.split("_")[1]
+        subscription_id = self._get_reference_id(transaction_old)
         subscription = await self.subscription_opr.get_subscription_by_id(subscription_id)
         
         if not subscription:
@@ -98,19 +96,31 @@ class SubscriptionService:
         """Process a transaction based on its type and the user's wallet balance."""
         user_wallet = await self.user_opr.get_user_wallet(user_id=transaction.user_id)
 
+        if not user_wallet:
+            raise ValueError("User wallet not found.")
+
         if transaction.transaction_type == TransactionType.TOP_UP:
-            await self._process_topup_transaction(transaction, user_wallet)
+            updated_wallet, updated_transaction  = await self.transaction_opr.update_transaction_and_user_wallet(
+                transaction,
+                self._process_topup_transaction
+            )
         elif transaction.transaction_type == TransactionType.SUBSCRIPTION_PAYMENT:
-            await self._process_subscription_payment(transaction, user_wallet)
+            updated_wallet, updated_transaction = await self.transaction_opr.update_transaction_and_user_wallet(
+                transaction,
+                self._process_subscription_payment
+            )
+            
+            # If payment was successful, schedule next payment
+            if updated_transaction.transaction_status == TransactionStatus.PAID:
+                await self.next_subscription(updated_transaction)
     
-    @inject
     async def apply_penalty(self, transaction: Transaction) -> None:
         """Apply penalty for expired subscriptions by removing the instance and subscription."""
         from .instance import InstanceService
         from ..container import AppContainer
-        instance_service: InstanceService = Depends(Provide[AppContainer.instance_service])
+        instance_service: InstanceService = AppContainer.instance_service()
 
-        subscription_id = transaction.reference_id.split("_")[1]
+        subscription_id = self._get_reference_id(transaction)
         subscription = await self.subscription_opr.get_subscription_by_id(subscription_id)
         
         if not subscription:
@@ -123,15 +133,25 @@ class SubscriptionService:
     async def process_overdue_subscriptions(self, overdue_subscriptions: List[Transaction]) -> None:
         """Attempt to process all overdue subscription payments."""
         for transaction in overdue_subscriptions:
-            await self.process_transaction(transaction)
+            try:
+                await self.process_transaction(transaction)
+            except Exception as e:
+                raise ValueError(f"Failed to process transaction({transaction.transaction_id}): {str(e)}")
         
     async def process_expired_subscriptions(self, expired_subscriptions: List[Transaction]) -> None:
         """Mark expired subscriptions and apply penalties."""
         for transaction in expired_subscriptions:
-            transaction.transaction_status = TransactionStatus.EXPIRED
-            transaction.last_updated_at = DateTimeUtils.now_dt()
-            await self.transaction_opr.upsert_transaction(transaction)
-            await self.apply_penalty(transaction)
+            try:
+                transaction.transaction_status = TransactionStatus.EXPIRED
+                transaction.last_updated_at = DateTimeUtils.now_dt()
+                await self.transaction_opr.upsert_transaction(transaction)
+                await self.apply_penalty(transaction)
+            except Exception as e:
+                raise ValueError(f"Failed to process transaction({transaction.transaction_id}): {str(e)}")
+
+    def _get_reference_id(self, transaction: Transaction) -> int:
+        """Get the subscription ID from a transaction reference ID."""
+        return int(transaction.reference_id.split("_")[1])
 
     # Private helper methods
     def _calculate_payment_amount(self, hourly_cost: float) -> float:
@@ -169,32 +189,32 @@ class SubscriptionService:
             transaction_status=transaction_statuses
         )
 
-    async def _process_topup_transaction(self, transaction: Transaction, user_wallet: UserWallet) -> None:
+    def _process_topup_transaction(self, user_wallet: UserWallet, transaction: Transaction) -> tuple[UserWallet, Transaction]:
         """Process a top-up transaction by adding funds to user wallet."""
         user_wallet.balance += transaction.amount
         user_wallet.last_updated_at = DateTimeUtils.now_dt()
-        await self.user_opr.upsert_user_wallet(user_wallet)
+        
+        transaction.transaction_status = TransactionStatus.SUCCESS
+        transaction.last_updated_at = DateTimeUtils.now_dt()
 
-    async def _process_subscription_payment(self, transaction: Transaction, user_wallet: UserWallet) -> None:
+        return user_wallet, transaction
+
+    def _process_subscription_payment(self, user_wallet: UserWallet, transaction: Transaction) -> tuple[UserWallet, Transaction]:
         """Process a subscription payment transaction."""
         # If user has insufficient funds, mark transaction as overdue
         if user_wallet.balance < transaction.amount:
             if transaction.transaction_status == TransactionStatus.SCHEDULED:
                 transaction.transaction_status = TransactionStatus.OVERDUE
                 transaction.last_updated_at = DateTimeUtils.now_dt()
-                await self.transaction_opr.upsert_transaction(transaction)
-            return
+            return user_wallet, transaction
         
         # Process payment
         user_wallet.balance -= transaction.amount
         user_wallet.last_updated_at = DateTimeUtils.now_dt()
-        await self.user_opr.upsert_user_wallet(user_wallet)
         
         # Mark transaction as paid
         transaction.transaction_status = TransactionStatus.PAID
         transaction.last_updated_at = DateTimeUtils.now_dt()
-        await self.transaction_opr.upsert_transaction(transaction)
 
-        # Schedule next payment
-        await self.next_subscription(transaction)
+        return user_wallet, transaction
         

@@ -4,7 +4,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey, UUID
 import uuid
 
-from ...utils.datetime import BkkDateTime
+from ...utils.datetime import UTCDateTime
 from .base import Base
 
 if TYPE_CHECKING:
@@ -23,8 +23,8 @@ class UserInstance(Base):
     hostname: Mapped[str] = mapped_column(nullable=False)
     lxd_node_name: Mapped[str] = mapped_column(nullable=False)
     status: Mapped[str] = mapped_column(nullable=False)
-    created_at: Mapped[datetime] = mapped_column(BkkDateTime, nullable=False)
-    last_updated_at: Mapped[datetime] = mapped_column(BkkDateTime, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, nullable=False)
+    last_updated_at: Mapped[datetime] = mapped_column(UTCDateTime, nullable=False)
     # TBD: password_hash, ip_address
     # password_hash: Mapped[str] = mapped_column(nullable=False)
     # ip_address: Mapped[str] = mapped_column(nullable=False)

@@ -1,6 +1,6 @@
 from typing import Optional
 import uuid
-from fastapi import WebSocket
+from fastapi import HTTPException, WebSocket
 import asyncio
 
 from .subscription import SubscriptionService
@@ -45,10 +45,16 @@ class InstanceService:
             os_type_task = tg.create_task(
                 self.instance_opr.get_os_type_by_id(instance_create.os_type.os_type_id)
             )
+            instance = tg.create_task(
+                self.instance_opr.get_instance_by_name(instance_create.instance_name)
+            )
         instance_plan_create = instance_plan_task.result()
         os_type_create = os_type_task.result()
+        instance = instance.result()
         if not instance_plan_create or not os_type_create:
-            raise ValueError("Invalid instance plan or os type")
+            raise HTTPException(status_code=404, detail="Instance plan or OS type not found")
+        if instance:
+            raise HTTPException(status_code=400, detail="Instance name already exists")
         InstanceValidator.validate_instance_create_request(
             instance_create=instance_create,
             instance_plan_db=instance_plan_create,

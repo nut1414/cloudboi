@@ -27,13 +27,16 @@ services:
       - "3000:3000"
     volumes:
       - ../../frontend:/app
-      - /app/node_modules
+      - cloudboi_fe-node_modules:/app/node_modules
     environment:
       - API_URL=http://localhost:8000
     depends_on:
       - backend
     networks:
       - cloudboi-network
+
+volumes:
+  cloudboi_fe-node_modules:
 
 networks:
   cloudboi-network:
