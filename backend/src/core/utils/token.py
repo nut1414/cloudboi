@@ -1,4 +1,4 @@
-from fastapi import Response
+from fastapi import Response, WebSocket
 from jose import jwt
 from datetime import datetime, timedelta
 import secrets
@@ -11,7 +11,7 @@ class TokenUtils:
     def _generate_token(cls, data: dict, expires_delta: timedelta):
         """Generate a JWT token."""
         to_encode = data.copy()
-        now = DateTimeUtils.from_string(DateTimeUtils.now())
+        now = DateTimeUtils.now_dt()
 
         to_encode.update({
             "exp": now + expires_delta,

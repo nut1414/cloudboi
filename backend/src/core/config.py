@@ -13,7 +13,7 @@ class DatabaseConfig:
         )
     )
     DB_CONFIG = {
-        "echo": True, # Enable logging
+        "echo": False, # Enable logging
     }
 
 class TokenConfig:
@@ -27,3 +27,12 @@ class TokenConfig:
 
     # HTTPS only in production
     SECURE_COOKIES = ENV == "production"
+
+class BillingConfig:
+    # Check for overdue subscriptions every x minutes
+    OVERDUE_CHECK_INTERVAL_MINUTES = 1
+    OVERDUE_MAX_INSTANCES = 2
+    
+    # Check for expired subscriptions every x minutes
+    EXPIRE_CHECK_INTERVAL_MINUTES = 1
+    EXPIRE_MAX_INSTANCES = 2

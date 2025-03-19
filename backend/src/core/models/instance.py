@@ -1,8 +1,21 @@
-from typing import List
+from datetime import datetime
+from typing import List, Optional
+import uuid
 from .base_model import BaseModel
 
-class InstanceType(BaseModel):
-    instance_type_id: int
+class UserInstance(BaseModel):
+    instance_id: Optional[uuid.UUID] = None
+    user_id: Optional[uuid.UUID] = None
+    instance_plan_id: int
+    os_type_id: int
+    hostname: str
+    lxd_node_name: str
+    status: str
+    created_at: Optional[datetime] = None
+    last_updated_at: datetime
+
+class InstancePlan(BaseModel):
+    instance_plan_id: int
     instance_package_name: str
     vcpu_amount: int
     ram_amount: int
@@ -15,16 +28,16 @@ class OsType(BaseModel):
     os_image_version: str
 
 class InstanceDetails(BaseModel):
-    instance_package: List[InstanceType]
+    instance_package: List[InstancePlan]
     os_image: List[OsType]
 
 class InstanceCreateRequest(BaseModel):
     os_type: OsType
-    instance_type: InstanceType
+    instance_plan: InstancePlan
     instance_name: str
     root_password: str
 
 class InstanceCreateResponse(BaseModel):
     instance_name: str
     instance_status: str
-    created_at: str
+    created_at: datetime
