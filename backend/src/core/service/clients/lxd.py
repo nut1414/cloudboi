@@ -94,6 +94,12 @@ class LXDClient(BaseInstanceClient[models.Instance]):
         finally:
             await self.lxd_ws_manager.remove_session(instance_identifier.name)
 
+    def create_lxd_cluster_join_token(self, server_name: str) -> str:
+        return self.lxd_manager.create_cluster_join_token(server_name)
+      
+    def add_member_to_lxd_cluster_group(self, server_name: str) -> bool:
+        return self.lxd_manager.add_member_to_cluster_group(server_name)
+
     def __to_instance_create_config(self, instance_create: InstanceCreateRequest) -> dict:
         return {
             "device": {
