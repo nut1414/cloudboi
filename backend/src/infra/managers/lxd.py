@@ -266,7 +266,7 @@ class LXDManager:
             raise LXDManagerException(f"Failed to create cluster join token: {str(e)}")
     
     @_ensure_connected()
-    def add_member_to_cluster_group(self, server_name: str, group: str = "resource") -> bool:
+    def add_member_to_cluster_group(self, server_name: str, group: str = "cloudboi-resource") -> bool:
         try:
             # Check if server exists
             all_members = self.get_all_cluster_members()
@@ -275,8 +275,8 @@ class LXDManager:
                 raise LXDManagerException(f"Server '{server_name}' not found in cluster members")
           
             # Get current group configuration
-            current_group_request = self.client.api.cluster.group[group].get()
-            current_group = current_group_request.json().metadata
+            current_group_request = self.client.api.cluster.groups[group].get()
+            current_group = current_group_request.json()['metadata']
             
             updated_group = {
               "description": current_group["description"],
@@ -286,7 +286,7 @@ class LXDManager:
             # Can only update the entire config of the group
             # https://documentation.ubuntu.com/lxd/en/latest/api/#/cluster-groups/cluster_group_patch
             
-            updated_group_request = self.client.api.cluster.group[group].put(
+            updated_group_request = self.client.api.cluster.groups[group].put(
                 json=updated_group
             )
             

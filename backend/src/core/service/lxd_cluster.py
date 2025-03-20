@@ -17,7 +17,7 @@ class LXDClusterService:
       
     async def add_member_to_lxd_cluster_group(self, request: AddMemberRequest) -> AddMemberResponse:
         add_result = self.lxd_client.add_member_to_lxd_cluster_group(request.server_name)
-        return AddMemberResponse(result=add_result)
+        return AddMemberResponse(success=add_result)
       
     
     

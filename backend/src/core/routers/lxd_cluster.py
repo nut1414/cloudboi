@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Request
 from dependency_injector.wiring import Provide, inject
 
-from ..models.lxd_cluster import AddMemberRequest, CreateJoinTokenRequest, CreateJoinTokenResponse
+from ..models.lxd_cluster import AddMemberRequest, AddMemberResponse, CreateJoinTokenRequest, CreateJoinTokenResponse
 from ..service.lxd_cluster import LXDClusterService
 from ..container import AppContainer
 
@@ -24,11 +24,11 @@ async def create_join_token(
 
 @router.post(
     "/add_member",
-    response_model=AddMemberRequest
+    response_model=AddMemberResponse
 )
 @inject
 async def add_member(
-    request: Request,
+    request: AddMemberRequest,
     lxd_cluster_service: LXDClusterService = Depends(Provide[AppContainer.lxd_cluster_service])
 ):
     return await lxd_cluster_service.add_member_to_lxd_cluster_group(request)
