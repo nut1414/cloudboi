@@ -5,6 +5,7 @@ import base64, json
 from ...core.commons.exception import create_exception_class
 from ..config import LXDConfig
 from ...core.utils.decorator import create_decorator
+from ...core.utils.logging import logger
 
 LXDManagerException = create_exception_class("LXDManager")
 
@@ -235,30 +236,34 @@ class LXDManager:
     @_ensure_connected()
     def create_cluster_join_token(self, server_name: str) -> str:
         try:
-            server = { 
-                server_name 
+            server = {
+                "server_name": server_name
             }
             token_request = self.client.api.cluster.members.post(
                 json=server
-            )
+            ).json()
+            
+            logger.info("Create cluster join token request: %s", token_request)
 
             # Response from calling the API consist of raw data that needed to be turn into base64
             # Response structure: https://documentation.ubuntu.com/lxd/en/latest/api/#/cluster/cluster_members_post
             # Join token structure: https://github.com/canonical/lxd/blob/main/shared/api/cluster.go#L108
-            response = token_request.json().metadata
+            response = token_request['metadata']['metadata']
+            
+            logger.info(f"Create cluster join token response: {response}")
 
             join_token_object = {
-                "addresses": response["addresses"],
-                "expiresAt": response["expiresAt"],
+                "server_name": response["serverName"],
                 "fingerprint": response["fingerprint"],
+                "addresses": response["addresses"],
                 "secret": response["secret"],
-                "serverName": response["serverName"]
+                "expires_at": response["expiresAt"],
             }
             
-            join_token_json = json.dumps(join_token_object)
-            join_token_base64 = base64.b64encode(join_token_json) 
+            join_token_json = json.dumps(join_token_object, separators=(',', ':'))
+            join_token_base64 = base64.b64encode(join_token_json.encode()) 
             
-            return join_token_base64
+            return join_token_base64.decode()
         except exceptions.LXDAPIException as e:
             raise LXDManagerException(f"Failed to create cluster join token: {str(e)}")
     
