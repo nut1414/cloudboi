@@ -243,14 +243,12 @@ class LXDManager:
                 json=server
             ).json()
             
-            logger.info("Create cluster join token request: %s", token_request)
 
             # Response from calling the API consist of raw data that needed to be turn into base64
             # Response structure: https://documentation.ubuntu.com/lxd/en/latest/api/#/cluster/cluster_members_post
             # Join token structure: https://github.com/canonical/lxd/blob/main/shared/api/cluster.go#L108
             response = token_request['metadata']['metadata']
             
-            logger.info(f"Create cluster join token response: {response}")
 
             join_token_object = {
                 "server_name": response["serverName"],
