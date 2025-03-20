@@ -25,7 +25,7 @@ modules = [
     # Router modules
     user,
     instance,
-    lxd_cluster
+    lxd_cluster 
 ]
 for module in modules:
     container.wire(modules=[module])
