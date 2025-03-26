@@ -6,7 +6,7 @@ export type HTTPValidationError = {
 
 export type InstanceCreateRequest = {
     os_type: OsType;
-    instance_type: InstanceType;
+    instance_plan: InstancePlan;
     instance_name: string;
     root_password: string;
 };
@@ -14,16 +14,16 @@ export type InstanceCreateRequest = {
 export type InstanceCreateResponse = {
     instance_name: string;
     instance_status: string;
-    created_at: string;
+    created_at: Date;
 };
 
 export type InstanceDetails = {
-    instance_package: Array<InstanceType>;
+    instance_package: Array<InstancePlan>;
     os_image: Array<OsType>;
 };
 
-export type InstanceType = {
-    instance_type_id: number;
+export type InstancePlan = {
+    instance_plan_id: number;
     instance_package_name: string;
     vcpu_amount: number;
     ram_amount: number;
@@ -46,7 +46,8 @@ export type UserCreateRequest = {
 export type UserCreateResponse = {
     username: string;
     email: string;
-    created_at: string;
+    balance: number;
+    created_at: Date;
 };
 
 export type UserLoginRequest = {
@@ -60,9 +61,9 @@ export type UserLoginResponse = {
 
 export type UserSessionResponse = {
     is_authenticated: boolean;
-    username: string;
-    email: string;
-    role: string;
+    username: (string | null);
+    email: (string | null);
+    role: (string | null);
 };
 
 export type ValidationError = {
@@ -110,3 +111,35 @@ export type UserGetUserSessionError = unknown;
 export type UserLogoutUserResponse = (UserLoginResponse);
 
 export type UserLogoutUserError = unknown;
+
+export type InstanceCreateInstanceResponseTransformer = (data: any) => Promise<InstanceCreateInstanceResponse>;
+
+export type InstanceCreateResponseModelResponseTransformer = (data: any) => InstanceCreateResponse;
+
+export const InstanceCreateResponseModelResponseTransformer: InstanceCreateResponseModelResponseTransformer = data => {
+    if (data?.created_at) {
+        data.created_at = new Date(data.created_at);
+    }
+    return data;
+};
+
+export const InstanceCreateInstanceResponseTransformer: InstanceCreateInstanceResponseTransformer = async (data) => {
+    InstanceCreateResponseModelResponseTransformer(data);
+    return data;
+};
+
+export type UserCreateUserResponseTransformer = (data: any) => Promise<UserCreateUserResponse>;
+
+export type UserCreateResponseModelResponseTransformer = (data: any) => UserCreateResponse;
+
+export const UserCreateResponseModelResponseTransformer: UserCreateResponseModelResponseTransformer = data => {
+    if (data?.created_at) {
+        data.created_at = new Date(data.created_at);
+    }
+    return data;
+};
+
+export const UserCreateUserResponseTransformer: UserCreateUserResponseTransformer = async (data) => {
+    UserCreateResponseModelResponseTransformer(data);
+    return data;
+};
