@@ -32,6 +32,7 @@ const NavItem: React.FC<NavItemProps> = ({ path, label, currentPath, showHighlig
         {label}
       </Link>
     </li>
+
   );
 };
 
