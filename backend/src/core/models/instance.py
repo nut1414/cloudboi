@@ -27,6 +27,10 @@ class OsType(BaseModel):
     os_image_name: str
     os_image_version: str
 
+class UserInstanceFromDB(UserInstance):
+    instance_plan: InstancePlan
+    os_type: OsType
+
 class InstanceDetails(BaseModel):
     instance_package: List[InstancePlan]
     os_image: List[OsType]
@@ -41,3 +45,11 @@ class InstanceCreateResponse(BaseModel):
     instance_name: str
     instance_status: str
     created_at: datetime
+
+class UserInstanceResponse(BaseModel):
+    instance_id: uuid.UUID
+    instance_name: str
+    instance_status: str
+    instance_plan: InstancePlan
+    os_type: OsType
+    last_updated_at: datetime

@@ -41,8 +41,9 @@ class LXDManager:
                 cert=LXDConfig.LXD_CERT,
                 verify=LXDConfig.LXD_VERIFY,
             )
-            self.check_connection()
-            self._is_connected = True
+            if not self.client.trusted:
+                self.authenticate(LXDConfig.LXD_TRUST_PASSWORD)
+            self._is_connected = self.check_connection()
             return True
         except exceptions.ClientConnectionFailed as e:
             self._is_connected = False
@@ -56,6 +57,13 @@ class LXDManager:
             return True
         except exceptions.LXDAPIException as e:
             raise LXDManagerException(f"Failed to check LXD connection: {str(e)}")
+    
+    def authenticate(self, password: str) -> bool:
+        try:
+            self.client.authenticate(password)
+            return self.client.trusted
+        except exceptions.LXDAPIException as e:
+            raise LXDManagerException(f"Failed to authenticate: {str(e)}")
     
     @_ensure_connected()
     def get_all_containers(self) -> List[models.Instance]:

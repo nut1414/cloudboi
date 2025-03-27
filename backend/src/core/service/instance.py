@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 import uuid
 from fastapi import HTTPException, WebSocket
 import asyncio
@@ -6,7 +6,7 @@ import asyncio
 from .subscription import SubscriptionService
 from .clients.base_instance_client import BaseInstanceClient
 from .validators.instance_validator import InstanceValidator
-from ..models.instance import InstanceCreateRequest, InstanceCreateResponse, InstanceDetails
+from ..models.instance import InstanceCreateRequest, InstanceCreateResponse, InstanceDetails, UserInstanceResponse
 from ..sql.operations import InstanceOperation
 from ..utils.dependencies import user_session_ctx
 
@@ -36,6 +36,17 @@ class InstanceService:
             os_image=os_types_task.result()
         )
     
+    async def get_all_user_instances(self) -> List[UserInstanceResponse]:
+        result_db = await self.instance_opr.get_all_user_instances(username=user_session_ctx.get().username)
+        return [UserInstanceResponse(
+            instance_id=instance.instance_id,
+            instance_name=instance.hostname,
+            instance_status=instance.status,
+            instance_plan=instance.instance_plan,
+            os_type=instance.os_type,
+            last_updated_at=instance.last_updated_at
+        ) for instance in result_db]
+    
     async def create_instance(self, instance_create: InstanceCreateRequest) -> InstanceCreateResponse:
         # Validate instance_create
         async with asyncio.TaskGroup() as tg:
@@ -62,7 +73,7 @@ class InstanceService:
         )
         
         # Create instance in LXD
-        instance = self.lxd_client.create_instance(instance_create)
+        instance = await self.lxd_client.create_instance(instance_create)
         if not instance:
             raise RuntimeError("Failed to create instance")
         
@@ -101,7 +112,7 @@ class InstanceService:
             raise ValueError("Instance not found")
         
         # Delete instance in LXD
-        self.lxd_client.delete_instance(instance.hostname)
+        await self.lxd_client.delete_instance(instance.hostname)
 
         # Delete instance in DB
         await self.instance_opr.delete_user_instance(instance.instance_id)
