@@ -25,9 +25,14 @@ interface TableHeaderProps {
 }
 
 export const TableHeader: React.FC<TableHeaderProps> = ({ columns }) => (
-  <div className="grid grid-cols-6 text-gray-300 text-lg py-4 font-medium border-b border-blue-800/30 px-6 bg-[#192A51]">
+  <div className={`grid grid-cols-${columns.length} text-gray-300 text-lg py-4 font-medium border-b border-blue-800/30 px-6 bg-[#192A51]`} 
+    style={{ gridTemplateColumns: `repeat(${columns.length}, 1fr)` }}>
     {columns.map((column) => (
-      <span key={column.key} style={column.width ? { width: column.width } : {}}>
+      <span 
+        key={column.key} 
+        className="flex justify-between items-center"
+        style={column.width ? { width: column.width } : {}}
+      >
         {column.label}
       </span>
     ))}
@@ -135,11 +140,15 @@ function Table<T>({
     return (
       <div
         key={rowKey}
-        className={`grid grid-cols-6 text-gray-300 bg-[#23375F] hover:bg-blue-800 transition-colors border-b border-blue-800/30 py-3 px-6 ${onRowClick ? 'cursor-pointer' : ''}`}
+        className={`grid text-gray-300 bg-[#23375F] hover:bg-blue-800 transition-colors border-b border-blue-800/30 py-3 px-6 ${onRowClick ? 'cursor-pointer' : ''}`}
+        style={{ gridTemplateColumns: `repeat(${columns.length}, 1fr)` }}
         onClick={() => onRowClick && onRowClick(item)}
       >
         {columns.map((column) => (
-          <span key={`${rowKey}-${column.key}`}>
+          <span 
+            key={`${rowKey}-${column.key}`}
+            className="flex justify-between items-center"
+          >
             {column.render 
               ? column.render(item)
               : (item as any)[column.key] !== undefined 

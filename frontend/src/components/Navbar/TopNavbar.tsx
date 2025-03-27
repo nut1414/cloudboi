@@ -1,14 +1,14 @@
-import React, { useState } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
-import { Icon } from "../../assets/Icon";
+import React, { useState } from "react"
+import { Link, useParams, useNavigate } from "react-router-dom"
+import { Icon } from "../../assets/Icon"
 
 // SearchBar component with real-time search
 interface SearchBarProps {
-  placeholder?: string;
-  onSearch?: (query: string) => void;
-  className?: string;
-  initialValue?: string;
-  width?: string;
+  placeholder?: string
+  onSearch?: (query: string) => void
+  className?: string
+  initialValue?: string
+  width?: string
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
@@ -18,15 +18,15 @@ const SearchBar: React.FC<SearchBarProps> = ({
   initialValue = "",
   width = "w-64",
 }) => {
-  const [query, setQuery] = useState(initialValue);
+  const [query, setQuery] = useState(initialValue)
 
   // Handle input changes directly
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newQuery = e.target.value;
-    setQuery(newQuery);
+    const newQuery = e.target.value
+    setQuery(newQuery)
     // Call onSearch directly
-    onSearch(newQuery);
-  };
+    onSearch(newQuery)
+  }
 
   return (
     <div className={`relative ${className}`}>
@@ -43,18 +43,18 @@ const SearchBar: React.FC<SearchBarProps> = ({
         {Icon.Search}
       </div>
     </div>
-  );
-};
+  )
+}
 
 // NavButton component
 interface NavButtonProps {
-  to?: string;
-  label: string;
-  hasBorder?: boolean;
-  className?: string;
-  icon?: React.ReactNode;
-  onClick?: () => void;
-  variant?: 'primary' | 'secondary' | 'outline';
+  to?: string
+  label: string
+  hasBorder?: boolean
+  className?: string
+  icon?: React.ReactNode
+  onClick?: () => void
+  variant?: 'primary' | 'secondary' | 'outline'
 }
 
 const NavButton: React.FC<NavButtonProps> = ({
@@ -70,7 +70,7 @@ const NavButton: React.FC<NavButtonProps> = ({
     primary: "bg-blue-800 text-white hover:bg-blue-700",
     secondary: "bg-purple-600 text-white hover:bg-purple-500",
     outline: "bg-transparent border-2 border-blue-800/30 text-gray-300 hover:bg-blue-800/20"
-  };
+  }
 
   const Button = (
     <button
@@ -85,23 +85,23 @@ const NavButton: React.FC<NavButtonProps> = ({
       {icon}
       {label}
     </button>
-  );
+  )
 
   if (to) {
     return (
       <Link to={to} className="inline-block">
         {Button}
       </Link>
-    );
+    )
   }
 
-  return Button;
-};
+  return Button
+}
 
 // Notification Badge component
 interface NotificationBadgeProps {
-  count: number;
-  onClick?: () => void;
+  count: number
+  onClick?: () => void
 }
 
 const NotificationBadge: React.FC<NotificationBadgeProps> = ({ count, onClick }) => (
@@ -117,16 +117,16 @@ const NotificationBadge: React.FC<NotificationBadgeProps> = ({ count, onClick })
       </span>
     )}
   </button>
-);
+)
 
 interface TopNavbarProps {
-  onSearch?: (query: string) => void;
-  actions?: React.ReactNode[];
-  showSearch?: boolean;
-  notificationCount?: number;
-  customLeftContent?: React.ReactNode;
-  customRightContent?: React.ReactNode;
-  className?: string;
+  onSearch?: (query: string) => void
+  actions?: React.ReactNode[]
+  showSearch?: boolean
+  notificationCount?: number
+  customLeftContent?: React.ReactNode
+  customRightContent?: React.ReactNode
+  className?: string
 }
 
 const TopNavbar: React.FC<TopNavbarProps> = ({
@@ -139,8 +139,8 @@ const TopNavbar: React.FC<TopNavbarProps> = ({
   className = "",
 }) => {
   // Get username from URL params for correct routing
-  const { userName } = useParams<{ userName: string }>();
-  const navigate = useNavigate();
+  const { userName } = useParams<{ userName: string }>()
+  const navigate = useNavigate()
 
   return (
     <nav className={`bg-[#192A51] border-b border-blue-900/50 text-white w-full px-6 py-3 shadow-sm z-10 sticky top-0 transition-colors ${className}`}>
@@ -187,10 +187,10 @@ const TopNavbar: React.FC<TopNavbarProps> = ({
         </div>
       </div>
     </nav>
-  );
-};
+  )
+}
 
 // Export individual components for reusability
-export { SearchBar, NavButton, NotificationBadge };
+export { SearchBar, NavButton, NotificationBadge }
 
-export default TopNavbar;
+export default TopNavbar

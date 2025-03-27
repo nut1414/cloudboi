@@ -1,97 +1,60 @@
-import React, { useState } from "react";
-import TopNavbar, { NavButton } from "../../components/Navbar/TopNavbar";
-import TableSection from "../../components/Common/TableSection"; 
-import { ActionButton, StatusBadge, TableColumn } from "../../components/Common/Table";
-import { UserInstances } from "../../constant/InstanceConst";
-import { Icon } from "../../assets/Icon";
-import { useNavigate } from "react-router-dom";
+import React from "react"
+import TopNavbar, { NavButton } from "../../components/Navbar/TopNavbar"
+import TableSection from "../../components/Common/TableSection"
+import { ActionButton, StatusBadge, TableColumn } from "../../components/Common/Table"
+import { Icon } from "../../assets/Icon"
+import { UserInstanceResponse } from "../../client"
+import { useInstanceList } from "../../hooks/Instance/useInstanceList"
 
-interface InstanceListPageProps {
-    instances?: any[];
-    isLoading?: boolean;
-    onSearch?: (query: string) => void;
-    onCreateInstance?: () => void;
-    onViewInstance?: (instance: any) => void;
-    onInstanceAction?: (action: string, instance: any) => void;
-    title?: string;
-    showTopNav?: boolean;
-    topNavProps?: any;
-    className?: string;
-    emptyStateMessage?: string;
-}
-
-function InstanceListPage({
-    instances = UserInstances, // Default to the constant if not provided
-    isLoading = false,
-    onSearch,
-    title = "Instance Management",
-    showTopNav = true,
-}: InstanceListPageProps) {
-    const [searchQuery, setSearchQuery] = useState("");
-    const navigate = useNavigate();
-
-    const onCreateInstance = () => {
-        // Navigate to the create instance page
-    }
-
-    const onViewInstance = (instance: any) => {
-        // Navigate to the instance details page
-    }
-
-    const onInstanceAction = (action: string, instance: any) => {
-        // Handle instance actions
-    }
-
-    // Apply filtering directly based on search query
-    const filteredInstances = React.useMemo(() => {
-        if (!searchQuery.trim()) {
-            return instances;
-        }
-
-        const lowercaseQuery = searchQuery.toLowerCase();
-        return instances.filter(instance =>
-            (instance.name && instance.name.toLowerCase().includes(lowercaseQuery)) ||
-            (instance.os && instance.os.toLowerCase().includes(lowercaseQuery)) ||
-            (instance.type && instance.type.toLowerCase().includes(lowercaseQuery)) ||
-            (instance.usage && instance.usage.toLowerCase().includes(lowercaseQuery)) ||
-            (instance.status && instance.status.toLowerCase().includes(lowercaseQuery))
-        );
-    }, [searchQuery, instances]);
-
-    const handleSearch = (query: string) => {
-        setSearchQuery(query);
-        if (onSearch) onSearch(query);
-    };
+function InstanceListPage() {
+    const {
+        filteredInstances,
+        isLoading,
+        handleSearch,
+        handleCreateInstance,
+        handleViewInstance,
+        handleInstanceAction
+    } = useInstanceList()
 
     // Define table columns with rendering functions
-    const columns: TableColumn<any>[] = [
-        { key: 'name', label: 'Name' },
-        { key: 'os', label: 'OS' },
-        { key: 'usage', label: 'Usage' },
-        { key: 'type', label: 'Instance Type' },
-        { 
-            key: 'status', 
-            label: 'Status',
-            render: (instance) => <StatusBadge status={instance.status} />
+    const columns: TableColumn<UserInstanceResponse>[] = [
+        {
+            key: 'instance_name',
+            label: 'Name'
         },
-        { 
-            key: 'actions', 
+        {
+            key: 'os_type',
+            label: 'OS',
+            render: (instance) => instance.os_type?.os_image_name || "N/A"
+        },
+        {
+            key: 'instance_plan',
+            label: 'Instance Plan',
+            render: (instance) => instance.instance_plan?.instance_package_name || "N/A"
+        },
+        {
+            key: 'instance_status',
+            label: 'Status',
+            render: (instance) => <StatusBadge status={instance.instance_status} />
+        },
+        {
+            key: 'actions',
             label: 'Actions',
             render: (instance) => (
                 <span className="flex space-x-2">
                     <ActionButton
                         label="View"
                         onClick={(e) => {
-                            e.stopPropagation();
-                            onViewInstance(instance);
+                            e.stopPropagation()
+                            handleViewInstance(instance)
                         }}
-                        className="py-1 text-sm bg-blue-800 hover:bg-blue-700 text-white" // Updated colors
+                        className="py-1 text-sm bg-blue-800 hover:bg-blue-700 text-white"
                     />
                     <button
-                        className="text-gray-300 hover:text-white transition-colors" // Updated colors
+                        className="text-gray-300 hover:text-white transition-colors"
                         onClick={(e) => {
-                            e.stopPropagation();
-                            onInstanceAction && onInstanceAction('menu', instance);
+                            e.stopPropagation()
+                            handleInstanceAction('menu', instance)
                         }}
                     >
                         {Icon.ThreeDots}
@@ -99,37 +62,34 @@ function InstanceListPage({
                 </span>
             )
         }
-    ];
+    ]
 
     return (
         <>
-            {showTopNav && (
-                <TopNavbar
-                    onSearch={handleSearch}
-                    actions={[
-                        <NavButton
-                            onClick={onCreateInstance}
-                            label="Create Instance"
-                            variant="secondary"
-                            icon={Icon.Plus}
-                        />
-                    ]}
-                />
-            )}
+            <TopNavbar
+                onSearch={handleSearch}
+                actions={[
+                    <NavButton
+                        onClick={handleCreateInstance}
+                        label="Create Instance"
+                        variant="secondary"
+                        icon={Icon.Plus}
+                    />
+                ]}
+            />
 
-            {/* Use the new TableSection component */}
             <TableSection
-                title={title}
+                title="Instance Management"
                 columns={columns}
                 data={filteredInstances}
                 isLoading={isLoading}
-                onRowClick={onViewInstance}
-                emptyStateMessage={"No instances found matching your criteria"}
-                onCreateNew={onCreateInstance}
-                keyExtractor={(instance) => instance.id || instance.name}
+                onRowClick={handleViewInstance}
+                emptyStateMessage="No instances found matching your criteria"
+                onCreateNew={handleCreateInstance}
+                keyExtractor={(instance) => instance.instance_id}
             />
         </>
-    );
+    )
 }
 
-export default React.memo(InstanceListPage);
+export default React.memo(InstanceListPage)

@@ -52,6 +52,25 @@ export const instanceInstanceDetailsOptions = (options?: Options) => {
     });
 };
 
+export const instanceListInstancesQueryKey = (options?: Options) => [
+    createQueryKey('instanceListInstances', options)
+];
+
+export const instanceListInstancesOptions = (options?: Options) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await InstanceService.instanceListInstances({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: instanceListInstancesQueryKey(options)
+    });
+};
+
 export const instanceCreateInstanceQueryKey = (options: Options<InstanceCreateInstanceData>) => [
     createQueryKey('instanceCreateInstance', options)
 ];

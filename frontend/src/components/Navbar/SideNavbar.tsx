@@ -1,25 +1,25 @@
-import React, { useEffect, useState } from "react";
-import { useLocation, Link, useParams, useNavigate } from "react-router-dom";
-import { Icon } from "../../assets/Icon";
-import { useAuth } from "../../hooks/User/useAuth";
+import React, { useEffect, useState } from "react"
+import { useLocation, Link, useParams, useNavigate } from "react-router-dom"
+import { Icon } from "../../assets/Icon"
+import { useAuth } from "../../hooks/User/useAuth"
 
 // Define proper types
 interface NavItemProps {
-  path: string;
-  label: string;
-  userName: string | undefined;
-  isHovering: boolean;
-  icon?: React.ReactNode; // Optional icon prop
+  path: string
+  label: string
+  userName: string | undefined
+  isHovering: boolean
+  icon?: React.ReactNode // Optional icon prop
 }
 
 interface SideNavbarProps {
-  navItems?: { path: string; label: string; icon?: React.ReactNode }[]; // Make nav items customizable
-  creditLimit?: number; // Make credit limit customizable
-  creditCurrency?: string; // Make currency customizable
-  logoText?: string; // Allow custom logo text
-  logoIcon?: React.ReactNode; // Allow custom logo icon
-  onLogout?: () => void; // Logout callback
-  userRole?: string; // User role to display
+  navItems?: { path: string; label: string; icon?: React.ReactNode }[] // Make nav items customizable
+  creditLimit?: number // Make credit limit customizable
+  creditCurrency?: string // Make currency customizable
+  logoText?: string // Allow custom logo text
+  logoIcon?: React.ReactNode // Allow custom logo icon
+  onLogout?: () => void // Logout callback
+  userRole?: string // User role to display
 }
 
 // NavItem component with better relative styling
@@ -30,9 +30,9 @@ const NavItem: React.FC<NavItemProps> = ({
   isHovering,
   icon
 }) => {
-  const { pathname } = useLocation();
-  const currentPath = pathname.split("/").pop() || "";
-  const isActive = currentPath === path;
+  const { pathname } = useLocation()
+  const currentPath = pathname.split("/").pop() || ""
+  const isActive = currentPath === path
 
   return (
     <li className={`
@@ -52,8 +52,8 @@ const NavItem: React.FC<NavItemProps> = ({
         {label}
       </Link>
     </li>
-  );
-};
+  )
+}
 
 // Credit card component with flex instead of absolute positioning
 const CreditCard: React.FC<{ creditLimit?: number; currency?: string }> = ({
@@ -75,31 +75,31 @@ const CreditCard: React.FC<{ creditLimit?: number; currency?: string }> = ({
       </span>
     </div>
   </div>
-);
+)
 
 // User menu component
 const UserMenu: React.FC<{
-  userName: string | undefined;
-  userRole?: string;
-  onLogout: () => Promise<void>;
+  userName: string | undefined
+  userRole?: string
+  onLogout: () => Promise<void>
 }> = ({ userName, userRole = "User Account", onLogout }) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const navigate = useNavigate();
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const navigate = useNavigate()
 
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
 
   // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
+      const target = event.target as HTMLElement
       if (isMenuOpen && !target.closest('.user-profile-section')) {
-        setIsMenuOpen(false);
+        setIsMenuOpen(false)
       }
-    };
+    }
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isMenuOpen]);
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [isMenuOpen])
 
   return (
     <div className="user-profile-section relative mt-auto border-t border-blue-800/30 p-4">
@@ -133,8 +133,8 @@ const UserMenu: React.FC<{
             <div className="border-t border-blue-800/30 my-1"></div>
             <button
               onClick={async () => {
-                await onLogout();
-                navigate("/login");
+                await onLogout()
+                navigate("/login")
               }}
               className="block w-full text-left px-4 py-2 text-red-400 hover:bg-blue-800 transition-colors"
             >
@@ -144,8 +144,8 @@ const UserMenu: React.FC<{
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
 const SideNavbar: React.FC<SideNavbarProps> = ({
   navItems: customNavItems,
@@ -155,9 +155,9 @@ const SideNavbar: React.FC<SideNavbarProps> = ({
   logoIcon = Icon.Logo,
   userRole
 }) => {
-  const { userName } = useParams<{ userName: string }>();
-  const { logout } = useAuth();
-  const [isHovering, setIsHovering] = useState<boolean>(false);
+  const { userName } = useParams<{ userName: string }>()
+  const { logout } = useAuth()
+  const [isHovering, setIsHovering] = useState<boolean>(false)
 
   // Default navigation items - can be overridden via props
   const defaultNavItems = [
@@ -165,10 +165,10 @@ const SideNavbar: React.FC<SideNavbarProps> = ({
     { path: "billing", label: "Billing", icon: Icon.Billing },
     { path: "support", label: "Support", icon: Icon.Support },
     { path: "setting", label: "Setting", icon: Icon.Setting }
-  ];
+  ]
 
   // Use provided navItems or fall back to defaults
-  const navItems = customNavItems || defaultNavItems;
+  const navItems = customNavItems || defaultNavItems
 
   return (
     <nav className="
@@ -219,7 +219,7 @@ const SideNavbar: React.FC<SideNavbarProps> = ({
         onLogout={logout}
       />
     </nav>
-  );
-};
+  )
+}
 
-export default SideNavbar;
+export default SideNavbar

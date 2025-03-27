@@ -50,6 +50,15 @@ export type UserCreateResponse = {
     created_at: Date;
 };
 
+export type UserInstanceResponse = {
+    instance_id: string;
+    instance_name: string;
+    instance_status: string;
+    instance_plan: InstancePlan;
+    os_type: OsType;
+    last_updated_at: Date;
+};
+
 export type UserLoginRequest = {
     username: string;
     password: string;
@@ -75,6 +84,10 @@ export type ValidationError = {
 export type InstanceInstanceDetailsResponse = (InstanceDetails);
 
 export type InstanceInstanceDetailsError = unknown;
+
+export type InstanceListInstancesResponse = (Array<UserInstanceResponse>);
+
+export type InstanceListInstancesError = unknown;
 
 export type InstanceCreateInstanceData = {
     body: InstanceCreateRequest;
@@ -111,6 +124,24 @@ export type UserGetUserSessionError = unknown;
 export type UserLogoutUserResponse = (UserLoginResponse);
 
 export type UserLogoutUserError = unknown;
+
+export type InstanceListInstancesResponseTransformer = (data: any) => Promise<InstanceListInstancesResponse>;
+
+export type UserInstanceResponseModelResponseTransformer = (data: any) => UserInstanceResponse;
+
+export const UserInstanceResponseModelResponseTransformer: UserInstanceResponseModelResponseTransformer = data => {
+    if (data?.last_updated_at) {
+        data.last_updated_at = new Date(data.last_updated_at);
+    }
+    return data;
+};
+
+export const InstanceListInstancesResponseTransformer: InstanceListInstancesResponseTransformer = async (data) => {
+    if (Array.isArray(data)) {
+        data.forEach(UserInstanceResponseModelResponseTransformer);
+    }
+    return data;
+};
 
 export type InstanceCreateInstanceResponseTransformer = (data: any) => Promise<InstanceCreateInstanceResponse>;
 
