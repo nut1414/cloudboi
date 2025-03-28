@@ -1,3 +1,4 @@
+// components/Common/Button.tsx
 import React from "react"
 import { Link } from "react-router-dom"
 
@@ -5,11 +6,12 @@ import { Link } from "react-router-dom"
 export interface ButtonProps {
   label: string
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
-  to?: string 
+  to?: string
   className?: string
   icon?: React.ReactNode
   variant?: 'primary' | 'secondary' | 'outline' | 'purple'
   hasBorder?: boolean
+  disabled?: boolean
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -19,13 +21,14 @@ export const Button: React.FC<ButtonProps> = ({
   className = "",
   icon,
   variant = 'primary',
-  hasBorder = false
+  hasBorder = false,
+  disabled = false
 }) => {
   // Define variant styles
   const variantStyles = {
     primary: "bg-blue-800 text-white hover:bg-blue-700",
     secondary: "bg-purple-600 text-white hover:bg-purple-500",
-    purple: "bg-purple-600 hover:bg-purple-700 text-white", // From ActionButton
+    purple: "bg-purple-600 hover:bg-purple-700 text-white",
     outline: "bg-transparent border-2 border-blue-800/30 text-gray-300 hover:bg-blue-800/20"
   }
 
@@ -37,6 +40,7 @@ export const Button: React.FC<ButtonProps> = ({
     transition-colors duration-200 
     flex items-center gap-2
     ${hasBorder ? 'border-blue-700 border-2' : ''}
+    ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
     ${className}
   `
 
@@ -44,6 +48,7 @@ export const Button: React.FC<ButtonProps> = ({
   const ButtonElement = (
     <button
       onClick={onClick}
+      disabled={disabled}
       className={buttonStyles}
     >
       {icon && <span>{icon}</span>}

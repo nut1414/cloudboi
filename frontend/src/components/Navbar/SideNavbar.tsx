@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { useLocation, Link, useParams, useNavigate } from "react-router-dom"
 import { useAuth } from "../../hooks/User/useAuth"
-import { Bars3BottomLeftIcon, ChevronDownIcon, Cog6ToothIcon, CreditCardIcon, UserGroupIcon } from "@heroicons/react/24/outline"
+import { ArrowLeftStartOnRectangleIcon, Bars3BottomLeftIcon, ChevronDownIcon, Cog6ToothIcon, CreditCardIcon, UserGroupIcon } from "@heroicons/react/24/outline"
 import { CloudIcon } from "@heroicons/react/24/solid"
 
 // Define proper types
@@ -139,6 +139,7 @@ const UserMenu: React.FC<{
               }}
               className="block w-full text-left px-4 py-2 text-red-400 hover:bg-blue-800 transition-colors"
             >
+              <ArrowLeftStartOnRectangleIcon className="h-5 w-5 inline-block mr-2" />
               Logout
             </button>
           </div>
