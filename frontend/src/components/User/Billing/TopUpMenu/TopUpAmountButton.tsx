@@ -8,7 +8,7 @@ const TopUpAmountButton: React.FC<TopUpAmountButtonProps> = ({ amount, onClick }
     return (
         <button
             onClick={onClick}
-            className="bg-[#192A51] w-[120px] h-[72%] mt-4 text-white rounded-lg hover:border-white border-2 hover:text-blue-400 transition duration-300"
+            className="bg-[#23375F] w-[120px] h-[72%] mt-4 text-white rounded-lg hover:border-white border-2 hover:text-blue-400 transition duration-300"
         >
             {amount} CBC
         </button>

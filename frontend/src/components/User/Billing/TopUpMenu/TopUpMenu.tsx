@@ -16,8 +16,8 @@ const TopUpMenu: React.FC = () => {
 
     return (
         <>
-            <p className="mt-8 text-xl font-bold">Total Credit: 1000 CBC</p>
-            <div className="mt-10 bg-red-300 shadow-md h-[400px] w-[800px] rounded-2xl flex flex-col justify-start items-start">
+            <p className="mt-8 text-white text-xl font-bold">Total Credit: 1000 CBC</p>
+            <div className="mt-10 bg-[#192A51] shadow-md h-[400px] w-[800px] rounded-2xl flex flex-col justify-start items-start">
                 <p className="ml-10 mt-8 text-3xl text-white font-bold">Top Up</p>
                 <div className="mt-10 grid grid-cols-2 gap-40">
                     <TopUpInput creditValue={creditValue} onChange={handleInputChange} />

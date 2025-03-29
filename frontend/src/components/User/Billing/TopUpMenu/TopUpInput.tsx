@@ -9,7 +9,7 @@ const TopUpInput: React.FC<TopUpInputProps> = ({ creditValue, onChange }) => {
             placeholder="Enter amount..."
             value={creditValue !== "" ? `${creditValue} CBC` : ""}
             onChange={onChange}
-            className="w-[140%] mt-4 ml-10 p-2 shadow-md rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-[140%] mt-4 ml-10 p-2 shadow-md rounded-lg bg-[#23375F] border border-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
     );
 };

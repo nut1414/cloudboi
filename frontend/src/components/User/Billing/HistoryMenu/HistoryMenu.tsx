@@ -12,8 +12,8 @@ const billingData: BillingItem[] = [
 
 const HistoryMenu: React.FC = () => {
     return (
-        <div className="mt-10 bg-red-300 shadow-md w-[780px] rounded-2xl pb-10">
-            <div className="bg-[#F5E6E8] shadow-md w-[700px] mt-10 ml-10 pb-14 rounded-xl">
+        <div className="mt-10 bg-[#23375F]  shadow-md w-[780px] rounded-2xl pb-10">
+            <div className="text-white bg-[#192A51] shadow-md w-[700px] mt-10 ml-10 pb-14 rounded-xl">
                 <ColumnName />
                 <ContainerHistory billing={billingData} />
             </div>

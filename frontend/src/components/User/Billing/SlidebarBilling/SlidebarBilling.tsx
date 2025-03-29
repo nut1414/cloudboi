@@ -20,7 +20,7 @@ const SlidebarBilling: React.FC<SlidebarBillingProps> = ({active,setActive}) => 
                 <ContainerSlidebar active={active} setActive={ setActive}  menu={"HistoryMenu"} showDiv={showDiv} name={"History"}/>
                 <ContainerSlidebar active={active} setActive={ setActive}  menu={"TopUpMenu"} showDiv={showDiv} name={"Top Up"}/>
             </div>
-            <div className="absolute shadow-md top-20 ml-6 mt-4 w-[530px] py-1 bg-red-300 bg-opacity-50 z-[-1] rounded-full"></div>
+            <div className="absolute shadow-md top-20 ml-6 mt-4 w-[530px] py-1 bg-[#192A51] bg-opacity-50 z-[-1] rounded-full"></div>
         </nav>
     );
 };

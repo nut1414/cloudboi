@@ -14,7 +14,7 @@ const BillingWrapper: React.FC<ComponentWithChildren> = ({ children, active, set
         <>
                 <div className="  text-black absolute top-4 left-80 z-0 ">
                     <div className="flex flex-col  justify-start items-start">
-                        <p className=" text-4xl font-bold">Billing</p>
+                        <p className="text-white text-4xl font-bold">Billing</p>
                         <SlidebarBilling active={active} setActive={ setActive}/>
                         {children}
                     </div>
