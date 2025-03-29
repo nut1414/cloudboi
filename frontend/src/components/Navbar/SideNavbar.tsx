@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react"
 import { useLocation, Link, useParams, useNavigate } from "react-router-dom"
-import { Icon } from "../../assets/Icon"
 import { useAuth } from "../../hooks/User/useAuth"
+import { Bars3BottomLeftIcon, ChevronDownIcon, Cog6ToothIcon, CreditCardIcon, UserGroupIcon } from "@heroicons/react/24/outline"
+import { CloudIcon } from "@heroicons/react/24/solid"
 
 // Define proper types
 interface NavItemProps {
@@ -116,7 +117,7 @@ const UserMenu: React.FC<{
         </div>
         {/* Dropdown arrow - rotates when open */}
         <div className={`transform transition-transform duration-300 ${isMenuOpen ? 'rotate-180' : ''}`}>
-          {Icon.ArrowDown}
+          <ChevronDownIcon className="h-5 w-5" />
         </div>
       </div>
 
@@ -152,7 +153,7 @@ const SideNavbar: React.FC<SideNavbarProps> = ({
   creditLimit,
   creditCurrency,
   logoText = "CloudBoi",
-  logoIcon = Icon.Logo,
+  logoIcon = <CloudIcon className="bg-purple-500 w-8 h-8 rounded-md mr-2 flex items-center justify-center" />,
   userRole
 }) => {
   const { userName } = useParams<{ userName: string }>()
@@ -161,10 +162,10 @@ const SideNavbar: React.FC<SideNavbarProps> = ({
 
   // Default navigation items - can be overridden via props
   const defaultNavItems = [
-    { path: "instance", label: "Manage", icon: Icon.Manage },
-    { path: "billing", label: "Billing", icon: Icon.Billing },
-    { path: "support", label: "Support", icon: Icon.Support },
-    { path: "setting", label: "Setting", icon: Icon.Setting }
+    { path: "instance", label: "Manage", icon: <Bars3BottomLeftIcon className="h-5 w-5" /> },
+    { path: "billing", label: "Billing", icon: <CreditCardIcon className="h-5 w-5" /> },
+    { path: "support", label: "Support", icon: <UserGroupIcon className="h-5 w-5" /> },
+    { path: "setting", label: "Setting", icon: <Cog6ToothIcon className="h-5 w-5" /> },
   ]
 
   // Use provided navItems or fall back to defaults

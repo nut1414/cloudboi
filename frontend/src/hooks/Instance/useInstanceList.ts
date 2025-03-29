@@ -1,18 +1,16 @@
+// src/hooks/useInstanceList.ts
 import { useEffect, useState, useCallback, useMemo } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import { useInstance } from "../../contexts/instanceContext"
+import { useInstance, INSTANCE_ACTIONS } from "../../contexts/instanceContext"
 import { InstanceService, UserInstanceResponse } from "../../client"
 
 export const useInstanceList = () => {
     const {
         userInstances,
-        setUserInstances,
         selectedInstance,
-        setSelectedInstance,
         isLoading,
-        setIsLoading,
         error,
-        setError
+        dispatch
     } = useInstance()
     const { userName } = useParams<{ userName: string }>()
     const [searchQuery, setSearchQuery] = useState("")
@@ -21,17 +19,20 @@ export const useInstanceList = () => {
     // Fetch instances data
     const fetchInstances = useCallback(async () => {
         try {
-            setIsLoading(true)
-            setError(null)
+            dispatch?.({ type: INSTANCE_ACTIONS.START_FETCH })
             const response = await InstanceService.instanceListInstances()
-            setUserInstances(response.data || [])
+            dispatch?.({ 
+                type: INSTANCE_ACTIONS.FETCH_SUCCESS, 
+                payload: response.data || [] 
+            })
         } catch (err) {
-            setError("Failed to load instances. Please try again later.")
+            dispatch?.({ 
+                type: INSTANCE_ACTIONS.FETCH_ERROR, 
+                payload: "Failed to load instances. Please try again later." 
+            })
             console.error("Error fetching instances:", err)
-        } finally {
-            setIsLoading(false)
         }
-    }, [setIsLoading, setError, setUserInstances])
+    }, [dispatch])
 
     // Initial data load
     useEffect(() => {
@@ -63,13 +64,16 @@ export const useInstanceList = () => {
     // Handle create instance
     const handleCreateInstance = useCallback(() => {
         navigate(`/user/${userName}/instance/create`)
-    }, [navigate])
+    }, [navigate, userName])
 
     // Handle view instance
     const handleViewInstance = useCallback((instance: UserInstanceResponse) => {
-        setSelectedInstance(instance)
+        dispatch?.({ 
+            type: INSTANCE_ACTIONS.SET_SELECTED_INSTANCE, 
+            payload: instance 
+        })
         navigate(`/user/${userName}/instance/${instance.instance_name}`)
-    }, [navigate, setSelectedInstance])
+    }, [navigate, dispatch, userName])
 
     // Handle instance actions (like start, stop, restart, delete)
     const handleInstanceAction = useCallback((action: string, instance: UserInstanceResponse) => {

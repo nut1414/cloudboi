@@ -1,9 +1,9 @@
-import React, { ReactNode } from "react";
-import { Outlet } from "react-router-dom";
-import SideNavbar from "../../components/Navbar/SideNavbar";
+import React, { ReactNode } from "react"
+import { Outlet } from "react-router-dom"
+import SideNavbar from "../../components/Navbar/SideNavbar"
 
 interface DefaultLayoutProps {
-  children?: ReactNode; // Optional children instead of using Outlet
+  children?: ReactNode // Optional children instead of using Outlet
 }
 
 const DefaultLayout: React.FC<DefaultLayoutProps> = ({
@@ -16,7 +16,7 @@ const DefaultLayout: React.FC<DefaultLayoutProps> = ({
         {children || <Outlet />}
       </main>
     </div>
-  );
-};
+  )
+}
 
-export default DefaultLayout;
+export default DefaultLayout

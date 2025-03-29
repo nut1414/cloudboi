@@ -1,10 +1,10 @@
 // src/contexts/AppProviders.tsx
-import { ReactNode } from 'react';
-import { UserProvider } from './userContext';
-import { InstanceProvider } from './instanceContext';
+import { ReactNode } from 'react'
+import { UserProvider } from './userContext'
+import { InstanceProvider } from './instanceContext'
 
 interface AppProvidersProps {
-  children: ReactNode;
+  children: ReactNode
 }
 
 export const AppProviders = ({ children }: AppProvidersProps) => {
@@ -14,5 +14,5 @@ export const AppProviders = ({ children }: AppProvidersProps) => {
         {children}
       </InstanceProvider>
     </UserProvider>
-  );
-};
+  )
+}

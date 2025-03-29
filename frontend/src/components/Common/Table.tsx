@@ -1,27 +1,28 @@
-import React from "react";
+import React from "react"
+import { Button } from "./Button" // Import the unified Button component
 
 // Types for the table
 export interface TableColumn<T> {
-  key: string;
-  label: string;
-  width?: string;
-  render?: (item: T) => React.ReactNode;
+  key: string
+  label: string
+  width?: string
+  render?: (item: T) => React.ReactNode
 }
 
 export interface TableProps<T> {
-  columns: TableColumn<T>[];
-  data: T[];
-  isLoading?: boolean;
-  onRowClick?: (item: T) => void;
-  onAction?: (action: string, item: T) => void;
-  emptyStateMessage?: string;
-  onCreateNew?: () => void;
-  keyExtractor?: (item: T, index: number) => string;
+  columns: TableColumn<T>[]
+  data: T[]
+  isLoading?: boolean
+  onRowClick?: (item: T) => void
+  onAction?: (action: string, item: T) => void
+  emptyStateMessage?: string
+  onCreateNew?: () => void
+  keyExtractor?: (item: T, index: number) => string
 }
 
 // Table Header component
 interface TableHeaderProps {
-  columns: TableColumn<any>[];
+  columns: TableColumn<any>[]
 }
 
 export const TableHeader: React.FC<TableHeaderProps> = ({ columns }) => (
@@ -37,11 +38,11 @@ export const TableHeader: React.FC<TableHeaderProps> = ({ columns }) => (
       </span>
     ))}
   </div>
-);
+)
 
 // Status Badge component
 interface StatusBadgeProps {
-  status: string;
+  status: string
 }
 
 export const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
@@ -53,21 +54,21 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
     Completed: "bg-green-700 text-green-100",
     Processing: "bg-blue-700 text-blue-100",
     Cancelled: "bg-red-700 text-red-100",
-  };
+  }
 
-  const style = statusStyles[status as keyof typeof statusStyles] || "bg-gray-700 text-gray-100";
+  const style = statusStyles[status as keyof typeof statusStyles] || "bg-gray-700 text-gray-100"
 
   return (
     <span className={`px-2 py-1 rounded-full text-xs font-medium ${style}`}>
       {status}
     </span>
-  );
-};
+  )
+}
 
 // Empty State component
 interface EmptyStateProps {
-  message?: string;
-  onCreateNew?: () => void;
+  message?: string
+  onCreateNew?: () => void
 }
 
 export const EmptyState: React.FC<EmptyStateProps> = ({
@@ -80,45 +81,24 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
     </svg>
     <p className="text-gray-300 mb-4">{message}</p>
     {onCreateNew && (
-      <button
-        className="bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg transition-colors"
+      <Button
+        variant="purple"
+        label="Create New"
         onClick={onCreateNew}
-      >
-        Create New
-      </button>
+      />
     )}
   </div>
-);
+)
 
 // Loading State component
 export const LoadingState: React.FC = () => (
   <div className="flex justify-center items-center py-12 bg-[#23375F] rounded-xl">
     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
   </div>
-);
+)
 
-// Default action button component
-interface ActionButtonProps {
-  label: string;
-  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void; 
-  className?: string;
-  icon?: React.ReactNode;
-}
-
-export const ActionButton: React.FC<ActionButtonProps> = ({ 
-  label, 
-  onClick, 
-  className = "",
-  icon 
-}) => (
-  <button
-    onClick={onClick}
-    className={`bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg flex items-center space-x-1 ${className}`}
-  >
-    {icon && <span>{icon}</span>}
-    <span>{label}</span>
-  </button>
-);
+// Use the shared Button component instead of ActionButton
+export const ActionButton = Button // For backward compatibility
 
 // Generic Table component
 function Table<T>({
@@ -135,7 +115,7 @@ function Table<T>({
   const renderRow = React.useCallback((item: T, index: number) => {
     const rowKey = typeof keyExtractor === 'function'
       ? keyExtractor(item, index)
-      : index.toString();
+      : index.toString()
 
     return (
       <div
@@ -157,8 +137,8 @@ function Table<T>({
           </span>
         ))}
       </div>
-    );
-  }, [columns, onRowClick, keyExtractor]);
+    )
+  }, [columns, onRowClick, keyExtractor])
 
   return (
     <div className="bg-[#192A51] rounded-xl shadow-lg overflow-hidden border border-blue-900/50">
@@ -177,7 +157,7 @@ function Table<T>({
         data.map(renderRow)
       )}
     </div>
-  );
+  )
 }
 
-export default React.memo(Table) as typeof Table;
+export default React.memo(Table) as typeof Table

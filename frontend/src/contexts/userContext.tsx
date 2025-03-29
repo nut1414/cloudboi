@@ -1,59 +1,129 @@
-import { useState, useEffect, ReactNode } from 'react'
+// src/contexts/userContext.tsx
+import { ReactNode, useEffect } from 'react'
 import { UserService, UserGetUserSessionResponse } from '../client'
-import { BaseContextState, createContextProvider } from './baseContext'
+import { BaseContextState, createContextProvider, ReducerAction } from './baseContext'
 
 interface UserContextState extends BaseContextState {
-  user: UserGetUserSessionResponse | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  error: string | null;
-  setUser: (user: UserGetUserSessionResponse | null) => void;
-  setError: (error: string | null) => void;
+  user: UserGetUserSessionResponse | null
+  isAuthenticated: boolean
+  isLoading: boolean
+  error: string | null
+  dispatch?: React.Dispatch<ReducerAction<UserContextState>>
 }
 
-const { Provider, useContextHook } = createContextProvider<UserContextState>({
+// Define action types
+export const USER_ACTIONS = {
+  SET_USER: 'SET_USER',
+  SET_ERROR: 'SET_ERROR',
+  START_SESSION_CHECK: 'START_SESSION_CHECK',
+  SESSION_CHECK_SUCCESS: 'SESSION_CHECK_SUCCESS',
+  SESSION_CHECK_FAILURE: 'SESSION_CHECK_FAILURE',
+  LOGOUT: 'LOGOUT',
+}
+
+// Define the reducer
+const userReducer = (
+  state: UserContextState,
+  action: ReducerAction<UserContextState>
+): UserContextState => {
+  switch (action.type) {
+    case USER_ACTIONS.SET_USER:
+      return {
+        ...state,
+        user: action.payload,
+        isAuthenticated: !!action.payload?.is_authenticated,
+      }
+    case USER_ACTIONS.SET_ERROR:
+      return {
+        ...state,
+        error: action.payload,
+      }
+    case USER_ACTIONS.START_SESSION_CHECK:
+      return {
+        ...state,
+        isLoading: true,
+        error: null,
+      }
+    case USER_ACTIONS.SESSION_CHECK_SUCCESS:
+      return {
+        ...state,
+        user: action.payload,
+        isAuthenticated: !!action.payload?.is_authenticated,
+        isLoading: false,
+        error: null,
+      }
+    case USER_ACTIONS.SESSION_CHECK_FAILURE:
+      return {
+        ...state,
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+        error: action.payload,
+      }
+    case USER_ACTIONS.LOGOUT:
+      return {
+        ...state,
+        user: null,
+        isAuthenticated: false,
+      }
+    default:
+      return state
+  }
+}
+
+// Initial state
+const initialState: UserContextState = {
   user: null,
   isAuthenticated: false,
   isLoading: true,
   error: null,
-  setUser: () => {},
-  setError: () => {},
-}, 'User');
+}
+
+// Create the context and hook using factory
+const { Provider, useContextHook } = createContextProvider<UserContextState>(
+  initialState,
+  'User',
+  userReducer
+)
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<UserGetUserSessionResponse | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  // Create the actual provider component
+  return (
+    <Provider>
+      <SessionInitializer>{children}</SessionInitializer>
+    </Provider>
+  )
+}
+
+// Separate component to handle session initialization to avoid circular dependencies
+const SessionInitializer = ({ children }: { children: ReactNode }) => {
+  const context = useContextHook()
+  const { dispatch } = context
 
   useEffect(() => {
     const checkSession = async () => {
+      if (!dispatch) return
+      
       try {
-        setIsLoading(true);
-        const response = await UserService.userGetUserSession();
-        setUser(response.data ?? null);
+        dispatch({ type: USER_ACTIONS.START_SESSION_CHECK })
+        const response = await UserService.userGetUserSession()
+        dispatch({ 
+          type: USER_ACTIONS.SESSION_CHECK_SUCCESS, 
+          payload: response.data ?? null 
+        })
       } catch (error) {
-        setError('Session check failed');
-        setUser(null);
-      } finally {
-        setIsLoading(false);
+        dispatch({ 
+          type: USER_ACTIONS.SESSION_CHECK_FAILURE, 
+          payload: 'Session check failed' 
+        })
+        console.error('Error checking session:', error)
       }
-    };
+    }
 
-    checkSession();
-  }, []);
+    checkSession()
+  }, [dispatch])
 
-  return (
-    <Provider value={{ 
-      user, 
-      isAuthenticated: !!user?.is_authenticated, 
-      isLoading, 
-      error, 
-      setUser, 
-      setError 
-    }}>
-      {children}
-    </Provider>
-  );
+  return <>{children}</>
 }
 
-export const useUser = useContextHook;
+export const useUser = useContextHook

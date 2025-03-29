@@ -1,11 +1,11 @@
-import React from "react";
-import Table, { TableProps } from "./Table";
+import React from "react"
+import Table, { TableProps } from "./Table"
 
 interface TableSectionProps<T> extends TableProps<T> {
-  title?: string;
-  showHeader?: boolean;
-  headerRight?: React.ReactNode;
-  className?: string;
+  title?: string
+  showHeader?: boolean
+  headerRight?: React.ReactNode
+  className?: string
 }
 
 function TableSection<T>({
@@ -27,7 +27,7 @@ function TableSection<T>({
     <p className="text-gray-300">
       Displaying {data.length} {data.length === 1 ? 'item' : 'items'}
     </p>
-  );
+  )
 
   return (
     <div className={className}>
@@ -49,7 +49,7 @@ function TableSection<T>({
         keyExtractor={keyExtractor}
       />
     </div>
-  );
+  )
 }
 
-export default React.memo(TableSection) as typeof TableSection;
+export default React.memo(TableSection) as typeof TableSection

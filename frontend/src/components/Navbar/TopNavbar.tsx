@@ -1,6 +1,7 @@
 import React, { useState } from "react"
-import { Link, useParams, useNavigate } from "react-router-dom"
-import { Icon } from "../../assets/Icon"
+import { useParams, useNavigate } from "react-router-dom"
+import { BellIcon, MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/outline"
+import { Button } from "../Common/Button"
 
 // SearchBar component with real-time search
 interface SearchBarProps {
@@ -40,62 +41,10 @@ const SearchBar: React.FC<SearchBarProps> = ({
                   ${width} transition-all duration-200`}
       />
       <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-        {Icon.Search}
+        <MagnifyingGlassIcon className="w-5 h-5" />
       </div>
     </div>
   )
-}
-
-// NavButton component
-interface NavButtonProps {
-  to?: string
-  label: string
-  hasBorder?: boolean
-  className?: string
-  icon?: React.ReactNode
-  onClick?: () => void
-  variant?: 'primary' | 'secondary' | 'outline'
-}
-
-const NavButton: React.FC<NavButtonProps> = ({
-  to,
-  label,
-  hasBorder = false,
-  className = "",
-  icon,
-  onClick,
-  variant = 'primary'
-}) => {
-  const variantStyles = {
-    primary: "bg-blue-800 text-white hover:bg-blue-700",
-    secondary: "bg-purple-600 text-white hover:bg-purple-500",
-    outline: "bg-transparent border-2 border-blue-800/30 text-gray-300 hover:bg-blue-800/20"
-  }
-
-  const Button = (
-    <button
-      onClick={onClick}
-      className={`
-        ${variantStyles[variant]} px-4 py-2 rounded-lg
-        transition-colors duration-200 flex items-center gap-2
-        ${hasBorder ? 'border-blue-700 border-2' : ''}
-        ${className}
-      `}
-    >
-      {icon}
-      {label}
-    </button>
-  )
-
-  if (to) {
-    return (
-      <Link to={to} className="inline-block">
-        {Button}
-      </Link>
-    )
-  }
-
-  return Button
 }
 
 // Notification Badge component
@@ -110,7 +59,7 @@ const NotificationBadge: React.FC<NotificationBadgeProps> = ({ count, onClick })
     onClick={onClick}
     aria-label={`Notifications: ${count} unread`}
   >
-    {Icon.Notification}
+    <BellIcon />
     {count > 0 && (
       <span className="absolute -top-1 -right-1 bg-purple-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
         {count > 9 ? '9+' : count}
@@ -169,11 +118,11 @@ const TopNavbar: React.FC<TopNavbarProps> = ({
               {actions ? (
                 actions
               ) : (
-                <NavButton
+                <Button
                   to={`/user/${userName}/instance/create`}
                   label="Create Instance"
                   variant="secondary"
-                  icon={Icon.Plus}
+                  icon={<PlusIcon className="w-4 h-4" />}
                 />
               )}
 
@@ -191,6 +140,6 @@ const TopNavbar: React.FC<TopNavbarProps> = ({
 }
 
 // Export individual components for reusability
-export { SearchBar, NavButton, NotificationBadge }
+export { SearchBar, NotificationBadge }
 
 export default TopNavbar

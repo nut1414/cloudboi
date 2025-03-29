@@ -1,10 +1,11 @@
 import React from "react"
-import TopNavbar, { NavButton } from "../../components/Navbar/TopNavbar"
+import TopNavbar from "../../components/Navbar/TopNavbar"
 import TableSection from "../../components/Common/TableSection"
-import { ActionButton, StatusBadge, TableColumn } from "../../components/Common/Table"
-import { Icon } from "../../assets/Icon"
+import { StatusBadge, TableColumn } from "../../components/Common/Table"
+import Button from "../../components/Common/Button"
 import { UserInstanceResponse } from "../../client"
 import { useInstanceList } from "../../hooks/Instance/useInstanceList"
+import { EllipsisVerticalIcon, PlusIcon } from "@heroicons/react/24/outline"
 
 function InstanceListPage() {
     const {
@@ -42,23 +43,24 @@ function InstanceListPage() {
             label: 'Actions',
             render: (instance) => (
                 <span className="flex space-x-2">
-                    <ActionButton
+                    <Button
                         label="View"
-                        onClick={(e) => {
+                        onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                             e.stopPropagation()
                             handleViewInstance(instance)
                         }}
-                        className="py-1 text-sm bg-blue-800 hover:bg-blue-700 text-white"
+                        variant="secondary"
                     />
-                    <button
-                        className="text-gray-300 hover:text-white transition-colors"
-                        onClick={(e) => {
+                    <Button
+                        icon={<EllipsisVerticalIcon className="w-5 h-5" />}
+                        label=""
+                        onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                             e.stopPropagation()
                             handleInstanceAction('menu', instance)
                         }}
-                    >
-                        {Icon.ThreeDots}
-                    </button>
+                        className="!p-1 !bg-transparent !border-0"
+                        variant="outline"
+                    />
                 </span>
             )
         }
@@ -69,11 +71,11 @@ function InstanceListPage() {
             <TopNavbar
                 onSearch={handleSearch}
                 actions={[
-                    <NavButton
+                    <Button
                         onClick={handleCreateInstance}
                         label="Create Instance"
                         variant="secondary"
-                        icon={Icon.Plus}
+                        icon={<PlusIcon className="w-4 h-4" />}
                     />
                 ]}
             />
