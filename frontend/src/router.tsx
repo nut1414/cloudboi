@@ -83,13 +83,26 @@ const routes = [
 
   //admin
   {
-    path: "/admin/:userName",
+    path: "/admin/:adminName",
     element: <DefaultLayout />,
     loader: userRouteGuard,
     children: [
       {
         path: "billing",
         element: <BillingAdmin />,
+      },
+      {
+        path: ":userName/instance",
+        children: [
+          {
+            index: true,
+            element: <Manage />,
+          },
+          {
+            path: ":instanceId",
+            element: <InstanceSetting />,
+          },
+        ]
       },
       {
         path: "package",

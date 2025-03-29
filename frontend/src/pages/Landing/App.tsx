@@ -41,10 +41,10 @@ function App() {
           </li>
           <li>
             <a
-              href="#"
+              href="login"
               className="bg-[#967AA1] text-white ml-40 px-4 py-2  rounded-2xl  border-transparent border-white border-2   hover:text-black "
             >
-              Sign In
+              Login
             </a>
           </li>
         </ul>
@@ -68,10 +68,10 @@ function App() {
           <ul>
             <li>
               <a
-                href="#"
+                href="/register"
                 className="bg-[#967AA1] text-white px-4 py-2 rounded-2xl  border-transparent hover:border-white border-2   hover:text-black "
               >
-                Sign up with email
+                Register with email
               </a>
             </li>
           </ul>

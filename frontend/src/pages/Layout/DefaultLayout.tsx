@@ -1,16 +1,15 @@
 import React from "react"
 import { Outlet } from "react-router-dom"
-// import SideNavbar from "../../components/Navbar/SideNavbar"
-import VerticalSidebar from "../../components/Navbar/sidebar/VerticalSidebar"
+import SideNavbar from "../../components/Navbar/SideNavbar"
+
+
 const DefaultLayout: React.FC = () => {
     return (
-        <div className="flex min-h-screen">
+        <div className="flex w-screen h-screen">
             {/* Navbar takes fixed width */}
-            {/* <SideNavbar /> */}
-            <VerticalSidebar/>
-            
+            <SideNavbar />
             {/* Main content area with left margin equal to navbar width */}
-            <main className="flex-1 ml-10 p-6">
+            <main className="flex-grow overflow-auto transition-all duration-300">
                 <Outlet />
             </main>
         </div>

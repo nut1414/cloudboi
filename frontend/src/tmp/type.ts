@@ -60,6 +60,15 @@ export interface BillingItem extends BaseModel {
 
 
 // PackageData can also live here if it's related to your instance/domain
+
+export interface InstanceData {
+    id: string;
+    instanceName: string;
+    username: string;
+    userId: string;
+    status: string;
+    paymentStatus: string;
+  }
 export interface PackageData extends BaseModel {
     id: string;
     name: string;
@@ -68,6 +77,7 @@ export interface PackageData extends BaseModel {
     cpu: number;
     ram: number;
     storage: number;
+    instances?: InstanceData[];
   }
 
 
