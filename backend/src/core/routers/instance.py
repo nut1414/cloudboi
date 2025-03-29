@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import APIRouter, Depends, HTTPException, WebSocket
 from dependency_injector.wiring import Provide, inject
 from fastapi.websockets import WebSocketState
@@ -5,7 +6,7 @@ from fastapi.websockets import WebSocketState
 from ..utils.logging import logger
 from ..utils.dependencies import get_current_user, get_current_user_ws
 from ..service.instance import InstanceService
-from ..models.instance import InstanceDetails, InstanceCreateRequest, InstanceCreateResponse
+from ..models.instance import InstanceDetails, InstanceCreateRequest, InstanceCreateResponse, UserInstanceResponse
 from ..container import AppContainer
 
 
@@ -24,6 +25,17 @@ async def instance_details(
     instance_service: InstanceService = Depends(Provide[AppContainer.instance_service])
 ):
     return await instance_service.get_all_instance_details()
+
+@router.get(
+    "/list",
+    response_model=List[UserInstanceResponse],
+    dependencies=[Depends(get_current_user)]
+)
+@inject
+async def list_instances(
+    instance_service: InstanceService = Depends(Provide[AppContainer.instance_service])
+):
+    return await instance_service.get_all_user_instances()
 
 @router.post(
     "/create",

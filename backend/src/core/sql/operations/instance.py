@@ -7,7 +7,7 @@ from sqlalchemy.dialects.postgresql import insert as pg_insert
 from .base import BaseOperation
 from ..tables.instance_plan import InstancePlan
 from ..tables.os_type import OsType
-from ...models.instance import InstancePlan as InstancePlanModel, OsType as OsTypeModel, UserInstance as UserInstanceModel
+from ...models.instance import InstancePlan as InstancePlanModel, OsType as OsTypeModel, UserInstance as UserInstanceModel, UserInstanceFromDB
 from ..tables.user_instance import UserInstance
 from ..tables.user import User
 
@@ -98,8 +98,16 @@ class InstanceOperation(BaseOperation):
             result = (await db.execute(stmt)).scalar_one_or_none()
             return self.to_pydantic(UserInstanceModel, result)
     
-    async def get_all_user_instances(self, username: str) -> List[UserInstanceModel]:
+    async def get_all_user_instances(self, username: str) -> List[UserInstanceFromDB]:
         async with self.session() as db:
-            stmt = select(UserInstance).join(User).where(User.username == username)
+            stmt = (
+                select(UserInstance)
+                .options(
+                    selectinload(UserInstance.instance_plan),
+                    selectinload(UserInstance.os_type)
+                )
+                .join(User)
+                .where(User.username == username)
+            )
             result = (await db.execute(stmt)).scalars().all()
-            return self.to_pydantic(UserInstanceModel, result)
+            return self.to_pydantic(UserInstanceFromDB, result)

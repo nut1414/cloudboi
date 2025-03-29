@@ -10,3 +10,4 @@ class LXDConfig:
         os.environ.get('LXD_KEY_PATH', os.path.join(CERT_DIR, 'lxd.key')),
     )
     LXD_VERIFY = os.environ.get('LXD_VERIFY', False)
+    LXD_TRUST_PASSWORD = os.environ.get('LXD_TRUST_PASSWORD', '')

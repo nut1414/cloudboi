@@ -1,36 +1,36 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../../hooks/User/useAuth' // Updated import path
-import { useUser } from '../../contexts/userContext' // New import
+import { useAuth } from '../../hooks/User/useAuth' // Make sure path is correct
+import { useUser } from '../../contexts/userContext'
 
 export default function Login() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  
+  const [localError, setLocalError] = useState<string | null>(null)
+
   const { login } = useAuth()
-  const { error: contextError } = useUser() // Access error from context
+  const { error: contextError } = useUser()
   const navigate = useNavigate()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError(null)
+    setLocalError(null)
     setIsSubmitting(true)
-    
+
     try {
       await login(username, password)
       // Redirect to dashboard after successful login
       navigate(`/user/${username}/instance`, { replace: true })
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Login failed. Please try again.')
+      setLocalError(err.message || 'Login failed. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
   }
 
   // Use error from local state or context
-  const displayError = error || contextError
+  const displayError = localError || contextError
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
@@ -40,13 +40,13 @@ export default function Login() {
             Sign in to your account
           </h2>
         </div>
-        
+
         {displayError && (
           <div className="rounded-md bg-red-50 p-4">
             <div className="text-sm text-red-700">{displayError}</div>
           </div>
         )}
-        
+
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4 rounded-md shadow-sm">
             <div>

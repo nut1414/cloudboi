@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime
 from fastapi import WebSocket
 from pylxd import models
@@ -32,18 +33,19 @@ class LXDClient(BaseInstanceClient[models.Instance]):
     def get_instance(self, instance_identifier: str) -> models.Instance:
         return self.lxd_manager.get_container_by_name(instance_identifier)
     
-    def create_instance(self, instance_config: InstanceCreateRequest) -> UserInstance:
-        container = self.lxd_manager.create_container(
+    async def create_instance(self, instance_config: InstanceCreateRequest) -> UserInstance:
+        container = await asyncio.to_thread(
+            self.lxd_manager.create_container,
             self.__to_instance_create_config(instance_config)
         )
         if container and instance_config.root_password:
-            is_set_password_success = self.set_instance_password(
+            is_set_password_success = await self.set_instance_password(
                 container,
                 instance_config.root_password
             )
         
         if not is_set_password_success:
-            self.delete_instance(container)
+            await self.delete_instance(container)
         
         return UserInstance(
             user_id=user_session_ctx.get().user_id,
@@ -58,20 +60,33 @@ class LXDClient(BaseInstanceClient[models.Instance]):
 
     
     @_resolve_instance()
-    def delete_instance(self, instance_identifier: models.Instance) -> bool:
-        return self.lxd_manager.delete_container(instance_identifier)
+    async def delete_instance(self, instance_identifier: models.Instance) -> bool:
+        return await asyncio.to_thread(
+            self.lxd_manager.delete_container,
+            instance_identifier
+        )
     
     @_resolve_instance()
-    def start_instance(self, instance_identifier: models.Instance) -> bool:
-        return self.lxd_manager.start_container(instance_identifier)
+    async def start_instance(self, instance_identifier: models.Instance) -> bool:
+        return await asyncio.to_thread(
+            self.lxd_manager.start_container,
+            instance_identifier
+        )
 
     @_resolve_instance()  
-    def stop_instance(self, instance_identifier: models.Instance) -> bool:
-        return self.lxd_manager.stop_container(instance_identifier)
+    async def stop_instance(self, instance_identifier: models.Instance) -> bool:
+        return await asyncio.to_thread(
+            self.lxd_manager.stop_container,
+            instance_identifier
+        )
     
     @_resolve_instance()
-    def set_instance_password(self, instance_identifier: models.Instance, password: str) -> bool:
-        return self.lxd_manager.set_root_password(instance_identifier, password)
+    async def set_instance_password(self, instance_identifier: models.Instance, password: str) -> bool:
+        return await asyncio.to_thread(
+            self.lxd_manager.set_root_password,
+            instance_identifier,
+            password
+        )
     
     @_resolve_instance()
     async def websocket_session(self, instance_identifier: models.Instance, client_ws: WebSocket):

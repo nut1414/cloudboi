@@ -6,7 +6,7 @@ export type HTTPValidationError = {
 
 export type InstanceCreateRequest = {
     os_type: OsType;
-    instance_type: InstanceType;
+    instance_plan: InstancePlan;
     instance_name: string;
     root_password: string;
 };
@@ -14,16 +14,16 @@ export type InstanceCreateRequest = {
 export type InstanceCreateResponse = {
     instance_name: string;
     instance_status: string;
-    created_at: string;
+    created_at: Date;
 };
 
 export type InstanceDetails = {
-    instance_package: Array<InstanceType>;
+    instance_package: Array<InstancePlan>;
     os_image: Array<OsType>;
 };
 
-export type InstanceType = {
-    instance_type_id: number;
+export type InstancePlan = {
+    instance_plan_id: number;
     instance_package_name: string;
     vcpu_amount: number;
     ram_amount: number;
@@ -46,7 +46,17 @@ export type UserCreateRequest = {
 export type UserCreateResponse = {
     username: string;
     email: string;
-    created_at: string;
+    balance: number;
+    created_at: Date;
+};
+
+export type UserInstanceResponse = {
+    instance_id: string;
+    instance_name: string;
+    instance_status: string;
+    instance_plan: InstancePlan;
+    os_type: OsType;
+    last_updated_at: Date;
 };
 
 export type UserLoginRequest = {
@@ -60,9 +70,9 @@ export type UserLoginResponse = {
 
 export type UserSessionResponse = {
     is_authenticated: boolean;
-    username: string;
-    email: string;
-    role: string;
+    username: (string | null);
+    email: (string | null);
+    role: (string | null);
 };
 
 export type ValidationError = {
@@ -74,6 +84,10 @@ export type ValidationError = {
 export type InstanceInstanceDetailsResponse = (InstanceDetails);
 
 export type InstanceInstanceDetailsError = unknown;
+
+export type InstanceListInstancesResponse = (Array<UserInstanceResponse>);
+
+export type InstanceListInstancesError = unknown;
 
 export type InstanceCreateInstanceData = {
     body: InstanceCreateRequest;
@@ -110,3 +124,53 @@ export type UserGetUserSessionError = unknown;
 export type UserLogoutUserResponse = (UserLoginResponse);
 
 export type UserLogoutUserError = unknown;
+
+export type InstanceListInstancesResponseTransformer = (data: any) => Promise<InstanceListInstancesResponse>;
+
+export type UserInstanceResponseModelResponseTransformer = (data: any) => UserInstanceResponse;
+
+export const UserInstanceResponseModelResponseTransformer: UserInstanceResponseModelResponseTransformer = data => {
+    if (data?.last_updated_at) {
+        data.last_updated_at = new Date(data.last_updated_at);
+    }
+    return data;
+};
+
+export const InstanceListInstancesResponseTransformer: InstanceListInstancesResponseTransformer = async (data) => {
+    if (Array.isArray(data)) {
+        data.forEach(UserInstanceResponseModelResponseTransformer);
+    }
+    return data;
+};
+
+export type InstanceCreateInstanceResponseTransformer = (data: any) => Promise<InstanceCreateInstanceResponse>;
+
+export type InstanceCreateResponseModelResponseTransformer = (data: any) => InstanceCreateResponse;
+
+export const InstanceCreateResponseModelResponseTransformer: InstanceCreateResponseModelResponseTransformer = data => {
+    if (data?.created_at) {
+        data.created_at = new Date(data.created_at);
+    }
+    return data;
+};
+
+export const InstanceCreateInstanceResponseTransformer: InstanceCreateInstanceResponseTransformer = async (data) => {
+    InstanceCreateResponseModelResponseTransformer(data);
+    return data;
+};
+
+export type UserCreateUserResponseTransformer = (data: any) => Promise<UserCreateUserResponse>;
+
+export type UserCreateResponseModelResponseTransformer = (data: any) => UserCreateResponse;
+
+export const UserCreateResponseModelResponseTransformer: UserCreateResponseModelResponseTransformer = data => {
+    if (data?.created_at) {
+        data.created_at = new Date(data.created_at);
+    }
+    return data;
+};
+
+export const UserCreateUserResponseTransformer: UserCreateUserResponseTransformer = async (data) => {
+    UserCreateResponseModelResponseTransformer(data);
+    return data;
+};

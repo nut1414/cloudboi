@@ -8,7 +8,7 @@ const DefaultLayout = lazy(() => import("./pages/Layout/DefaultLayout"))
 const App = lazy(() => import("./pages/Landing/App"))
 const Login = lazy(() => import("./pages/Auth/Login"))
 const SignUp = lazy(() => import("./pages/Auth/signUp"))
-const Manage = lazy(() => import("./pages/InstanceList/manage"))
+const InstanceListPage = lazy(() => import("./pages/Instance/InstanceListPage"))
 const CreateInstance = lazy(() => import("./pages/InstanceCreate/createInstance"))
 const Billing = lazy(() => import("./pages/Billing/billing"))
 const Setting = lazy(() => import("./pages/InstanceSetting/setting"))
@@ -57,7 +57,7 @@ const routes = [
         children: [
           {
             index: true,
-            element: <Manage />,
+            element: <InstanceListPage />,
           },
           {
             path: "create",
@@ -76,10 +76,10 @@ const routes = [
       },
     ],
   },
-];
+]
 
 client.setConfig(API_CONFIG)
 
-const router = createBrowserRouter(routes);
+const router = createBrowserRouter(routes)
 
-export default router;
+export default router

@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 from typing import Callable, Dict, List, Optional, Sequence, Type, TypeVar, Union, AsyncContextManager, AsyncGenerator, Any
 from functools import wraps
 import inspect
+from sqlalchemy.inspection import inspect as sqlalchemy_inspect
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,7 +13,7 @@ class OperationException(Exception):
     def __init__(self, method_name: str, original_exception: Exception):
         self.method_name = method_name
         self.original_exception = original_exception
-        super().__init__(f"Error in {method_name}: {str(original_exception)}")
+        super().__init__(f"[SQLOperation] Error in {method_name}: {str(original_exception)}")
 
 
 def operation_exception_handler(func):
@@ -69,11 +70,27 @@ class BaseOperation(metaclass=BaseOperationMeta):
         if orm_objects is None:
             return None
         
-        # Convert SQLAlchemy model to dict if needed
-        if hasattr(orm_objects, '__table__'):  # Check if it's a SQLAlchemy model
-            orm_objects = {c.name: getattr(orm_objects, c.name) for c in orm_objects.__table__.columns}
-            
         if isinstance(orm_objects, Sequence) and not isinstance(orm_objects, (str, bytes)):
-            return [pydantic_model.model_validate(obj) for obj in orm_objects]
+            return [self._convert_to_pydantic(pydantic_model, obj) for obj in orm_objects]
         else:
-            return pydantic_model.model_validate(orm_objects)
+            return self._convert_to_pydantic(pydantic_model, orm_objects)
+
+    def _convert_to_pydantic(self, pydantic_model: Type[PydanticT], orm_object: object) -> PydanticT:
+        if hasattr(orm_object, '__table__'):  # It's a SQLAlchemy model
+            # Create a dict from the model's attributes
+            data = {}
+            for c in orm_object.__table__.columns:
+                data[c.name] = getattr(orm_object, c.name)
+            
+            # Only include loaded relationship data, don't trigger lazy loading
+            mapper = orm_object.__mapper__
+            for relationship_name, relationship_property in mapper.relationships.items():
+                # Check if the relationship is already loaded
+                if relationship_name in orm_object.__dict__:  # This won't trigger loading
+                    related_obj = orm_object.__dict__[relationship_name]
+                    if related_obj is not None:
+                        data[relationship_name] = related_obj
+                        
+            return pydantic_model.model_validate(data)
+        else:
+            return pydantic_model.model_validate(orm_object)
