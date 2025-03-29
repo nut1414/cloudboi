@@ -21,7 +21,7 @@ const BillSummary: React.FC<BillSummaryProps> = ({
     
     return (
         <>
-            <p className="text-2xl pt-5 pb-5">Bill Summary</p>
+            <p className="text-white text-2xl pt-5 pb-5">Bill Summary</p>
             <div className="bg-gray-100 h-auto min-h-[200px] w-[650px] rounded-2xl flex flex-col p-6 mb-6">
                 <div className="grid grid-cols-2 gap-6">
                     <div className="flex flex-col space-y-3">

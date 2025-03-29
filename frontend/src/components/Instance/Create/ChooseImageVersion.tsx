@@ -54,7 +54,7 @@ const ChooseImageVersion: React.FC<ChooseImageVersionProps> = ({
 
     return (
         <>
-            <p className="text-xl pt-10 pb-10">Choose an image</p>
+            <p className="text-white text-xl pt-10 pb-10">Choose an image</p>
             <div className="flex gap-4">
                 {uniqueImageNames.map((imageName, index) => (
                     <OptionButton 
@@ -76,7 +76,7 @@ const ChooseImageVersion: React.FC<ChooseImageVersionProps> = ({
             )}
             
             {selectedOsType && (
-                <div className="mt-4 text-lg">
+                <div className="mt-4 text-white text-lg">
                     <p>Selected OS: <strong>{selectedOsType.os_image_name}</strong></p>
                     <p>Version: <strong>{selectedOsType.os_image_version}</strong></p>
                 </div>

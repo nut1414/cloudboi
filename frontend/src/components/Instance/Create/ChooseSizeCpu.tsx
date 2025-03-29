@@ -16,8 +16,8 @@ const ChooseSizeCpu: React.FC<ChooseSizeCpuProps> = ({
 }) => {
     return (
         <>
-            <p className="text-2xl pt-10">Choose Size</p>
-            <p className="pt-2 pb-4">CPU options</p>
+            <p className="text-white text-2xl pt-10">Choose Size</p>
+            <p className="text-white pt-2 pb-4">CPU options</p>
             <div className="flex gap-4">
                 {instancePackages.map((packageOption, index) => (
                     <OptionButton 

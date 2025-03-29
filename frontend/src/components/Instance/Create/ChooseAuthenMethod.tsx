@@ -42,7 +42,7 @@ const ChooseAuthenMethod: React.FC<ChooseAuthenMethodProps> = ({
     
     return (
         <>
-            <p className="text-2xl pt-5 pb-4">Choose Authentication Method</p>
+            <p className="text-white text-2xl pt-5 pb-4">Choose Authentication Method</p>
             <div className="bg-gray-100 h-auto min-h-[360px] w-[650px] rounded-2xl flex flex-col justify-start items-start p-6">
                 <p className="text-xl font-bold">Create root password</p>
                 <p className="mt-2 text-gray-600">Choose a secure root password to access and manage your instance</p>
@@ -53,11 +53,11 @@ const ChooseAuthenMethod: React.FC<ChooseAuthenMethodProps> = ({
                         value={password}
                         onChange={(e) => validatePassword(e.target.value)}
                         placeholder="Enter password..."
-                        className="w-full p-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="text-white w-full p-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <button 
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-2 text-gray-500"
+                        className="absolute right-3 top-4 text-gray-200"
                     >
                         {showPassword ? "Hide" : "Show"}
                     </button>
