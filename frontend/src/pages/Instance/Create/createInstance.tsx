@@ -62,20 +62,20 @@ function CreateInstance() {
     
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-screen">
-                <div className="animate-pulse flex flex-col items-center">
-                    <div className="h-6 w-36 bg-gray-200 rounded mb-4"></div>
-                    <div className="h-4 w-64 bg-gray-200 rounded"></div>
-                </div>
+          <div className="flex justify-center items-center h-screen">
+            <div className="animate-pulse flex flex-col items-center">
+              <p className="mt-4 text-lg font-bold text-gray-500">Loading data...</p>
             </div>
+          </div>
         );
-    }
+      }
+      
     
     return (
         <>
             <div className="text-black absolute top-4 left-80 z-0">
                 <div className="flex flex-col justify-start items-start">
-                    <p className="text-5xl">Create Instance</p>
+                    <p className="text-white text-5xl">Create Instance</p>
                     
                     {instanceDetails && (
                         <>
