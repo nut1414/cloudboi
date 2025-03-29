@@ -3,9 +3,13 @@ import React from "react";
 import DestroyInstance from "./DestroyInstance";
 const DestroyMenu: React.FC = () => {
 
+    const handleDeleteInstance = () => {
+        
+      };
+
     return (
         <>
-            <DestroyInstance/>
+            <DestroyInstance onDelete={handleDeleteInstance}/>
         </>
     );
 };

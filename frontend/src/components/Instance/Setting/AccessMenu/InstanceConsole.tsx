@@ -3,17 +3,17 @@ import ButtonCommon from "../ButtonCommon";
 import MenuContainer from "../Menucontainer";
 
 interface InstanceConsoleProps {
-   
-}
+    onLaunchInstance: () => void;
+  }
 
-const InstanceConsole: React.FC<InstanceConsoleProps> = ({ }) => {
+const InstanceConsole: React.FC<InstanceConsoleProps> = ({ onLaunchInstance }) => {
     return (
         <>
-            <MenuContainer style="bg-red-300 mt-8 h-[230px] w-[780px]">         
-                <p className="ml-14 mt-4 text-xl font-bold">Instance Console</p>
-                <p className="ml-14 mt-4 ">Access the console for direct control over your cloud instance, just like having physical access to </p>
-                <p className="ml-14">  the server. Use it to configure settings, troubleshoot issues, and perform administrative actions </p>
-                <p className="ml-14">  without needing SSH access.Ideal for managing your instance at a detailed level.</p>
+            <MenuContainer style="bg-[#192A51]  mt-8 h-[230px] w-[780px]">         
+                <p className="ml-14 mt-4 text-white text-xl font-bold">Instance Console</p>
+                <p className="ml-14 mt-4 text-gray-300">Access the console for direct control over your cloud instance, just like having physical access to </p>
+                <p className="ml-14 text-gray-300">  the server. Use it to configure settings, troubleshoot issues, and perform administrative actions </p>
+                <p className="ml-14 text-gray-300">  without needing SSH access.Ideal for managing your instance at a detailed level.</p>
 
                 <div className=" mt-2  justify-center grid grid-cols-2 ">
                     <div className="bg-blue-300 h-[50px] w-[100px] mt-4 ml-20  rounded-2xl">
@@ -22,7 +22,7 @@ const InstanceConsole: React.FC<InstanceConsoleProps> = ({ }) => {
                             <p className="mr-6">root</p>
                         </div>
                     </div>
-                    <ButtonCommon name={"Launch Instance Console"} style={"w-[100%] text-white mt-4  py-2"}/>
+                    <ButtonCommon onClick={onLaunchInstance} name={"Launch Instance Console"} style={"w-[100%] bg-purple-600 text-white mt-4  px-2 py-2"}/>
                 </div>
             </MenuContainer>
         </>

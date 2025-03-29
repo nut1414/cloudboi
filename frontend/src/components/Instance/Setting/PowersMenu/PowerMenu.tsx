@@ -4,9 +4,13 @@ import TurnOff from "./TurnOff";
 
 const PowersMenu: React.FC = () => {
 
+  const handleTurnOff = () => {
+        
+  };
+
     return (
         <>
-          <TurnOff />
+          <TurnOff onTurnOff={handleTurnOff} />
         </>
     );
 };

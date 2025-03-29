@@ -3,14 +3,16 @@ import React from "react";
 interface ButtonCommonProps {
     name: string;
     style: string;
+    onClick?: () => void
 }
 
-const ButtonCommon: React.FC<ButtonCommonProps> = ({ name, style}) => {
+const ButtonCommon: React.FC<ButtonCommonProps> = ({ name, style,onClick}) => {
     return (
         <>
             <button
                 type="submit"
-                className={`bg-[#192A51] ${style} rounded-lg hover:border-white border-2   hover:text-blue-400 transition duration-300`}
+                onClick={onClick}
+                className={`${style} rounded-lg hover:border-white  hover:border-2 transition duration-300`}
             >
                 {name}
             </button>
