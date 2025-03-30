@@ -80,7 +80,7 @@ export const useInstanceCreate = () => {
     // Get available versions for selected image with useMemo
     const availableVersions = useMemo(() => {
         if (!selectedImageName || !instanceDetails?.os_image) return []
-        
+
         return instanceDetails.os_image
             .filter(img => img.os_image_name === selectedImageName)
             .map(img => img.os_image_version)
@@ -95,12 +95,12 @@ export const useInstanceCreate = () => {
     // Handle version selection
     const handleVersionSelect = useCallback((version: string) => {
         setSelectedVersion(version)
-        
+
         // Find the complete OsType object
         const selectedOs = instanceDetails?.os_image.find(
             img => img.os_image_name === selectedImageName && img.os_image_version === version
         )
-        
+
         if (selectedOs) {
             handleOsTypeSelect(selectedOs)
         }
@@ -108,12 +108,13 @@ export const useInstanceCreate = () => {
 
     // Check if all required fields are filled
     const isFormValid = useMemo(() => {
-        return !!(
-            formData.os_type &&
-            formData.instance_plan &&
-            formData.instance_name &&
+        const requiredFields = [
+            formData.os_type,
+            formData.instance_plan,
+            formData.instance_name,
             formData.root_password
-        )
+        ]
+        return requiredFields.every(field => field != null)
     }, [formData.os_type, formData.instance_plan, formData.instance_name, formData.root_password])
 
     // Create instance

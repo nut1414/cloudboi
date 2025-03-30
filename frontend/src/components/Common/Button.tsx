@@ -6,7 +6,7 @@ import { Link } from "react-router-dom"
 export interface ButtonProps {
   label: string
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
-  to?: string
+  href?: string
   className?: string
   icon?: React.ReactNode
   variant?: 'primary' | 'secondary' | 'outline' | 'purple'
@@ -17,7 +17,7 @@ export interface ButtonProps {
 export const Button: React.FC<ButtonProps> = ({
   label,
   onClick,
-  to,
+  href,
   className = "",
   icon,
   variant = 'primary',
@@ -57,9 +57,9 @@ export const Button: React.FC<ButtonProps> = ({
   )
 
   // If "to" prop is provided, wrap in Link component
-  if (to) {
+  if (href) {
     return (
-      <Link to={to} className="inline-block">
+      <Link to={href} className="inline-block">
         {ButtonElement}
       </Link>
     )
