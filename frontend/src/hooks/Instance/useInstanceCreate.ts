@@ -9,15 +9,18 @@ import {
 } from "../../client"
 import { useInstance } from "../../contexts/instanceContext"
 import { INSTANCE_ACTIONS } from "../../contexts/instanceContext"
+import { useInstanceList } from "./useInstanceList"
 
 export const useInstanceCreate = () => {
     const {
-        userInstances,
         instanceDetails,
         isLoading,
         error,
         dispatch
     } = useInstance()
+    const {
+        refreshInstances
+    } = useInstanceList()
 
     // States
     const [formData, setFormData] = useState<Partial<InstanceCreateRequest>>({})
@@ -134,10 +137,7 @@ export const useInstanceCreate = () => {
                 body: formData as InstanceCreateRequest
             })
 
-            dispatch?.({
-                type: INSTANCE_ACTIONS.SET_USER_INSTANCES,
-                payload: [...(userInstances || []), response.data]
-            })
+            refreshInstances()
 
             return {
                 success: true,

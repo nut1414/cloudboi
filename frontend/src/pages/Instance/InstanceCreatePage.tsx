@@ -8,6 +8,8 @@ import BillSummarySection from "../../components/Instance/Create/BillSummarySect
 import { useInstanceCreate } from "../../hooks/Instance/useInstanceCreate"
 import { ArrowPathIcon, RocketLaunchIcon } from "@heroicons/react/24/outline"
 import Button from "../../components/Common/Button" // Import the Button component
+import SkeletonLoader from "../../components/Common/SkeletonLoader"
+import Section from "../../components/Common/Section"
 
 function InstanceCreatePage() {
     const { userName } = useParams<{ userName: string }>()
@@ -52,13 +54,34 @@ function InstanceCreatePage() {
     // Loading state UI
     if (isLoading) {
         return (
-            <div className="flex justify-center items-center h-full w-full">
-                <div className="animate-pulse flex flex-col items-center">
-                    <div className="h-6 w-36 bg-blue-800/30 rounded mb-4"></div>
-                    <div className="h-4 w-64 bg-blue-800/30 rounded"></div>
+            <div className="p-6 w-full max-w-7xl mx-auto">
+                <div className="flex items-center gap-3 mb-8">
+                    <SkeletonLoader height="h-8" width="w-64" />
+                </div>
+                
+                <div className="space-y-10">
+                    {/* Just one section with skeleton content */}
+                    <Section 
+                        title="" 
+                        icon={<SkeletonLoader height="h-5" width="w-5" rounded="rounded-full" />}
+                    >
+                        <div className="space-y-4">
+                            <SkeletonLoader height="h-10" />
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <SkeletonLoader height="h-20" rounded="rounded-lg" />
+                                <SkeletonLoader height="h-20" rounded="rounded-lg" />
+                                <SkeletonLoader height="h-20" rounded="rounded-lg" />
+                            </div>
+                        </div>
+                    </Section>
+                    
+                    {/* Button skeleton */}
+                    <div className="py-4">
+                        <SkeletonLoader height="h-12" width="w-48" />
+                    </div>
                 </div>
             </div>
-        )
+        );
     }
 
     return (
