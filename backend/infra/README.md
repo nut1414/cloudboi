@@ -60,3 +60,10 @@ proceed to follow the on-screen instruction (generate then use the cert to trust
 
 for connection with pylxd client, please read up on document here:
 https://pylxd.readthedocs.io/en/latest/authentication.html#generate-a-certificate
+
+
+## cloud-init
+
+When deploying a node on MAAS, we can use `gen_cloudinit.sh` to generate cloud-init file to config auto node join. 
+
+noted that this required `init_maas.sh` and `init_main_lxd.sh` to be properly installed first.

@@ -2,6 +2,11 @@
 
 DEFAULT_LXD_CHANNEL=5.21/stable
 
+TENTATIVE_IP=$(hostname -I | grep -o '10\.[0-9.]*' | head -n 1)
+
+# Assign to HOST_IP: Use TENTATIVE_IP if it's not empty, otherwise use the first IP.
+HOST_IP=${TENTATIVE_IP:-$(hostname -I | awk '{print $1}')}
+
 # check root
 if [[ $(/usr/bin/id -u) -ne 0 ]]; then
     echo "Must be run as root"
@@ -23,6 +28,10 @@ if [ "$INSTALL_LXD" != "y" ]; then
     exit
 fi
 
+# stop maas to avoid conflict
+echo "Stopping MAAS to prevent conflict"
+snap stop maas
+
 # install LXD and dependencies
 snap install lxd --channel=${DEFAULT_LXD_CHANNEL}
 
@@ -43,11 +52,21 @@ snap install lxd --channel=${DEFAULT_LXD_CHANNEL}
 # init LXD
 echo "Initializing LXD..."
 
-printf "yes\n\nno\ncloudboi-main\nyes\ndir\nno\nno\nno\nyes\n\nyes\nyes\n\n\n" | lxd init 
-
-
+printf "yes\n${HOST_IP}\nno\ncloudboi-main\nyes\ndir\nno\nno\nno\nyes\n\nyes\nyes\n\n\n" | lxd init 
 
 # create resource group
 echo "Creating resource group..."
 
 lxc cluster group create cloudboi-resource
+
+# stop lxd
+echo "Stopping LXD to start MAAS..."
+snap stop lxd
+
+# start maas
+echo "Starting MAAS..."
+snap start maas
+
+# start lxd
+echo "Starting LXD..."
+snap start lxd

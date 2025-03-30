@@ -1,0 +1,49 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+packages:
+  - lxd
+  - jq
+  - curl
+
+write_files:
+  - path: /usr/local/bin/setup-lxd.sh
+    permissions: '0755'
+    content: |
+      #!/bin/bash
+      
+      # Get node hostname
+      NODE_HOSTNAME=$(hostname)
+      NODE_IP=$(hostname -I | awk '{print }')
+      
+      # Get join token from backend
+      JSON_BODY=$(curl -X POST \
+        -H "Content-Type: application/json" \
+        -H "Accept: application/json" \
+        -d "{\"server_name\": \"$NODE_HOSTNAME\"}" \
+        http://10.10.10.2:8000/internal/cluster/create_token)
+      
+      # Extract join token
+      JOIN_TOKEN=$(echo $JSON_BODY | jq -r '.join_token')
+      
+      # 1. 'yes' Use LXD Cluster
+      # 2. '' Use default ip 
+      # 3. 'yes' joining an existing cluster
+      # 4. ${JOIN_TOKEN} join token
+      # 5. 'yes' confirm all data lost
+      # 6. '' confirm default storage pool
+      # 7. 'yes' print yaml 
+      # Initialize LXD with the join token
+      printf "yes\n\nyes\n${JOIN_TOKEN}\nyes\n\nyes\n" | lxd init 
+      
+      # Join resource group
+      curl -X POST \
+        -H "Content-Type: application/json" \
+        -H "Accept: application/json" \
+        -d "{\"server_name\": \"$NODE_HOSTNAME\"}" \
+        http://10.10.10.2:8000/internal/add_member
+
+runcmd:
+  - systemctl enable lxd
+  - systemctl start lxd
+  - /usr/local/bin/setup-lxd.sh
