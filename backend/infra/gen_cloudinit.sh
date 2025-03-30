@@ -27,7 +27,7 @@ fi
 
 JOIN_TOKEN=$(lxc cluster add $NODE_HOSTNAME | grep -E '^[A-Za-z0-9+/]+={0,2}$')
 #echo "JOIN_TOKEN: $JOIN_TOKEN"
-echo "cloud-init.sh will be generated with the join token"
+echo "cloud-init.yaml will be generated with the join token"
 echo ""
 echo "----------------------------------------"
 echo ""

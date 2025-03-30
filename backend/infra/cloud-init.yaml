@@ -12,7 +12,7 @@ write_files:
       snap install lxd
       
       # Extract join token
-      JOIN_TOKEN=eyJzZXJ2ZXJfbmFtZSI6ImZyZWUtYmlyZCIsImZpbmdlcnByaW50IjoiYjE5YjkxNWE3MWY2NTgzM2FlMGQ0M2Y2YzVhYTFmZTY1NDExMTYzMTcxNjJmNTdkOWUwMzM5ODcwYjQ1N2M3ZiIsImFkZHJlc3NlcyI6WyIxMC4xMC4xMC4yOjg0NDMiXSwic2VjcmV0IjoiYzY5MzQwM2FhN2ZhNWZlMjNjMzdmYTcwMjk3ZTIxMjFlYTMzY2VmOTVlN2QxM2E4NTg0ZmUwMDZhYjliMjY1YyIsImV4cGlyZXNfYXQiOiIyMDI1LTAzLTMwVDIxOjE0OjI4Ljg3MjMwNTcwNCswNzowMCJ9
+      JOIN_TOKEN=eyJzZXJ2ZXJfbmFtZSI6ImZyZWUtYmlyZCIsImZpbmdlcnByaW50IjoiYjE5YjkxNWE3MWY2NTgzM2FlMGQ0M2Y2YzVhYTFmZTY1NDExMTYzMTcxNjJmNTdkOWUwMzM5ODcwYjQ1N2M3ZiIsImFkZHJlc3NlcyI6WyIxMC4xMC4xMC4yOjg0NDMiLCIxMC4xMC4xMC4yMTA6ODQ0MyJdLCJzZWNyZXQiOiI4Njg5YjhkNmQ3Yzk0NzNmZGU0ZTkzMDZhMDk1ZTg1YmQ2NmEwYzQzMGFhNWVmMzVlZGEyM2MyYTI4MjZkYjk3IiwiZXhwaXJlc19hdCI6IjIwMjUtMDMtMzBUMjI6MDI6NDQuMzI5NjUzNjErMDc6MDAifQ==
       
       # 1. 'yes' Use LXD Cluster
       # 2. '' Use default ip 
@@ -24,6 +24,10 @@ write_files:
       # Initialize LXD with the join token
       printf "yes\n\nyes\n${JOIN_TOKEN}\nyes\n\nyes\n" | lxd init 
       
+      mkdir -p /var/snap/lxd/common/lxd/networks/lxdfan0/dnsmasq.hosts/
+      chown root:lxd /var/snap/lxd/common/lxd/networks/lxdfan0/dnsmasq.hosts/
+      chmod 775 /var/snap/lxd/common/lxd/networks/lxdfan0/dnsmasq.hosts/
+
       # Join resource group
       lxc cluster group add free-bird cloudboi-resource
 
