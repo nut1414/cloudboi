@@ -1,0 +1,35 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+
+write_files:
+  - path: /usr/local/bin/setup-lxd.sh
+    permissions: '0755'
+    content: |
+      #!/bin/bash
+
+      snap remove lxd
+      snap install lxd
+      
+      # Extract join token
+      JOIN_TOKEN=eyJzZXJ2ZXJfbmFtZSI6ImZyZWUtYmlyZCIsImZpbmdlcnByaW50IjoiYjE5YjkxNWE3MWY2NTgzM2FlMGQ0M2Y2YzVhYTFmZTY1NDExMTYzMTcxNjJmNTdkOWUwMzM5ODcwYjQ1N2M3ZiIsImFkZHJlc3NlcyI6WyIxMC4xMC4xMC4yOjg0NDMiLCIxMC4xMC4xMC4yMTA6ODQ0MyJdLCJzZWNyZXQiOiI4Njg5YjhkNmQ3Yzk0NzNmZGU0ZTkzMDZhMDk1ZTg1YmQ2NmEwYzQzMGFhNWVmMzVlZGEyM2MyYTI4MjZkYjk3IiwiZXhwaXJlc19hdCI6IjIwMjUtMDMtMzBUMjI6MDI6NDQuMzI5NjUzNjErMDc6MDAifQ==
+      
+      # 1. 'yes' Use LXD Cluster
+      # 2. '' Use default ip 
+      # 3. 'yes' joining an existing cluster
+      # 4. ${JOIN_TOKEN} join token
+      # 5. 'yes' confirm all data lost
+      # 6. '' confirm default storage pool
+      # 7. 'yes' print yaml 
+      # Initialize LXD with the join token
+      printf "yes\n\nyes\n${JOIN_TOKEN}\nyes\n\nyes\n" | lxd init 
+      
+      mkdir -p /var/snap/lxd/common/lxd/networks/lxdfan0/dnsmasq.hosts/
+      chown root:lxd /var/snap/lxd/common/lxd/networks/lxdfan0/dnsmasq.hosts/
+      chmod 775 /var/snap/lxd/common/lxd/networks/lxdfan0/dnsmasq.hosts/
+
+      # Join resource group
+      lxc cluster group add free-bird cloudboi-resource
+
+runcmd:
+  - /usr/local/bin/setup-lxd.sh
