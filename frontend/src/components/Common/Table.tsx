@@ -1,5 +1,6 @@
 import React from "react"
 import { Button } from "./Button" // Import the unified Button component
+import SkeletonLoader from "./SkeletonLoader" // Import the skeleton loader
 
 // Types for the table
 export interface TableColumn<T> {
@@ -18,14 +19,16 @@ export interface TableProps<T> {
   emptyStateMessage?: string
   onCreateNew?: () => void
   keyExtractor?: (item: T, index: number) => string
+  skeletonRowCount?: number // Number of skeleton rows to show while loading
 }
 
 // Table Header component
 interface TableHeaderProps {
   columns: TableColumn<any>[]
+  isLoading?: boolean
 }
 
-export const TableHeader: React.FC<TableHeaderProps> = ({ columns }) => (
+export const TableHeader: React.FC<TableHeaderProps> = ({ columns, isLoading = false }) => (
   <div className={`grid grid-cols-${columns.length} text-gray-300 text-lg py-4 font-medium border-b border-blue-800/30 px-6 bg-[#192A51]`} 
     style={{ gridTemplateColumns: `repeat(${columns.length}, 1fr)` }}>
     {columns.map((column) => (
@@ -34,7 +37,11 @@ export const TableHeader: React.FC<TableHeaderProps> = ({ columns }) => (
         className="flex justify-between items-center"
         style={column.width ? { width: column.width } : {}}
       >
-        {column.label}
+        {isLoading ? (
+          <SkeletonLoader height="h-6" width="w-24" />
+        ) : (
+          column.label
+        )}
       </span>
     ))}
   </div>
@@ -90,10 +97,28 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   </div>
 )
 
-// Loading State component
-export const LoadingState: React.FC = () => (
-  <div className="flex justify-center items-center py-12 bg-[#23375F] rounded-xl">
-    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+// Skeleton Row component
+interface SkeletonRowProps {
+  columns: TableColumn<any>[]
+}
+
+export const SkeletonRow: React.FC<SkeletonRowProps> = ({ columns }) => (
+  <div
+    className="grid text-gray-300 bg-[#23375F] border-b border-blue-800/30 py-3 px-6"
+    style={{ gridTemplateColumns: `repeat(${columns.length}, 1fr)` }}
+  >
+    {columns.map((column, idx) => (
+      <span 
+        key={`skeleton-${column.key}-${idx}`}
+        className="flex justify-between items-center"
+      >
+        <SkeletonLoader 
+          height="h-4" 
+          width={idx === 0 ? "w-32" : "w-20"} 
+          rounded="rounded-md"
+        />
+      </span>
+    ))}
   </div>
 )
 
@@ -110,6 +135,7 @@ function Table<T>({
   emptyStateMessage = "No items found",
   onCreateNew,
   keyExtractor = (_, index) => index.toString(),
+  skeletonRowCount = 5,
 }: TableProps<T>) {
   // Render a table row
   const renderRow = React.useCallback((item: T, index: number) => {
@@ -140,14 +166,22 @@ function Table<T>({
     )
   }, [columns, onRowClick, keyExtractor])
 
+  // Render skeleton rows
+  const renderSkeletonRows = React.useCallback(() => {
+    return Array(skeletonRowCount).fill(0).map((_, index) => (
+      <SkeletonRow key={`skeleton-row-${index}`} columns={columns} />
+    ))
+  }, [columns, skeletonRowCount])
+
   return (
     <div className="bg-[#192A51] rounded-xl shadow-lg overflow-hidden border border-blue-900/50">
-      {/* Header Row */}
-      <TableHeader columns={columns} />
+      {/* Header Row - always visible but with skeleton content when loading */}
+      <TableHeader columns={columns} isLoading={isLoading} />
 
-      {/* Content - shows either loading, empty state, or items */}
+      {/* Content */}
       {isLoading ? (
-        <LoadingState />
+        // Show skeleton rows instead of the spinning loader
+        renderSkeletonRows()
       ) : data.length === 0 ? (
         <EmptyState
           message={emptyStateMessage}

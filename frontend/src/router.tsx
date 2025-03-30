@@ -9,7 +9,7 @@ const App = lazy(() => import("./pages/Landing/App"))
 const Login = lazy(() => import("./pages/Auth/Login"))
 const SignUp = lazy(() => import("./pages/Auth/signUp"))
 const InstanceListPage = lazy(() => import("./pages/Instance/InstanceListPage"))
-const CreateInstance = lazy(() => import("./pages/InstanceCreate/createInstance"))
+const InstanceCreatePage = lazy(() => import("./pages/Instance/InstanceCreatePage"))
 const Billing = lazy(() => import("./pages/Billing/billing"))
 const Setting = lazy(() => import("./pages/InstanceSetting/setting"))
 const Support = lazy(() => import("./pages/User/support"))
@@ -61,7 +61,7 @@ const routes = [
           },
           {
             path: "create",
-            element: <CreateInstance />,
+            element: <InstanceCreatePage />,
           },
           {
             path: ":instanceName",
