@@ -1,30 +1,18 @@
 #cloud-config
 package_update: true
 package_upgrade: true
-packages:
-  - lxd
-  - jq
-  - curl
 
 write_files:
   - path: /usr/local/bin/setup-lxd.sh
     permissions: '0755'
     content: |
       #!/bin/bash
-      
-      # Get node hostname
-      NODE_HOSTNAME=$(hostname)
-      NODE_IP=$(hostname -I | awk '{print }')
-      
-      # Get join token from backend
-      JSON_BODY=$(curl -X POST \
-        -H "Content-Type: application/json" \
-        -H "Accept: application/json" \
-        -d "{\"server_name\": \"$NODE_HOSTNAME\"}" \
-        http://10.10.10.2:8000/internal/cluster/create_token)
+
+      snap remove lxd
+      snap install lxd
       
       # Extract join token
-      JOIN_TOKEN=$(echo $JSON_BODY | jq -r '.join_token')
+      JOIN_TOKEN=eyJzZXJ2ZXJfbmFtZSI6ImZyZWUtYmlyZCIsImZpbmdlcnByaW50IjoiYjE5YjkxNWE3MWY2NTgzM2FlMGQ0M2Y2YzVhYTFmZTY1NDExMTYzMTcxNjJmNTdkOWUwMzM5ODcwYjQ1N2M3ZiIsImFkZHJlc3NlcyI6WyIxMC4xMC4xMC4yOjg0NDMiXSwic2VjcmV0IjoiYzY5MzQwM2FhN2ZhNWZlMjNjMzdmYTcwMjk3ZTIxMjFlYTMzY2VmOTVlN2QxM2E4NTg0ZmUwMDZhYjliMjY1YyIsImV4cGlyZXNfYXQiOiIyMDI1LTAzLTMwVDIxOjE0OjI4Ljg3MjMwNTcwNCswNzowMCJ9
       
       # 1. 'yes' Use LXD Cluster
       # 2. '' Use default ip 
@@ -37,13 +25,7 @@ write_files:
       printf "yes\n\nyes\n${JOIN_TOKEN}\nyes\n\nyes\n" | lxd init 
       
       # Join resource group
-      curl -X POST \
-        -H "Content-Type: application/json" \
-        -H "Accept: application/json" \
-        -d "{\"server_name\": \"$NODE_HOSTNAME\"}" \
-        http://10.10.10.2:8000/internal/add_member
+      lxc cluster group add free-bird cloudboi-resource
 
 runcmd:
-  - systemctl enable lxd
-  - systemctl start lxd
   - /usr/local/bin/setup-lxd.sh

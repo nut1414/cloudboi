@@ -15,42 +15,41 @@ TENTATIVE_IP=$(hostname -I | grep -o '10\.[0-9.]*' | head -n 1)
 HOST_IP=${TENTATIVE_IP:-$(hostname -I | awk '{print $1}')}
 
 ENDPOINT_PORT="8000"
+# check if arg is provided
+if [ -z "$1" ]; then
+    # ask user to input the node hostname
+    read -p "Enter the node hostname: " NODE_HOSTNAME
+else
+    NODE_HOSTNAME=$1
+fi
 
-# ask user to input the node hostname
-read -p "Enter the node hostname: " NODE_HOSTNAME
-echo "NODE_HOSTNAME: $NODE_HOSTNAME"
+#echo "NODE_HOSTNAME: $NODE_HOSTNAME"
 
 JOIN_TOKEN=$(lxc cluster add $NODE_HOSTNAME | grep -E '^[A-Za-z0-9+/]+={0,2}$')
-echo "JOIN_TOKEN: $JOIN_TOKEN"
+#echo "JOIN_TOKEN: $JOIN_TOKEN"
+echo "cloud-init.sh will be generated with the join token"
+echo ""
+echo "----------------------------------------"
+echo ""
+
 
 # Generate cloud-init configuration
 cat << EOF > cloud-init.yaml
 #cloud-config
 package_update: true
 package_upgrade: true
-packages:
-  - lxd
-  - jq
-  - curl
 
 write_files:
   - path: /usr/local/bin/setup-lxd.sh
     permissions: '0755'
     content: |
       #!/bin/bash
-      
-      # Get node hostname
-      NODE_IP=\$(hostname -I | awk '{print $1}')
-      
-      # Get join token from backend
-      JSON_BODY=\$(curl -X POST \\
-        -H "Content-Type: application/json" \\
-        -H "Accept: application/json" \\
-        -d "{\\"server_name\\": \\"\$NODE_HOSTNAME\\"}" \\
-        http://${HOST_IP}:${ENDPOINT_PORT}/internal/cluster/create_token)
+
+      snap remove lxd
+      snap install lxd
       
       # Extract join token
-      JOIN_TOKEN=\$(echo \$JSON_BODY | jq -r '.join_token')
+      JOIN_TOKEN=$JOIN_TOKEN
       
       # 1. 'yes' Use LXD Cluster
       # 2. '' Use default ip 
@@ -62,16 +61,14 @@ write_files:
       # Initialize LXD with the join token
       printf "yes\n\nyes\n\${JOIN_TOKEN}\nyes\n\nyes\n" | lxd init 
       
+      mkdir -p /var/snap/lxd/common/lxd/networks/lxdfan0/dnsmasq.hosts/
+      chown root:lxd /var/snap/lxd/common/lxd/networks/lxdfan0/dnsmasq.hosts/
+      chmod 775 /var/snap/lxd/common/lxd/networks/lxdfan0/dnsmasq.hosts/
+
       # Join resource group
-      curl -X POST \\
-        -H "Content-Type: application/json" \\
-        -H "Accept: application/json" \\
-        -d "{\\"server_name\\": \\"\$NODE_HOSTNAME\\"}" \\
-        http://${HOST_IP}:${ENDPOINT_PORT}/internal/add_member
+      lxc cluster group add $NODE_HOSTNAME cloudboi-resource
 
 runcmd:
-  - systemctl enable lxd
-  - systemctl start lxd
   - /usr/local/bin/setup-lxd.sh
 EOF
 

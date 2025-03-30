@@ -8,6 +8,14 @@ DEFAULT_MAAS_ADMIN_USERNAME=admin
 DEFAULT_MAAS_ADMIN_PASSWORD=admin
 DEFAULT_MAAS_ADMIN_EMAIL=admin@example.com
 
+TENTATIVE_IP=$(hostname -I | grep -o '10\.[0-9.]*' | head -n 1)
+
+# Assign to HOST_IP: Use TENTATIVE_IP if it's not empty, otherwise use the first IP.
+HOST_IP=${TENTATIVE_IP:-$(hostname -I | awk '{print $1}')}
+
+# get interface name of HOST_IP
+INTERFACE_NAME=$(ip -o -4 addr list | grep $HOST_IP | awk '{print $2}')
+
 # check root
 if [[ $(/usr/bin/id -u) -ne 0 ]]; then
     echo "Must be run as root"
@@ -51,6 +59,9 @@ fi
 
 ############################################
 
+echo "Stopping LXD..."
+snap stop lxd
+
 echo "Installng MAAS..."
 systemctl disable --now systemd-timesyncd
 
@@ -86,7 +97,14 @@ maas init region+rack --database-uri postgres://$MAAS_DB_USER:$MAAS_DB_PASSWORD@
 # create admin user
 maas createadmin --username=$MAAS_ADMIN_USERNAME --password=$MAAS_ADMIN_PASSWORD --email=$MAAS_ADMIN_EMAIL
 
+# set dnsmasq of maas to use the interface name
+echo "interface=${INTERFACE_NAME}" >> /var/snap/maas/current/etc/dnsmasq.conf
+
+snap restart maas
 
 echo "MAAS installed and configured"
+
+echo "Starting LXD..."
+snap start lxd
 
 
