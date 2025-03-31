@@ -1,18 +1,16 @@
+// DestroyMenu.tsx
 import React, { useState } from "react"
 import { ExclamationTriangleIcon, TrashIcon } from "@heroicons/react/24/outline"
 import Section from "../../../components/Common/Section"
 import Button from "../../../components/Common/Button"
 import MenuContainer from "./MenuContainer"
-
+import { useInstanceSetting } from "../../../hooks/Instance/useInstanceSetting"
 
 const DestroyMenu: React.FC = () => {
     const [confirmText, setConfirmText] = useState("")
-    const instanceName = "cloud-instance-name" // This should come from your state/props
-
-    const handleDeleteInstance = () => {
-        // Handle delete instance
-    }
-
+    const { instance, deleteInstance, isLoading } = useInstanceSetting()
+    
+    const instanceName = instance?.instance_name || ""
     const isDeleteConfirmed = confirmText === instanceName
 
     return (
@@ -35,6 +33,13 @@ const DestroyMenu: React.FC = () => {
                                 <li>All instance configurations and settings</li>
                                 <li>All network configurations for this instance</li>
                             </ul>
+                            
+                            {/* <div className="mt-3 p-2 bg-red-950 rounded border border-red-800/30">
+                                <p className="text-red-300 text-sm">
+                                    <strong>Billing Note:</strong> Your account will no longer be billed for this instance,
+                                    but you will be charged for any usage up to the point of deletion.
+                                </p>
+                            </div> */}
                         </div>
                     </div>
                 </div>
@@ -55,10 +60,10 @@ const DestroyMenu: React.FC = () => {
                 <div className="flex justify-end">
                     <Button
                         label="Destroy this Instance"
-                        onClick={handleDeleteInstance}
+                        onClick={deleteInstance}
                         icon={<TrashIcon className="w-5 h-5" />}
-                        variant="purple" // Using purple for destructive action as per your color scheme
-                        disabled={!isDeleteConfirmed}
+                        variant="purple" 
+                        disabled={!isDeleteConfirmed || isLoading}
                     />
                 </div>
             </Section>

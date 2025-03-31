@@ -1,11 +1,13 @@
 import React from "react"
 import { CommandLineIcon } from "@heroicons/react/24/outline"
-import InstanceTerminal from "../InstanceTerminal"
+import InstanceTerminal from "./InstanceTerminal"
 import { useParams } from "react-router-dom"
 import MenuContainer from "./MenuContainer"
+import { useInstanceSetting } from "../../../hooks/Instance/useInstanceSetting"
 
 const AccessMenu: React.FC = () => {
   const instanceName = useParams<{ instanceName: string }>().instanceName || ''
+  const { isInstanceRunning } = useInstanceSetting()
 
   return (
     <MenuContainer>
@@ -22,6 +24,7 @@ const AccessMenu: React.FC = () => {
       <div className="bg-[#12203c] rounded-lg overflow-hidden shadow-lg border border-blue-900/20">
         <InstanceTerminal
           instanceName={instanceName}
+          isRunning={isInstanceRunning || false}
         />
       </div>
     </MenuContainer>

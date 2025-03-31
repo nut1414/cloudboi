@@ -74,7 +74,7 @@ async def start_instance(
     instance_name: str,
     instance_service: InstanceService = Depends(Provide[AppContainer.instance_service])
 ):
-    return await instance_service.start_instance(instance_name)
+    return await instance_service.start_instance(instance_name=instance_name)
 
 @router.post(
     "/{instance_name}/stop",
@@ -86,7 +86,7 @@ async def stop_instance(
     instance_name: str,
     instance_service: InstanceService = Depends(Provide[AppContainer.instance_service])
 ):
-    return await instance_service.stop_instance(instance_name)
+    return await instance_service.stop_instance(instance_name=instance_name)
 
 @router.post(
     "/{instance_name}/delete",
@@ -98,7 +98,7 @@ async def delete_instance(
     instance_name: str,
     instance_service: InstanceService = Depends(Provide[AppContainer.instance_service])
 ):
-    return await instance_service.delete_instance(instance_name)
+    return await instance_service.delete_instance(instance_name=instance_name)
 
 @router.post(
     "/{instance_name}/restart",
@@ -110,8 +110,8 @@ async def restart_instance(
     instance_name: str,
     instance_service: InstanceService = Depends(Provide[AppContainer.instance_service])
 ):
-    await instance_service.stop_instance(instance_name)
-    return await instance_service.start_instance(instance_name)
+    await instance_service.stop_instance(instance_name=instance_name)
+    return await instance_service.start_instance(instance_name=instance_name)
 
 @router.websocket(
     "/ws/{instance_name}",

@@ -1,26 +1,26 @@
-import React from "react";
-import AccessMenu from "./AccessMenu";
-import PowersMenu from "./PowerMenu";
-import NetworkingMenu from "./NetworkingMenu";
-import DestroyMenu from "./DestroyMenu";
+import React from "react"
+import AccessMenu from "./AccessMenu"
+import PowersMenu from "./PowerMenu"
+import NetworkingMenu from "./NetworkingMenu"
+import DestroyMenu from "./DestroyMenu"
 
 interface InstanceSettingContentProps {
-  active: string;
+  active: string
 }
 
 const InstanceSettingContent: React.FC<InstanceSettingContentProps> = ({ active }) => {
   switch (active) {
     case "AccessMenu":
-      return <AccessMenu />;
+      return <AccessMenu />
     case "PowersMenu":
-      return <PowersMenu />;
+      return <PowersMenu />
     case "NetworkingMenu":
-      return <NetworkingMenu />;
+      return <NetworkingMenu />
     case "DestroyMenu":
-      return <DestroyMenu />;
+      return <DestroyMenu />
     default:
-      return <AccessMenu />;
+      return <AccessMenu />
   }
-};
+}
 
-export default InstanceSettingContent;
+export default InstanceSettingContent

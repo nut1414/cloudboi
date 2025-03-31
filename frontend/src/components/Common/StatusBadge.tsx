@@ -1,18 +1,12 @@
 import React from 'react'
+import { InstanceStatus } from '../../constant/InstanceConstant'
 
-export type StatusType =
-    | 'running'
-    | 'stopped'
-    | 'pending'
-    | 'failed'
-    | 'completed'
-    | 'processing'
-    | 'cancelled'
-    | 'warning'
-    | 'info'
+// Create a type from the InstanceStatus values
+export type InstanceStatusType = typeof InstanceStatus[keyof typeof InstanceStatus]
 
+// Updated interface to use InstanceStatus directly
 interface StatusBadgeProps {
-    status: StatusType | string
+    status: InstanceStatusType
     showDot?: boolean
     showBackground?: boolean
     size?: 'sm' | 'md' | 'lg'
@@ -26,64 +20,34 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({
     size = 'md',
     className = '',
 }) => {
-    // Normalize status to lowercase to ensure consistent matching
-    const normalizedStatus = status.toLowerCase() as StatusType
+    // Normalize status to lowercase for matching
+    const normalizedStatus = status.toLowerCase()
 
     // Define status styles map
     const statusConfig = {
-        running: {
+        [InstanceStatus.RUNNING.toLowerCase()]: {
             bg: 'bg-green-700',
             text: 'text-green-100',
             dotColor: 'bg-green-500',
             textOnly: 'text-green-500',
         },
-        stopped: {
+        [InstanceStatus.STOPPED.toLowerCase()]: {
             bg: 'bg-red-700',
             text: 'text-red-100',
             dotColor: 'bg-red-500',
             textOnly: 'text-red-500',
         },
-        pending: {
-            bg: 'bg-yellow-700',
-            text: 'text-yellow-100',
-            dotColor: 'bg-yellow-500',
-            textOnly: 'text-yellow-500',
-        },
-        failed: {
-            bg: 'bg-gray-700',
-            text: 'text-gray-100',
-            dotColor: 'bg-gray-500',
-            textOnly: 'text-gray-500',
-        },
-        completed: {
-            bg: 'bg-green-700',
-            text: 'text-green-100',
-            dotColor: 'bg-green-500',
-            textOnly: 'text-green-500',
-        },
-        processing: {
+        [InstanceStatus.FROZEN.toLowerCase()]: {
             bg: 'bg-blue-700',
             text: 'text-blue-100',
             dotColor: 'bg-blue-500',
             textOnly: 'text-blue-500',
         },
-        cancelled: {
+        [InstanceStatus.ERROR.toLowerCase()]: {
             bg: 'bg-red-700',
             text: 'text-red-100',
             dotColor: 'bg-red-500',
             textOnly: 'text-red-500',
-        },
-        warning: {
-            bg: 'bg-orange-700',
-            text: 'text-orange-100',
-            dotColor: 'bg-orange-500',
-            textOnly: 'text-orange-500',
-        },
-        info: {
-            bg: 'bg-indigo-700',
-            text: 'text-indigo-100',
-            dotColor: 'bg-indigo-500',
-            textOnly: 'text-indigo-500',
         },
     }
 
@@ -119,7 +83,7 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({
             {showDot && (
                 <span className={`${styles.dotColor} ${dotSize[size]} rounded-full ${!showBackground ? 'mr-1.5' : 'mr-1.5'}`}></span>
             )}
-            {status.charAt(0).toUpperCase() + status.slice(1).toLowerCase()}
+            {status}
         </span>
     )
 }

@@ -164,9 +164,16 @@ class InstanceService:
         instance_id: Optional[uuid.UUID] = None,
         instance_name: Optional[str] = None
     ) -> InstanceControlResponse:
+        from ..sql.operations.subscription import SubscriptionOperation
+        from ..container import AppContainer
+        subscription_opr: SubscriptionOperation = AppContainer.subscription_opr()
+
         instance = InstanceHelper.to_instance_upsert_model(
             await self.get_instance(instance_id=instance_id, instance_name=instance_name)
         )
+
+        # Delete subscription
+        await subscription_opr.delete_subscription(instance_id=instance.instance_id)
         
         # Delete instance in LXD
         await self.lxd_client.delete_instance(instance.hostname)
@@ -188,6 +195,8 @@ class InstanceService:
         )
 
         if not instance:
-            raise ValueError("Instance not found")
+            raise HTTPException(status_code=404, detail="Instance not found")
+        if instance.status != "Running":
+            raise HTTPException(status_code=400, detail="Instance is not running")
         
         await self.lxd_client.websocket_session(instance_name, client_ws)

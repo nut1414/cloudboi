@@ -127,7 +127,6 @@ class SubscriptionService:
             return
         
         # Delete user instance and subscription
-        await self.subscription_opr.delete_subscription(subscription.subscription_id)
         await instance_service.delete_instance(instance_id=subscription.instance_id)
     
     async def process_overdue_subscriptions(self, overdue_subscriptions: List[Transaction]) -> None:

@@ -1,14 +1,15 @@
 import React, { useEffect, useMemo } from 'react'
-import { useTerminal, useWebSocket } from '../../hooks/Instance/useTerminalConnection'
+import { useTerminal, useWebSocket } from '../../../hooks/Instance/useTerminalConnection'
 import { ArrowPathIcon } from '@heroicons/react/24/outline'
-import { WS_URL } from '../../config/api'
+import { WS_URL } from '../../../config/api'
 import 'xterm/css/xterm.css'
 
 interface InstanceTerminalProps {
-    instanceName: string
+    instanceName: string,
+    isRunning: boolean,
 }
 
-const InstanceTerminal: React.FC<InstanceTerminalProps> = ({ instanceName }) => {
+const InstanceTerminal: React.FC<InstanceTerminalProps> = ({ instanceName, isRunning }) => {
     // Use terminal hook
     const {
         terminalRef,
@@ -17,8 +18,8 @@ const InstanceTerminal: React.FC<InstanceTerminalProps> = ({ instanceName }) => 
         fitTerminal,
         getTerminalDimensions
     } = useTerminal()
-
-    // Use WebSocket hook
+    
+    // Use WebSocket hook only if instance is running
     const {
         connected,
         error,
@@ -28,23 +29,26 @@ const InstanceTerminal: React.FC<InstanceTerminalProps> = ({ instanceName }) => 
         WS_URL,
         instanceName,
         writeToTerminal,
-        getTerminalDimensions
+        getTerminalDimensions,
+        isRunning
     )
 
     // Connect terminal data events to WebSocket
     useEffect(() => {
-        setTerminalDataHandlerV2(sendData)
-    }, [sendData, setTerminalDataHandlerV2])
+        if (isRunning) {
+            setTerminalDataHandlerV2(sendData)
+        }
+    }, [sendData, setTerminalDataHandlerV2, isRunning])
 
     // Fit terminal when component mounts or connection status changes
     useEffect(() => {
-        if (connected) {
+        if (connected && isRunning) {
             setTimeout(() => {
                 fitTerminal()
                 updateTerminalSize()
             }, 100)
         }
-    }, [connected, fitTerminal, updateTerminalSize])
+    }, [connected, fitTerminal, updateTerminalSize, isRunning])
 
     return (
         <div className="flex flex-col h-full">
@@ -77,14 +81,20 @@ const InstanceTerminal: React.FC<InstanceTerminalProps> = ({ instanceName }) => 
                 className="flex-grow bg-[#0d1729] w-full h-full relative overflow-hidden"
                 style={{ position: 'relative' }}
             >
-                {!connected && !error && (
+                {!isRunning ? (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
+                        <div className="flex items-center space-x-3 bg-red-900/20 px-4 py-2 rounded-md border border-red-800/30">
+                            <span className="text-gray-300">Terminal unavailable - <span className="text-red-400 font-medium">Instance not running</span></span>
+                        </div>
+                    </div>
+                ) : !connected && !error ? (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
                         <div className="flex items-center space-x-3 bg-[#172a47] px-4 py-2 rounded-md border border-blue-800/30">
                             <div className="w-5 h-5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
                             <span className="text-blue-200">Connecting to terminal...</span>
                         </div>
                     </div>
-                )}
+                ) : null}
 
                 <div
                     ref={terminalRef}

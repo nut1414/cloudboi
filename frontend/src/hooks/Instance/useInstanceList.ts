@@ -21,10 +21,8 @@ export const useInstanceList = () => {
         try {
             dispatch?.({ type: INSTANCE_ACTIONS.START_FETCH })
             const response = await InstanceService.instanceListInstances()
-            dispatch?.({ 
-                type: INSTANCE_ACTIONS.FETCH_SUCCESS, 
-                payload: response.data || [] 
-            })
+            dispatch?.({ type: INSTANCE_ACTIONS.FETCH_SUCCESS })
+            dispatch?.({ type: INSTANCE_ACTIONS.SET_USER_INSTANCES, payload: response.data })
         } catch (err) {
             dispatch?.({ 
                 type: INSTANCE_ACTIONS.FETCH_ERROR, 

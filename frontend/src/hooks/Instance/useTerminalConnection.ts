@@ -105,7 +105,8 @@ const useWebSocket = (
     apiBaseUrl: string,
     instanceName: string,
     onMessage: (data: string | ArrayBuffer) => void,
-    getTerminalDimensions: () => { rows: string; cols: string } | undefined
+    getTerminalDimensions: () => { rows: string; cols: string } | undefined,
+    isRunning: boolean
   ) => {
     const wsRef = useRef<WebSocket | null>(null)
     const [connected, setConnected] = useState(false)
@@ -143,6 +144,13 @@ const useWebSocket = (
   
     // Connect to WebSocket
     useEffect(() => {
+        // Don't connect if instance is not running or if apiBaseUrl/instanceName is null
+        if (!isRunning || !apiBaseUrl || !instanceName) {
+            setConnected(false);
+            setError(null);
+            return;
+        }
+        
         const connectWebSocket = () => {
             try {
                 // Only attempt new connection if we don't have one already
@@ -198,7 +206,7 @@ const useWebSocket = (
                 wsRef.current = null
             }
         }
-    }, [apiBaseUrl, instanceName, onMessage, updateTerminalSize])
+    }, [apiBaseUrl, instanceName, onMessage, updateTerminalSize, isRunning])
   
     return {
         connected,

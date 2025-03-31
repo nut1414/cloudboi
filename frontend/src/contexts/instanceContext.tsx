@@ -65,7 +65,6 @@ const instanceReducer = (
     case INSTANCE_ACTIONS.FETCH_SUCCESS:
       return {
         ...state,
-        userInstances: action.payload,
         isLoading: false,
         error: null,
       }
