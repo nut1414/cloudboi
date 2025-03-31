@@ -4,14 +4,14 @@ import { publicOnlyGuard, userRouteGuard } from "./guard"
 import { client } from "./client"
 import { API_CONFIG } from "./config/api"
 
-const DefaultLayout = lazy(() => import("./pages/Layout/DefaultLayout"))
+const DefaultLayout = lazy(() => import("./components/Layout/DefaultLayout"))
 const App = lazy(() => import("./pages/Landing/App"))
 const Login = lazy(() => import("./pages/Auth/Login"))
 const SignUp = lazy(() => import("./pages/Auth/signUp"))
 const InstanceListPage = lazy(() => import("./pages/Instance/InstanceListPage"))
 const InstanceCreatePage = lazy(() => import("./pages/Instance/InstanceCreatePage"))
+const InstanceSettingPage = lazy(() => import("./pages/Instance/InstanceSettingPage"))
 const Billing = lazy(() => import("./pages/Billing/billing"))
-const Setting = lazy(() => import("./pages/InstanceSetting/setting"))
 const Support = lazy(() => import("./pages/User/support"))
 
 /**
@@ -68,7 +68,7 @@ const routes = [
             children: [
               {
                 index: true,
-                element: <Setting />,
+                element: <InstanceSettingPage />,
               },
             ],
           },

@@ -119,7 +119,7 @@ const TopNavbar: React.FC<TopNavbarProps> = ({
                 actions
               ) : (
                 <Button
-                  to={`/user/${userName}/instance/create`}
+                  href={`/user/${userName}/instance/create`}
                   label="Create Instance"
                   variant="secondary"
                   icon={<PlusIcon className="w-4 h-4" />}

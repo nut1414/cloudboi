@@ -2,9 +2,9 @@
 
 import type { Options } from '@hey-api/client-axios';
 import { queryOptions, type UseMutationOptions } from '@tanstack/react-query';
-import { client, InstanceService, RootService, UserService } from '../services.gen';
-import type { InstanceCreateInstanceData, InstanceCreateInstanceError, InstanceCreateInstanceResponse, UserCreateUserData, UserCreateUserError, UserCreateUserResponse, UserLoginUserData, UserLoginUserError, UserLoginUserResponse, UserLogoutUserError, UserLogoutUserResponse } from '../types.gen';
+import type { ClusterCreateJoinTokenData, ClusterCreateJoinTokenError, ClusterCreateJoinTokenResponse, ClusterAddMemberData, ClusterAddMemberError, ClusterAddMemberResponse, InstanceGetInstanceData, InstanceCreateInstanceData, InstanceCreateInstanceError, InstanceCreateInstanceResponse, InstanceStartInstanceData, InstanceStartInstanceError, InstanceStartInstanceResponse, InstanceStopInstanceData, InstanceStopInstanceError, InstanceStopInstanceResponse, InstanceDeleteInstanceData, InstanceDeleteInstanceError, InstanceDeleteInstanceResponse, InstanceRestartInstanceData, InstanceRestartInstanceError, InstanceRestartInstanceResponse, UserCreateUserData, UserCreateUserError, UserCreateUserResponse, UserLoginUserData, UserLoginUserError, UserLoginUserResponse, UserLogoutUserError, UserLogoutUserResponse } from '../types.gen';
 import type { AxiosError } from 'axios';
+import { client, ClusterService, InstanceService, RootService, UserService } from '../services.gen';
 
 type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseURL' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -31,6 +31,72 @@ const createQueryKey = <TOptions extends Options>(id: string, options?: TOptions
         params.query = options.query;
     }
     return params;
+};
+
+export const clusterCreateJoinTokenQueryKey = (options: Options<ClusterCreateJoinTokenData>) => [
+    createQueryKey('clusterCreateJoinToken', options)
+];
+
+export const clusterCreateJoinTokenOptions = (options: Options<ClusterCreateJoinTokenData>) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await ClusterService.clusterCreateJoinToken({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: clusterCreateJoinTokenQueryKey(options)
+    });
+};
+
+export const clusterCreateJoinTokenMutation = (options?: Partial<Options<ClusterCreateJoinTokenData>>) => {
+    const mutationOptions: UseMutationOptions<ClusterCreateJoinTokenResponse, AxiosError<ClusterCreateJoinTokenError>, Options<ClusterCreateJoinTokenData>> = {
+        mutationFn: async (localOptions) => {
+            const { data } = await ClusterService.clusterCreateJoinToken({
+                ...options,
+                ...localOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const clusterAddMemberQueryKey = (options: Options<ClusterAddMemberData>) => [
+    createQueryKey('clusterAddMember', options)
+];
+
+export const clusterAddMemberOptions = (options: Options<ClusterAddMemberData>) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await ClusterService.clusterAddMember({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: clusterAddMemberQueryKey(options)
+    });
+};
+
+export const clusterAddMemberMutation = (options?: Partial<Options<ClusterAddMemberData>>) => {
+    const mutationOptions: UseMutationOptions<ClusterAddMemberResponse, AxiosError<ClusterAddMemberError>, Options<ClusterAddMemberData>> = {
+        mutationFn: async (localOptions) => {
+            const { data } = await ClusterService.clusterAddMember({
+                ...options,
+                ...localOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
 };
 
 export const instanceInstanceDetailsQueryKey = (options?: Options) => [
@@ -71,6 +137,25 @@ export const instanceListInstancesOptions = (options?: Options) => {
     });
 };
 
+export const instanceGetInstanceQueryKey = (options: Options<InstanceGetInstanceData>) => [
+    createQueryKey('instanceGetInstance', options)
+];
+
+export const instanceGetInstanceOptions = (options: Options<InstanceGetInstanceData>) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await InstanceService.instanceGetInstance({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: instanceGetInstanceQueryKey(options)
+    });
+};
+
 export const instanceCreateInstanceQueryKey = (options: Options<InstanceCreateInstanceData>) => [
     createQueryKey('instanceCreateInstance', options)
 ];
@@ -94,6 +179,138 @@ export const instanceCreateInstanceMutation = (options?: Partial<Options<Instanc
     const mutationOptions: UseMutationOptions<InstanceCreateInstanceResponse, AxiosError<InstanceCreateInstanceError>, Options<InstanceCreateInstanceData>> = {
         mutationFn: async (localOptions) => {
             const { data } = await InstanceService.instanceCreateInstance({
+                ...options,
+                ...localOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const instanceStartInstanceQueryKey = (options: Options<InstanceStartInstanceData>) => [
+    createQueryKey('instanceStartInstance', options)
+];
+
+export const instanceStartInstanceOptions = (options: Options<InstanceStartInstanceData>) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await InstanceService.instanceStartInstance({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: instanceStartInstanceQueryKey(options)
+    });
+};
+
+export const instanceStartInstanceMutation = (options?: Partial<Options<InstanceStartInstanceData>>) => {
+    const mutationOptions: UseMutationOptions<InstanceStartInstanceResponse, AxiosError<InstanceStartInstanceError>, Options<InstanceStartInstanceData>> = {
+        mutationFn: async (localOptions) => {
+            const { data } = await InstanceService.instanceStartInstance({
+                ...options,
+                ...localOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const instanceStopInstanceQueryKey = (options: Options<InstanceStopInstanceData>) => [
+    createQueryKey('instanceStopInstance', options)
+];
+
+export const instanceStopInstanceOptions = (options: Options<InstanceStopInstanceData>) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await InstanceService.instanceStopInstance({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: instanceStopInstanceQueryKey(options)
+    });
+};
+
+export const instanceStopInstanceMutation = (options?: Partial<Options<InstanceStopInstanceData>>) => {
+    const mutationOptions: UseMutationOptions<InstanceStopInstanceResponse, AxiosError<InstanceStopInstanceError>, Options<InstanceStopInstanceData>> = {
+        mutationFn: async (localOptions) => {
+            const { data } = await InstanceService.instanceStopInstance({
+                ...options,
+                ...localOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const instanceDeleteInstanceQueryKey = (options: Options<InstanceDeleteInstanceData>) => [
+    createQueryKey('instanceDeleteInstance', options)
+];
+
+export const instanceDeleteInstanceOptions = (options: Options<InstanceDeleteInstanceData>) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await InstanceService.instanceDeleteInstance({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: instanceDeleteInstanceQueryKey(options)
+    });
+};
+
+export const instanceDeleteInstanceMutation = (options?: Partial<Options<InstanceDeleteInstanceData>>) => {
+    const mutationOptions: UseMutationOptions<InstanceDeleteInstanceResponse, AxiosError<InstanceDeleteInstanceError>, Options<InstanceDeleteInstanceData>> = {
+        mutationFn: async (localOptions) => {
+            const { data } = await InstanceService.instanceDeleteInstance({
+                ...options,
+                ...localOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const instanceRestartInstanceQueryKey = (options: Options<InstanceRestartInstanceData>) => [
+    createQueryKey('instanceRestartInstance', options)
+];
+
+export const instanceRestartInstanceOptions = (options: Options<InstanceRestartInstanceData>) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await InstanceService.instanceRestartInstance({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: instanceRestartInstanceQueryKey(options)
+    });
+};
+
+export const instanceRestartInstanceMutation = (options?: Partial<Options<InstanceRestartInstanceData>>) => {
+    const mutationOptions: UseMutationOptions<InstanceRestartInstanceResponse, AxiosError<InstanceRestartInstanceError>, Options<InstanceRestartInstanceData>> = {
+        mutationFn: async (localOptions) => {
+            const { data } = await InstanceService.instanceRestartInstance({
                 ...options,
                 ...localOptions,
                 throwOnError: true

@@ -13,9 +13,22 @@ const useTerminal = () => {
         const term = new Terminal({
             cursorBlink: true,
             theme: {
-              background: '#1e1e1e',
-              foreground: '#f0f0f0',
+                background: '#0d1729',
+                foreground: '#e2e8f0',
+                cursor: '#a855f7', // Purple cursor
+                black: '#263238',
+                red: '#ff5252',
+                green: '#5cf19e',
+                yellow: '#ffd740',
+                blue: '#40c4ff',
+                magenta: '#ff4081',
+                cyan: '#64fcda',
+                white: '#ffffff',
             },
+            fontSize: 14,
+            fontFamily: '"JetBrains Mono", "Fira Code", monospace',
+            lineHeight: 1.2,
+            scrollback: 3000,
             convertEol: true,
         })
 
@@ -92,7 +105,8 @@ const useWebSocket = (
     apiBaseUrl: string,
     instanceName: string,
     onMessage: (data: string | ArrayBuffer) => void,
-    getTerminalDimensions: () => { rows: string; cols: string } | undefined
+    getTerminalDimensions: () => { rows: string; cols: string } | undefined,
+    isRunning: boolean
   ) => {
     const wsRef = useRef<WebSocket | null>(null)
     const [connected, setConnected] = useState(false)
@@ -130,6 +144,13 @@ const useWebSocket = (
   
     // Connect to WebSocket
     useEffect(() => {
+        // Don't connect if instance is not running or if apiBaseUrl/instanceName is null
+        if (!isRunning || !apiBaseUrl || !instanceName) {
+            setConnected(false);
+            setError(null);
+            return;
+        }
+        
         const connectWebSocket = () => {
             try {
                 // Only attempt new connection if we don't have one already
@@ -185,7 +206,7 @@ const useWebSocket = (
                 wsRef.current = null
             }
         }
-    }, [apiBaseUrl, instanceName, onMessage, updateTerminalSize])
+    }, [apiBaseUrl, instanceName, onMessage, updateTerminalSize, isRunning])
   
     return {
         connected,

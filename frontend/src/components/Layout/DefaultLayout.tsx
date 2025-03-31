@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react"
 import { Outlet } from "react-router-dom"
-import SideNavbar from "../../components/Navbar/SideNavbar"
+import SideNavbar from "../Navbar/SideNavbar"
 
 interface DefaultLayoutProps {
   children?: ReactNode // Optional children instead of using Outlet

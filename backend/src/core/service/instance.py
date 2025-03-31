@@ -3,12 +3,14 @@ import uuid
 from fastapi import HTTPException, WebSocket
 import asyncio
 
+from ..utils.datetime import DateTimeUtils
 from .subscription import SubscriptionService
 from .clients.base_instance_client import BaseInstanceClient
 from .validators.instance_validator import InstanceValidator
-from ..models.instance import InstanceCreateRequest, InstanceCreateResponse, InstanceDetails, UserInstanceResponse
+from ..models.instance import InstanceCreateRequest, InstanceCreateResponse, InstanceDetails, UserInstanceFromDB, UserInstanceResponse, InstanceControlResponse
 from ..sql.operations import InstanceOperation
 from ..utils.dependencies import user_session_ctx
+from .helpers.instance_helper import InstanceHelper
 
 
 class InstanceService:
@@ -37,15 +39,8 @@ class InstanceService:
         )
     
     async def get_all_user_instances(self) -> List[UserInstanceResponse]:
-        result_db = await self.instance_opr.get_all_user_instances(username=user_session_ctx.get().username)
-        return [UserInstanceResponse(
-            instance_id=instance.instance_id,
-            instance_name=instance.hostname,
-            instance_status=instance.status,
-            instance_plan=instance.instance_plan,
-            os_type=instance.os_type,
-            last_updated_at=instance.last_updated_at
-        ) for instance in result_db]
+        result_db = await self.instance_opr.get_user_instances(username=user_session_ctx.get().username)
+        return [InstanceHelper.to_instance_response_model(instance) for instance in result_db]
     
     async def create_instance(self, instance_create: InstanceCreateRequest) -> InstanceCreateResponse:
         # Validate instance_create
@@ -93,29 +88,104 @@ class InstanceService:
             created_at=created_instance.created_at
         )
     
-    async def delete_instance(
+    async def get_instance(
         self,
         instance_id: Optional[uuid.UUID] = None,
         instance_name: Optional[str] = None
-    ) -> None:
+    ) -> UserInstanceFromDB:
         if not instance_id and not instance_name:
             raise ValueError("Instance ID or name is required")
         
         if instance_id:
-            instance = await self.instance_opr.get_user_instance(instance_id=instance_id)
-        else:
-            instance = await self.instance_opr.get_user_instance(
+            instances = await self.instance_opr.get_user_instances(
                 username=user_session_ctx.get().username,
-                instance_name=instance_name
+                instance_ids=[instance_id]
             )
-        if not instance:
+        else:
+            instances = await self.instance_opr.get_user_instances(
+                username=user_session_ctx.get().username,
+                instance_names=[instance_name]
+            )
+        if not instances or len(instances) == 0:
             raise ValueError("Instance not found")
+        instance = instances[0]
+        
+        return instance
+        
+    
+    async def start_instance(
+        self,
+        instance_id: Optional[uuid.UUID] = None,
+        instance_name: Optional[str] = None
+    ) -> InstanceControlResponse:
+        instance = InstanceHelper.to_instance_upsert_model(
+            await self.get_instance(instance_id=instance_id, instance_name=instance_name)
+        )
+        
+        # Start instance in LXD
+        await self.lxd_client.start_instance(instance.hostname)
+
+        # Update instance status in DB
+        instance.status = "Running"
+        instance.last_updated_at = DateTimeUtils.now_dt()
+        await self.instance_opr.upsert_user_instance(instance)
+
+        return InstanceControlResponse(
+            instance_id=instance.instance_id,
+            instance_name=instance.hostname,
+            is_success=True
+        )
+    
+    async def stop_instance(
+        self,
+        instance_id: Optional[uuid.UUID] = None,
+        instance_name: Optional[str] = None
+    ) -> InstanceControlResponse:
+        instance = InstanceHelper.to_instance_upsert_model(
+            await self.get_instance(instance_id=instance_id, instance_name=instance_name)
+        )
+        
+        # Stop instance in LXD
+        await self.lxd_client.stop_instance(instance.hostname)
+
+        # Update instance status in DB
+        instance.status = "Stopped"
+        instance.last_updated_at = DateTimeUtils.now_dt()
+        await self.instance_opr.upsert_user_instance(instance)
+
+        return InstanceControlResponse(
+            instance_id=instance.instance_id,
+            instance_name=instance.hostname,
+            is_success=True
+        )
+    
+    async def delete_instance(
+        self,
+        instance_id: Optional[uuid.UUID] = None,
+        instance_name: Optional[str] = None
+    ) -> InstanceControlResponse:
+        from ..sql.operations.subscription import SubscriptionOperation
+        from ..container import AppContainer
+        subscription_opr: SubscriptionOperation = AppContainer.subscription_opr()
+
+        instance = InstanceHelper.to_instance_upsert_model(
+            await self.get_instance(instance_id=instance_id, instance_name=instance_name)
+        )
+
+        # Delete subscription
+        await subscription_opr.delete_subscription(instance_id=instance.instance_id)
         
         # Delete instance in LXD
         await self.lxd_client.delete_instance(instance.hostname)
 
         # Delete instance in DB
         await self.instance_opr.delete_user_instance(instance.instance_id)
+
+        return InstanceControlResponse(
+            instance_id=instance.instance_id,
+            instance_name=instance.hostname,
+            is_success=True
+        )
     
     async def websocket_session(self, instance_name: str, client_ws: WebSocket):
         # Validate if user has access to instance
@@ -125,6 +195,8 @@ class InstanceService:
         )
 
         if not instance:
-            raise ValueError("Instance not found")
+            raise HTTPException(status_code=404, detail="Instance not found")
+        if instance.status != "Running":
+            raise HTTPException(status_code=400, detail="Instance is not running")
         
         await self.lxd_client.websocket_session(instance_name, client_ws)

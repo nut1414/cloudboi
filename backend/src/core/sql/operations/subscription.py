@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 from sqlalchemy import select, insert, delete
 from sqlalchemy.orm import selectinload
 from sqlalchemy.dialects.postgresql import insert as pg_insert
@@ -30,9 +30,19 @@ class SubscriptionOperation(BaseOperation):
             result = (await db.execute(stmt)).scalar()
             return self.to_pydantic(UserSubscriptionModel, result)
     
-    async def delete_subscription(self, subscription_id: int) -> None:
+    async def delete_subscription(
+        self,
+        subscription_id: Optional[int] = None,
+        instance_id: Optional[uuid.UUID] = None,
+    ) -> None:
+        if subscription_id is None and instance_id is None:
+            raise ValueError("Either subscription_id or instance_id must be provided.")
         async with self.session() as db:
-            stmt = delete(UserSubscription).where(UserSubscription.subscription_id == subscription_id)
+            stmt = delete(UserSubscription)
+            if subscription_id is not None:
+                stmt = stmt.where(UserSubscription.subscription_id == subscription_id)
+            if instance_id is not None:
+                stmt = stmt.where(UserSubscription.instance_id == instance_id)
             await db.execute(stmt)
     
     async def get_subscription_by_id(self, subscription_id: int) -> UserSubscriptionModel:

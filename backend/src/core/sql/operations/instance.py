@@ -98,7 +98,13 @@ class InstanceOperation(BaseOperation):
             result = (await db.execute(stmt)).scalar_one_or_none()
             return self.to_pydantic(UserInstanceModel, result)
     
-    async def get_all_user_instances(self, username: str) -> List[UserInstanceFromDB]:
+    async def get_user_instances(
+        self, 
+        username: Optional[str] = None,
+        user_id: Optional[uuid.UUID] = None,
+        instance_ids: Optional[List[uuid.UUID]] = None,
+        instance_names: Optional[List[str]] = None
+    ) -> List[UserInstanceFromDB]:
         async with self.session() as db:
             stmt = (
                 select(UserInstance)
@@ -106,8 +112,14 @@ class InstanceOperation(BaseOperation):
                     selectinload(UserInstance.instance_plan),
                     selectinload(UserInstance.os_type)
                 )
-                .join(User)
-                .where(User.username == username)
             )
+            if username is not None:
+                stmt = stmt.join(User).where(User.username == username)
+            elif user_id is not None:
+                stmt = stmt.where(UserInstance.user_id == user_id)
+            if instance_ids is not None and len(instance_ids) > 0:
+                stmt = stmt.where(UserInstance.instance_id.in_(instance_ids))
+            if instance_names is not None and len(instance_names) > 0:
+                stmt = stmt.where(UserInstance.hostname.in_(instance_names))
             result = (await db.execute(stmt)).scalars().all()
             return self.to_pydantic(UserInstanceFromDB, result)
