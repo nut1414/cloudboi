@@ -8,8 +8,8 @@ interface TransactionTableProps {
 }
 
 const TransactionTable: React.FC<TransactionTableProps> = ({ instances }) => (
-  <div className="mt-[5vh] pb-16 mb-10 shadow-md justify-center w-[900px] bg-[#F5E6E8] rounded-2xl">
-    <div className="ml-16 justify-center grid grid-cols-6 text-black text-lg pt-4 pb-6 font-semibold">
+  <div className="mt-[5vh] pb-16 mb-10 shadow-md justify-center w-[900px] bg-[#192A51] rounded-2xl">
+    <div className="ml-16 justify-center grid grid-cols-6 text-white text-lg pt-4 pb-6 font-semibold">
       <span>Date</span>
       <span>Username</span>
       <span>Type</span>

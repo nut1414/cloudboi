@@ -17,13 +17,13 @@ const TransactionSearch: React.FC<TransactionSearchProps> = ({
     <input
       type="text"
       placeholder={`Search by ${searchType}...`}
-      className="bg-[#F5E6E8] text-black placeholder-black pl-4 pr-20 py-2 rounded-2xl border-transparent border-[#D5C6E0] border-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+       className="bg-[#23375F] text-gray-300 placeholder-gray-300 pl-4 pr-20 py-2 rounded-2xl border-transparent border-[#D5C6E0] border-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
       value={search}
       onChange={(e) => onSearchChange(e.target.value)}
     />
     <select
       id="os"
-      className="bg-[#F5E6E8] border border-gray-300 rounded-2xl h-[50px] w-[200px] text-black text-center"
+      className="bg-[#23375F] text-gray-300 border border-gray-300 rounded-2xl h-[50px] w-[200px] text-black text-center"
       value={searchType}
       onChange={(e) => onSearchTypeChange(e.target.value)}
     >
