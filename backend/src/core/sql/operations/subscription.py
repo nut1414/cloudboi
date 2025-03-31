@@ -35,6 +35,8 @@ class SubscriptionOperation(BaseOperation):
         subscription_id: Optional[int] = None,
         instance_id: Optional[uuid.UUID] = None,
     ) -> None:
+        if subscription_id is None and instance_id is None:
+            raise ValueError("Either subscription_id or instance_id must be provided.")
         async with self.session() as db:
             stmt = delete(UserSubscription)
             if subscription_id is not None:
