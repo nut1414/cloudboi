@@ -29,11 +29,11 @@ interface TableHeaderProps {
 }
 
 export const TableHeader: React.FC<TableHeaderProps> = ({ columns, isLoading = false }) => (
-  <div className={`grid grid-cols-${columns.length} text-gray-300 text-lg py-4 font-medium border-b border-blue-800/30 px-6 bg-[#192A51]`} 
+  <div className={`grid grid-cols-${columns.length} text-gray-300 text-lg py-4 font-medium border-b border-blue-800/30 px-6 bg-[#192A51]`}
     style={{ gridTemplateColumns: `repeat(${columns.length}, 1fr)` }}>
     {columns.map((column) => (
-      <span 
-        key={column.key} 
+      <span
+        key={column.key}
         className="flex justify-between items-center"
         style={column.width ? { width: column.width } : {}}
       >
@@ -46,31 +46,6 @@ export const TableHeader: React.FC<TableHeaderProps> = ({ columns, isLoading = f
     ))}
   </div>
 )
-
-// Status Badge component
-interface StatusBadgeProps {
-  status: string
-}
-
-export const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
-  const statusStyles = {
-    Running: "bg-green-700 text-green-100",
-    Stopped: "bg-red-700 text-red-100",
-    Pending: "bg-yellow-700 text-yellow-100",
-    Failed: "bg-gray-700 text-gray-100",
-    Completed: "bg-green-700 text-green-100",
-    Processing: "bg-blue-700 text-blue-100",
-    Cancelled: "bg-red-700 text-red-100",
-  }
-
-  const style = statusStyles[status as keyof typeof statusStyles] || "bg-gray-700 text-gray-100"
-
-  return (
-    <span className={`px-2 py-1 rounded-full text-xs font-medium ${style}`}>
-      {status}
-    </span>
-  )
-}
 
 // Empty State component
 interface EmptyStateProps {
@@ -108,13 +83,13 @@ export const SkeletonRow: React.FC<SkeletonRowProps> = ({ columns }) => (
     style={{ gridTemplateColumns: `repeat(${columns.length}, 1fr)` }}
   >
     {columns.map((column, idx) => (
-      <span 
+      <span
         key={`skeleton-${column.key}-${idx}`}
         className="flex justify-between items-center"
       >
-        <SkeletonLoader 
-          height="h-4" 
-          width={idx === 0 ? "w-32" : "w-20"} 
+        <SkeletonLoader
+          height="h-4"
+          width={idx === 0 ? "w-32" : "w-20"}
           rounded="rounded-md"
         />
       </span>
@@ -151,14 +126,14 @@ function Table<T>({
         onClick={() => onRowClick && onRowClick(item)}
       >
         {columns.map((column) => (
-          <span 
+          <span
             key={`${rowKey}-${column.key}`}
             className="flex justify-between items-center"
           >
-            {column.render 
+            {column.render
               ? column.render(item)
-              : (item as any)[column.key] !== undefined 
-                ? String((item as any)[column.key]) 
+              : (item as any)[column.key] !== undefined
+                ? String((item as any)[column.key])
                 : ''}
           </span>
         ))}
@@ -174,23 +149,28 @@ function Table<T>({
   }, [columns, skeletonRowCount])
 
   return (
-    <div className="bg-[#192A51] rounded-xl shadow-lg overflow-hidden border border-blue-900/50">
-      {/* Header Row - always visible but with skeleton content when loading */}
-      <TableHeader columns={columns} isLoading={isLoading} />
+    <>
+      <p className="text-gray-300 justify-self-end mb-2 text-sm">
+        Displaying {data.length} {data.length === 1 ? 'instance' : 'instances'}
+      </p>
+      <div className="bg-[#192A51] rounded-xl shadow-lg overflow-hidden border border-blue-900/50">
+        {/* Header Row - always visible but with skeleton content when loading */}
+        <TableHeader columns={columns} isLoading={isLoading} />
 
-      {/* Content */}
-      {isLoading ? (
-        // Show skeleton rows instead of the spinning loader
-        renderSkeletonRows()
-      ) : data.length === 0 ? (
-        <EmptyState
-          message={emptyStateMessage}
-          onCreateNew={onCreateNew}
-        />
-      ) : (
-        data.map(renderRow)
-      )}
-    </div>
+        {/* Content */}
+        {isLoading ? (
+          // Show skeleton rows instead of the spinning loader
+          renderSkeletonRows()
+        ) : data.length === 0 ? (
+          <EmptyState
+            message={emptyStateMessage}
+            onCreateNew={onCreateNew}
+          />
+        ) : (
+          data.map(renderRow)
+        )}
+      </div>
+    </>
   )
 }
 

@@ -1,11 +1,13 @@
 import React from "react"
 import TopNavbar from "../../components/Navbar/TopNavbar"
-import TableSection from "../../components/Common/TableSection"
-import { StatusBadge, TableColumn } from "../../components/Common/Table"
+import Table from "../../components/Common/Table"
+import { TableColumn } from "../../components/Common/Table"
+import StatusBadge from "../../components/Common/StatusBadge"
 import Button from "../../components/Common/Button"
 import { UserInstanceResponse } from "../../client"
 import { useInstanceList } from "../../hooks/Instance/useInstanceList"
-import { EllipsisVerticalIcon, PlusIcon } from "@heroicons/react/24/outline"
+import { EllipsisVerticalIcon, ServerIcon } from "@heroicons/react/24/outline"
+import PageContainer from "../../components/Layout/PageContainer"
 
 function InstanceListPage() {
     const {
@@ -70,26 +72,23 @@ function InstanceListPage() {
         <>
             <TopNavbar
                 onSearch={handleSearch}
-                actions={[
-                    <Button
-                        onClick={handleCreateInstance}
-                        label="Create Instance"
-                        variant="secondary"
-                        icon={<PlusIcon className="w-4 h-4" />}
-                    />
-                ]}
             />
-
-            <TableSection
+            <PageContainer 
                 title="Instance Management"
-                columns={columns}
-                data={filteredInstances}
-                isLoading={isLoading}
-                onRowClick={handleViewInstance}
-                emptyStateMessage="No instances found matching your criteria"
-                onCreateNew={handleCreateInstance}
-                keyExtractor={(instance) => instance.instance_id}
-            />
+                subtitle="Manage your cloud instances"
+                subtitleIcon={<ServerIcon className="w-4 h-4" />}
+                maxWidth="max-w-[1200px]"
+            >
+                <Table
+                    columns={columns}
+                    data={filteredInstances}
+                    isLoading={isLoading}
+                    onRowClick={handleViewInstance}
+                    emptyStateMessage="No instances found matching your criteria"
+                    onCreateNew={handleCreateInstance}
+                    keyExtractor={(instance) => instance.instance_id}
+                />
+            </PageContainer>
         </>
     )
 }

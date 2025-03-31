@@ -5,3 +5,5 @@ export const API_CONFIG: Config = {
   withCredentials: true,
   throwOnError: true,
 }
+
+export const WS_URL = 'ws://localhost:8000'

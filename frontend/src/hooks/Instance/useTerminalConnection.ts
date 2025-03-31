@@ -13,9 +13,22 @@ const useTerminal = () => {
         const term = new Terminal({
             cursorBlink: true,
             theme: {
-              background: '#1e1e1e',
-              foreground: '#f0f0f0',
+                background: '#0d1729',
+                foreground: '#e2e8f0',
+                cursor: '#a855f7', // Purple cursor
+                black: '#263238',
+                red: '#ff5252',
+                green: '#5cf19e',
+                yellow: '#ffd740',
+                blue: '#40c4ff',
+                magenta: '#ff4081',
+                cyan: '#64fcda',
+                white: '#ffffff',
             },
+            fontSize: 14,
+            fontFamily: '"JetBrains Mono", "Fira Code", monospace',
+            lineHeight: 1.2,
+            scrollback: 3000,
             convertEol: true,
         })
 
