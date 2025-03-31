@@ -126,7 +126,9 @@ const PackageForm: React.FC<PackageFormProps> = ({
 
       <button
         type="submit"
-        className="bg-[#7D5BA6] text-white px-6 py-2 rounded-lg hover:bg-[#6B4E91] transition w-full mt-4"
+        className="bg-purple-600 text-white font-bold px-6 py-2 rounded-lg 
+        hover:bg-purple-700 transition-colors duration-300 transition w-full mt-4"
+
       >
         {submitButtonText}
       </button>

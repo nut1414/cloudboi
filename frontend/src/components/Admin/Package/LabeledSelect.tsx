@@ -30,7 +30,9 @@ const LabeledSelect: React.FC<LabeledSelectProps> = ({
         name={name}
         value={value}
         onChange={onChange}
-        className="w-full p-2 text-center rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black"
+        className="w-full p-2 text-center rounded-lg bg-black-200 text-gray-300 
+             border border-gray-500 focus:outline-none 
+             focus:ring-2 focus:ring-blue-500"
       >
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>
@@ -38,7 +40,7 @@ const LabeledSelect: React.FC<LabeledSelectProps> = ({
           </option>
         ))}
       </select>
-      {unit && <span className="absolute right-14 text-gray-600">{unit}</span>}
+      {unit && <span className="absolute right-14 text-gray-300">{unit}</span>}
     </div>
   );
 };

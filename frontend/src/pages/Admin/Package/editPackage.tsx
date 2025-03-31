@@ -33,8 +33,8 @@ const EditPackage: React.FC = () => {
   return (
       <div className="text-black absolute top-4 left-80 z-0">
         <div className="flex flex-col justify-start items-start">
-          <p className="text-4xl font-bold mb-6">Edit Package</p>
-          <div className="bg-red-300 shadow-md h-auto w-[640px] rounded-2xl p-6">
+          <p className="text-white text-4xl font-bold mb-6">Edit Package</p>
+          <div className="bg-[#192A51] shadow-md h-auto w-[640px] rounded-2xl p-6">
             {initialData ? (
               <PackageForm
                 initialData={initialData}

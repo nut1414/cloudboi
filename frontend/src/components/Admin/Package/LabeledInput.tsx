@@ -29,9 +29,9 @@ const LabeledInput: React.FC<LabeledInputProps> = ({
                 value={value}
                 onChange={onChange}
                 placeholder={placeholder}
-                className="w-full p-2 text-center rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-2 text-gray-300 text-center rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            {unit && <span className="absolute right-14 text-gray-600">{unit}</span>}
+            {unit && <span className="absolute right-14 text-gray-300">{unit}</span>}
         </div>
     );
 };
