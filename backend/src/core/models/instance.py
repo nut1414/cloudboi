@@ -53,3 +53,8 @@ class UserInstanceResponse(BaseModel):
     instance_plan: InstancePlan
     os_type: OsType
     last_updated_at: datetime
+
+class InstanceControlResponse(BaseModel):
+    instance_id: uuid.UUID
+    instance_name: str
+    is_success: bool
