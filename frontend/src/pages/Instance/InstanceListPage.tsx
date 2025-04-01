@@ -87,6 +87,7 @@ function InstanceListPage() {
                     emptyStateMessage="No instances found matching your criteria"
                     onCreateNew={handleCreateInstance}
                     keyExtractor={(instance) => instance.instance_id}
+                    unit="instance"
                 />
             </PageContainer>
         </>

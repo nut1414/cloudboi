@@ -1,10 +1,10 @@
 import React from "react"
 
-interface MenuContainerProps {
+interface TabContentContainerProps {
   children: React.ReactNode
 }
 
-const MenuContainer: React.FC<MenuContainerProps> = ({ children }) => {
+const TabContentContainer: React.FC<TabContentContainerProps> = ({ children }) => {
   return (
     <div className="p-6 bg-[#12203c] rounded-lg border border-blue-900/20">
       <div className="space-y-6">
@@ -14,4 +14,4 @@ const MenuContainer: React.FC<MenuContainerProps> = ({ children }) => {
   )
 }
 
-export default MenuContainer
+export default TabContentContainer

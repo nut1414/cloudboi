@@ -2,7 +2,6 @@
 import React from "react"
 import { WifiIcon } from "@heroicons/react/24/outline"
 import Section from "../../../components/Common/Section"
-import MenuContainer from "./MenuContainer"
 import { useInstanceSetting } from "../../../hooks/Instance/useInstanceSetting"
 
 const NetworkingMenu: React.FC = () => {
@@ -13,7 +12,7 @@ const NetworkingMenu: React.FC = () => {
     const networkId = `network-${instance?.instance_id.slice(0, 8) || 'default'}`
 
     return (
-        <MenuContainer>
+        <>
             <Section
                 title="Private Network"
                 icon={<WifiIcon className="w-5 h-5" />}
@@ -47,7 +46,7 @@ const NetworkingMenu: React.FC = () => {
                     </p>
                 </div>
             </Section>
-        </MenuContainer>
+        </>
     )
 }
 

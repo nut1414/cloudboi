@@ -6,13 +6,14 @@ import PageContainer from "../../components/Layout/PageContainer"
 import StatusBadge from "../../components/Common/StatusBadge"
 import { useInstanceSetting } from "../../hooks/Instance/useInstanceSetting"
 import SkeletonLoader from "../../components/Common/SkeletonLoader"
+import TabNavigation, { TabItem } from "../../components/Common/Tab/TabNavigation"
 
 const InstanceSettingPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("AccessMenu")
   const { instance, isLoading, formatUptime } = useInstanceSetting()
 
   // Define tabs with icons for better visual hierarchy
-  const tabs = [
+  const tabs: TabItem[] = [
     { id: "AccessMenu", label: "Access", icon: <CommandLineIcon className="w-5 h-5" /> },
     { id: "PowersMenu", label: "Power", icon: <BoltIcon className="w-5 h-5" /> },
     { id: "NetworkingMenu", label: "Networking", icon: <GlobeAltIcon className="w-5 h-5" /> },
@@ -97,26 +98,11 @@ const InstanceSettingPage: React.FC = () => {
       subtitleIcon={<Cog6ToothIcon className="w-4 h-4" />}
       rightContent={statusWidget}
     >
-      {/* Navigation Tabs with Active Indicator */}
-      <div className="border-b border-blue-900/30 mb-6">
-        <nav className="flex -mb-px">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`
-                mr-8 py-3 flex items-center border-b-2 transition-colors text-base font-medium
-                ${activeTab === tab.id
-                  ? "border-purple-600 text-purple-600"
-                  : "border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-700"}
-              `}
-            >
-              <span className="mr-2">{tab.icon}</span>
-              {tab.label}
-            </button>
-          ))}
-        </nav>
-      </div>
+      <TabNavigation
+        tabs={tabs}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+      />
 
       {/* Content Area */}
       <InstanceSettingContent active={activeTab} />
