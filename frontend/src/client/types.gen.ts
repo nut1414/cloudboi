@@ -8,6 +8,12 @@ export type AddMemberResponse = {
     success: boolean;
 };
 
+export type AllTimePayment = {
+    sum_amount: number;
+    total_cycle: number;
+    last_payment_date: string;
+};
+
 export type CreateJoinTokenRequest = {
     server_name: string;
 };
@@ -59,6 +65,22 @@ export type OsType = {
     os_image_version: string;
 };
 
+export type TransactionStatus = 'PENDING' | 'FAILED' | 'SUCCESS' | 'SCHEDULED' | 'PAID' | 'OVERDUE' | 'EXPIRED';
+
+export type TransactionType = 'SUBSCRIPTION_PAYMENT' | 'TOP_UP';
+
+export type UpcomingPayment = {
+    sum_amount: number;
+    total_subscription: number;
+    earliest_due_date: string;
+};
+
+export type UserBillingOverviewResponse = {
+    upcoming_payment: UpcomingPayment;
+    all_time_payment: AllTimePayment;
+    username: string;
+};
+
 export type UserCreateRequest = {
     username: string;
     email: string;
@@ -97,11 +119,59 @@ export type UserSessionResponse = {
     role: (string | null);
 };
 
+export type UserTopUpRequest = {
+    amount: number;
+};
+
+export type UserTopUpResponse = {
+    transaction_id: string;
+    transaction_type: string;
+    transaction_status: string;
+    amount: number;
+    created_at: string;
+    last_updated_at: string;
+};
+
+export type UserTransactionResponse = {
+    transaction_id: string;
+    transaction_type: TransactionType;
+    transaction_status: TransactionStatus;
+    amount: number;
+    created_at: string;
+    last_updated_at: string;
+};
+
+export type UserWalletResponse = {
+    username: string;
+    balance: number;
+    last_updated_at: string;
+};
+
 export type ValidationError = {
     loc: Array<(string | number)>;
     msg: string;
     type: string;
 };
+
+export type BillingGetBillingOverviewResponse = (UserBillingOverviewResponse);
+
+export type BillingGetBillingOverviewError = unknown;
+
+export type BillingGetAllUserTransactionsResponse = (Array<UserTransactionResponse>);
+
+export type BillingGetAllUserTransactionsError = unknown;
+
+export type BillingTopUpData = {
+    body: UserTopUpRequest;
+};
+
+export type BillingTopUpResponse = (UserTopUpResponse);
+
+export type BillingTopUpError = (HTTPValidationError);
+
+export type BillingGetUserWalletResponse = (UserWalletResponse);
+
+export type BillingGetUserWalletError = unknown;
 
 export type ClusterCreateJoinTokenData = {
     body: CreateJoinTokenRequest;

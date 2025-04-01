@@ -14,3 +14,11 @@ class Transaction(BaseModel):
     amount: float
     created_at: Optional[datetime] = None
     last_updated_at: datetime
+
+class UserTransactionResponse(BaseModel):
+    transaction_id: uuid.UUID
+    transaction_type: TransactionType
+    transaction_status: TransactionStatus
+    amount: float
+    created_at: str
+    last_updated_at: str

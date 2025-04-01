@@ -41,3 +41,8 @@ class UserSessionResponse(BaseModel):
     username: Optional[str]
     email: Optional[str]
     role: Optional[str]
+
+class UserWalletResponse(BaseModel):
+    username: str
+    balance: float
+    last_updated_at: str

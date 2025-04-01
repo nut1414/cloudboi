@@ -92,12 +92,16 @@ class SubscriptionService:
             transaction_statuses=[TransactionStatus.OVERDUE]
         )
     
-    async def process_transaction(self, transaction: Transaction) -> None:
-        """Process a transaction based on its type and the user's wallet balance."""
-        user_wallet = await self.user_opr.get_user_wallet(user_id=transaction.user_id)
-
+    async def get_user_wallet(self, user_id: uuid.UUID) -> UserWallet:
+        """Get the user's wallet information."""
+        user_wallet = await self.user_opr.get_user_wallet(user_id=user_id)
         if not user_wallet:
             raise ValueError("User wallet not found.")
+        return user_wallet
+    
+    async def process_transaction(self, transaction: Transaction) -> Transaction:
+        """Process a transaction based on its type and the user's wallet balance."""
+        await self.get_user_wallet(user_id=transaction.user_id)
 
         if transaction.transaction_type == TransactionType.TOP_UP:
             updated_wallet, updated_transaction  = await self.transaction_opr.update_transaction_and_user_wallet(
@@ -113,6 +117,8 @@ class SubscriptionService:
             # If payment was successful, schedule next payment
             if updated_transaction.transaction_status == TransactionStatus.PAID:
                 await self.next_subscription(updated_transaction)
+            
+        return updated_transaction
     
     async def apply_penalty(self, transaction: Transaction) -> None:
         """Apply penalty for expired subscriptions by removing the instance and subscription."""
@@ -166,6 +172,19 @@ class SubscriptionService:
             transaction_type=TransactionType.SUBSCRIPTION_PAYMENT,
             transaction_status=TransactionStatus.SCHEDULED,
             reference_id=f"subscription_{subscription_id}",
+            amount=amount,
+            created_at=current_time,
+            last_updated_at=current_time
+        )
+    
+    def _create_topup_transaction(self, user_id: uuid.UUID, username: str, amount: float) -> Transaction:
+        """Create a top-up transaction."""
+        current_time = DateTimeUtils.now_dt()
+        return Transaction(
+            user_id=user_id,
+            transaction_type=TransactionType.TOP_UP,
+            transaction_status=TransactionStatus.PENDING,
+            reference_id=f"topup_{DateTimeUtils.to_bkk_string(current_time)}_{username}",
             amount=amount,
             created_at=current_time,
             last_updated_at=current_time
