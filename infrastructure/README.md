@@ -14,6 +14,7 @@ Options:
 - `--username`: MAAS admin username (default: admin)
 - `--password`: MAAS admin password (default: admin)
 - `--email`: MAAS admin email (default: admin@example.com)
+- `--force`: Skip confirmation prompts and use default values
 
 MAAS will be accessible at `https://yourip:5240/MAAS`
 
@@ -31,12 +32,13 @@ sudo ./cloudboi-cli init-lxd [options]
 
 Options:
 - `--channel`: LXD snap channel (default: 5.21/stable)
+- `--force`: Skip confirmation prompts
 
 LXD will be accessible at `https://yourip:8443`
 
 #### LXD Cluster Configuration Details
 
-The initialization process will prompt for the following:
+The initialization process will automatically configure:
 1. 'yes' - Use LXD Cluster
 2. '' - Use default ip name
 3. 'no' - Not joining an existing cluster
@@ -45,10 +47,11 @@ The initialization process will prompt for the following:
 6. 'dir' - Storage pool name
 7. 'no' - Don't use remote storage
 8. 'no' - Don't connect to MAAS
-9. 'yes' - Use existing bridge/interface
-10. 'ACTIVE_INTERFACE' - Name of the existing bridge/interface (check using: `ip link show | grep 'state UP' | awk '{print $2}' | tr -d :`)
-11. 'yes' - Stale cached image
-12. 'yes' - Print yaml
+9. 'no' - Use existing bridge/interface
+10. 'yes' - Create a new fan overlay network
+11. '' - Auto subnet for fan overlay network
+12. 'yes' - Stale cached image
+13. 'yes' - Print yaml
 
 > **Note**: While LXD can be accessed via browser at `https://yourip:8443`, this is not required. All operations can be performed using the `lxc` command-line tool.
 
@@ -86,7 +89,38 @@ JOIN_TOKEN=$(lxc cluster add $NODE_HOSTNAME | grep -E '^[A-Za-z0-9+/]+={0,2}$')
 sudo ./cloudboi-cli clear-maas [--force]
 ```
 
-Removes MAAS and all its dependencies. Use `--force` to skip the confirmation prompt.
+Removes MAAS and all its dependencies. The `--force` option will skip confirmation prompts.
+
+### Clear LXD
+
+```bash
+sudo ./cloudboi-cli clear-lxd [--force]
+```
+
+Removes LXD and all its dependencies. The `--force` option will skip confirmation prompts.
+
+### Clear System
+
+```bash
+sudo ./cloudboi-cli clear-system [--force]
+```
+
+Removes both MAAS and LXD from the system. The `--force` option will skip confirmation prompts.
+
+### Install
+
+```bash
+sudo ./cloudboi-cli install [options]
+```
+
+Installs both MAAS and LXD with the specified options. This command combines `init-maas` and `init-lxd` into a single operation.
+
+Options:
+- `--username`: MAAS admin username (default: admin)
+- `--password`: MAAS admin password (default: admin)
+- `--email`: MAAS admin email (default: admin@example.com)
+- `--channel`: LXD snap channel (default: 5.21/stable)
+- `--force`: Skip confirmation prompts and use default values
 
 ## Help
 

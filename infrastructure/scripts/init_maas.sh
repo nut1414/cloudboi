@@ -29,8 +29,12 @@ if ! [ -x "$(command -v snap)" ]; then
 fi
 
 # check if want to install MAAS
-echo "Do you want to install MAAS? (y/n)"
-read INSTALL_MAAS
+if [ "$FORCE" != "yes" ]; then
+    echo "Do you want to install MAAS? (y/n)"
+    read INSTALL_MAAS
+else
+    INSTALL_MAAS="y"
+fi
 
 if [ "$INSTALL_MAAS" != "y" ]; then
     exit
@@ -38,18 +42,30 @@ fi
 
 # Only ask for credentials if not provided through environment variables
 if [ -z "$MAAS_ADMIN_USERNAME" ]; then
-    echo "Enter MAAS admin username (default: admin)"
-    read MAAS_ADMIN_USERNAME
+    if [ "$FORCE" != "yes" ]; then
+        echo "Enter MAAS admin username (default: admin)"
+        read MAAS_ADMIN_USERNAME
+    else
+        MAAS_ADMIN_USERNAME=$DEFAULT_MAAS_ADMIN_USERNAME
+    fi
 fi
 
 if [ -z "$MAAS_ADMIN_PASSWORD" ]; then
-    echo "Enter MAAS admin password (default: admin)"
-    read MAAS_ADMIN_PASSWORD
+    if [ "$FORCE" != "yes" ]; then
+        echo "Enter MAAS admin password (default: admin)"
+        read MAAS_ADMIN_PASSWORD
+    else
+        MAAS_ADMIN_PASSWORD=$DEFAULT_MAAS_ADMIN_PASSWORD
+    fi
 fi
 
 if [ -z "$MAAS_ADMIN_EMAIL" ]; then
-    echo "Enter MAAS admin email (default: admin@example.com)"
-    read MAAS_ADMIN_EMAIL
+    if [ "$FORCE" != "yes" ]; then
+        echo "Enter MAAS admin email (default: admin@example.com)"
+        read MAAS_ADMIN_EMAIL
+    else
+        MAAS_ADMIN_EMAIL=$DEFAULT_MAAS_ADMIN_EMAIL
+    fi
 fi
 
 # Set default values if still empty
@@ -70,19 +86,16 @@ fi
 echo "Stopping LXD..."
 snap stop lxd
 
-echo "Installng MAAS..."
+echo "Installing MAAS..."
 systemctl disable --now systemd-timesyncd
-
 
 # install MAAS and dependencies
 snap install maas --channel=${MAAS_CHANNEL}
-
 
 # install postgresql
 apt install -y postgresql-16
 systemctl start postgresql
 systemctl enable --now postgresql
-
 
 echo "Configuring MAAS..."
 # create maas user and database

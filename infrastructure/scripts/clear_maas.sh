@@ -12,14 +12,15 @@ if ! [ -x "$(command -v snap)" ]; then
     exit
 fi
 
-
 # check if want to remove MAAS
-echo "Do you want to remove MAAS? (y/n)"
-
-read REMOVE_MAAS
+if [ "$FORCE" != "yes" ]; then
+    echo "Do you want to remove MAAS? (y/n)"
+    read REMOVE_MAAS
+else
+    REMOVE_MAAS="y"
+fi
 
 # remove MAAS
-
 if [ "$REMOVE_MAAS" == "y" ]; then
     snap remove maas
     sudo -u postgres psql -c "DROP DATABASE maasdb;"

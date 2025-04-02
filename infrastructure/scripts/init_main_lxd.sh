@@ -13,7 +13,6 @@ if [[ $(/usr/bin/id -u) -ne 0 ]]; then
     exit
 fi
 
-
 # check if snap is installed
 if ! [ -x "$(command -v snap)" ]; then
     echo "snap is not installed (install using 'sudo apt install snapd')"
@@ -21,8 +20,12 @@ if ! [ -x "$(command -v snap)" ]; then
 fi
 
 # check if want to install LXD
-echo "Do you want to install LXD? (y/n)"
-read INSTALL_LXD
+if [ "$FORCE" != "yes" ]; then
+    echo "Do you want to install LXD? (y/n)"
+    read INSTALL_LXD
+else
+    INSTALL_LXD="y"
+fi
 
 if [ "$INSTALL_LXD" != "y" ]; then
     exit
