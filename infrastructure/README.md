@@ -61,7 +61,7 @@ https://pylxd.readthedocs.io/en/latest/authentication.html#generate-a-certificat
 ### Generate Cloud-init Configuration
 
 ```bash
-sudo ./cloudboi-cli gen-cloudinit [node_hostname]
+sudo ./cloudboi-cli gen-cloudinit [--hostname node_hostname]
 ```
 
 This command generates a cloud-init configuration for onboarding new nodes into the LXD cluster. If no hostname is provided, the script will prompt for input.
