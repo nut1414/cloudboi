@@ -24,6 +24,7 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
         {tabs.map((tab) => (
           <button
             key={tab.id}
+            data-tab-id={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`
               mr-8 py-3 flex items-center border-b-2 transition-colors text-base font-medium

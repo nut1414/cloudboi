@@ -12,7 +12,7 @@ import SkeletonLoader from "../../components/Common/SkeletonLoader"
 import Section from "../../components/Common/Section"
 import PageContainer from "../../components/Layout/PageContainer"
 
-function InstanceCreatePage() {
+const InstanceCreatePage: React.FC = () => {
     const { userName } = useParams<{ userName: string }>()
     const navigate = useNavigate()
     const { 

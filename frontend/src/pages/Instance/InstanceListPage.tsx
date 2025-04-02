@@ -9,7 +9,7 @@ import { useInstanceList } from "../../hooks/Instance/useInstanceList"
 import { EllipsisVerticalIcon, ServerIcon } from "@heroicons/react/24/outline"
 import PageContainer from "../../components/Layout/PageContainer"
 
-function InstanceListPage() {
+const InstanceListPage: React.FC = () => {
     const {
         filteredInstances,
         isLoading,

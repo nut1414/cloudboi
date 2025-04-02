@@ -1,3 +1,4 @@
+import uuid
 from .base_model import BaseModel
 
 class UpcomingPayment(BaseModel):
@@ -21,7 +22,7 @@ class UserTopUpRequest(BaseModel):
     amount: float
 
 class UserTopUpResponse(BaseModel):
-    transaction_id: str
+    transaction_id: uuid.UUID
     transaction_type: str
     transaction_status: str
     amount: float

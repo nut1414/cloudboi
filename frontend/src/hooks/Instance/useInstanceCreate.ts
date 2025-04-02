@@ -48,7 +48,7 @@ export const useInstanceCreate = () => {
                 type: INSTANCE_ACTIONS.SET_ERROR,
                 payload: "Failed to load instance details. Please try again."
             })
-            console.error("Error fetching instance details:", err)
+            alert("Error fetching instance details")
         } finally {
             dispatch?.({ type: INSTANCE_ACTIONS.SET_LOADING, payload: false })
         }

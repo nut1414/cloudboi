@@ -1,49 +1,52 @@
 // components/User/Billing/HistoryMenu/HistoryMenu.tsx
-import React from "react";
-import { ClockIcon } from "@heroicons/react/24/outline";
-import Table from "../../Common/Table";
-import { TransactionStatusType } from "../../Common/StatusBadge";
-import { TransactionStatus } from "../../../constant/TransactionConstant";
-import StatusBadge from "../../Common/StatusBadge";
-
-interface Transaction {
-    id: string;
-    date: string;
-    type: string;
-    amount: number;
-    status: TransactionStatusType;
-}
+import React, { useEffect } from "react"
+import { ClockIcon } from "@heroicons/react/24/outline"
+import Table, { TableColumn } from "../../Common/Table"
+import { UserTransactionResponse } from "../../../client"
+import StatusBadge from "../../Common/StatusBadge"
+import { useUserBilling } from "../../../hooks/User/useUserBilling"
 
 const HistoryMenu: React.FC = () => {
-    const transactions: Transaction[] = [
-        { id: "tx-001", date: "2023-05-15", type: "Top Up", amount: 500, status: TransactionStatus.SUCCESS },
-        { id: "tx-002", date: "2023-05-01", type: "Usage", amount: -120, status: TransactionStatus.PAID },
-        { id: "tx-003", date: "2023-04-15", type: "Top Up", amount: 1000, status: TransactionStatus.SUCCESS },
-        { id: "tx-004", date: "2023-04-10", type: "Top Up", amount: 200, status: TransactionStatus.PENDING },
-        { id: "tx-005", date: "2023-03-20", type: "Subscription", amount: -250, status: TransactionStatus.SCHEDULED },
-        { id: "tx-006", date: "2023-03-15", type: "Top Up", amount: 100, status: TransactionStatus.FAILED }
-    ];
+    const {
+        userTransactions,
+        fetchTransactions,
+        formatTransactionType
+    } = useUserBilling()
 
-    const columns = [
-        { key: "date", label: "Date" },
-        { key: "type", label: "Transaction Type" },
+    useEffect(() => {
+        if (!userTransactions) {
+            fetchTransactions()
+        }
+    }, [fetchTransactions, userTransactions])
+
+    const columns: TableColumn<UserTransactionResponse>[] = [
+        {
+            key: "created_at",
+            label: "Date",
+            render: (item) => item.created_at
+        },
+        {
+            key: "transaction_type",
+            label: "Transaction Type",
+            render: (item) => formatTransactionType(item.transaction_type)
+        },
         {
             key: "amount",
             label: "Amount",
-            render: (item: Transaction) => (
-                <span className={item.amount > 0 ? "text-green-400" : "text-red-400"}>
-                    {item.amount > 0 ? "+" : ""}{item.amount} CBC
+            render: (item) => (
+                <span className={item.transaction_type === "TOP_UP" ? "text-green-400" : "text-red-400"}>
+                    {item.transaction_type === "TOP_UP" ? "+" : "-"}{item.amount} CBC
                 </span>
             )
         },
         {
-            key: "status",
+            key: "transaction_status",
             label: "Status",
-            render: (item: Transaction) => (
-                <StatusBadge status={item.status} />
+            render: (item) => (
+                <StatusBadge status={item.transaction_status} />
             )
         },
-    ];
+    ]
 
     return (
         <>
@@ -59,12 +62,12 @@ const HistoryMenu: React.FC = () => {
 
             <Table
                 columns={columns}
-                data={transactions}
+                data={userTransactions || []}
                 emptyStateMessage="No transactions found"
                 unit="transaction"
             />
         </>
-    );
-};
+    )
+}
 
-export default HistoryMenu;
+export default React.memo(HistoryMenu)
