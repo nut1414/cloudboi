@@ -94,3 +94,17 @@ export interface PackageData extends BaseModel {
     status: TransactionStatus;
     amount: number; 
   }
+
+
+  // For User Manage Page 
+  export type UserStatus = "Active" | "Inactive";
+  export type UserRole = "user" | "admin";
+  
+  export interface User extends BaseModel {
+    id: string;
+    username: string;
+    email: string;
+    noOfInstances: number;
+    status: UserStatus;
+    role: UserRole;
+  }

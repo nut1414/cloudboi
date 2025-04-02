@@ -22,6 +22,7 @@ const Package = lazy(() => import("./pages/Admin/Package/package"))
 const CreatePackage = lazy(() => import("./pages/Admin/Package/createPackage"))
 const EditPackage = lazy(() => import("./pages/Admin/Package/editPackage"))
 const BillingAdmin = lazy(() => import("./pages/Admin/Billing/billing"))
+const UserManage = lazy(() => import("./pages/Admin/User/userManage"))
 
 /**
  * Route configuration with authentication guards
@@ -121,6 +122,10 @@ const routes = [
           },
         ],
       },
+      {
+        path: "usermanage",
+        element: <UserManage />,
+      }
     ],
   },
 ];
