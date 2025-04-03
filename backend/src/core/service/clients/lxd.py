@@ -7,6 +7,7 @@ from ...commons.exception import create_exception_class
 from .websocket import LXDWebSocketManager, LXDWebSocketSession
 from .base_instance_client import BaseInstanceClient
 from ...models.instance import InstanceCreateRequest, UserInstance
+from ...models.lxd_state import InstanceState
 from ....infra.managers.lxd import LXDManager
 from ...utils.decorator import create_decorator
 from ...utils.datetime import DateTimeUtils
@@ -77,6 +78,13 @@ class LXDClient(BaseInstanceClient[models.Instance]):
     async def stop_instance(self, instance_identifier: models.Instance) -> bool:
         return await asyncio.to_thread(
             self.lxd_manager.stop_container,
+            instance_identifier
+        )
+    
+    @_resolve_instance()
+    async def get_instance_state(self, instance_identifier: models.Instance) -> InstanceState:
+        return await asyncio.to_thread(
+            self.lxd_manager.get_container_state,
             instance_identifier
         )
     
