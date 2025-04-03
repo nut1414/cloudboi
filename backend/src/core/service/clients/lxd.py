@@ -6,8 +6,7 @@ from pylxd import models
 from ...commons.exception import create_exception_class
 from .websocket import LXDWebSocketManager, LXDWebSocketSession
 from .base_instance_client import BaseInstanceClient
-from ...models.instance import InstanceCreateRequest, UserInstance
-from ...models.lxd_state import InstanceState
+from ...models.instance import InstanceCreateRequest, UserInstance, LxdInstanceState
 from ....infra.managers.lxd import LXDManager
 from ...utils.decorator import create_decorator
 from ...utils.datetime import DateTimeUtils
@@ -82,7 +81,7 @@ class LXDClient(BaseInstanceClient[models.Instance]):
         )
     
     @_resolve_instance()
-    async def get_instance_state(self, instance_identifier: models.Instance) -> InstanceState:
+    async def get_instance_state(self, instance_identifier: models.Instance) -> LxdInstanceState:
         return await asyncio.to_thread(
             self.lxd_manager.get_container_state,
             instance_identifier

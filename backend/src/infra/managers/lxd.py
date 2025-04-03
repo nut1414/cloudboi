@@ -6,7 +6,7 @@ from ...core.commons.exception import create_exception_class
 from ..config import LXDConfig
 from ...core.utils.decorator import create_decorator
 from ...core.utils.logging import logger
-from ...core.models.lxd_state import InstanceState
+from ...core.models.instance import LxdInstanceState
 
 LXDManagerException = create_exception_class("LXDManager")
 
@@ -227,11 +227,8 @@ class LXDManager:
             raise LXDManagerException(f"Failed to set root password: {str(e)}")
         
     @_ensure_connected()
-    def get_container_state(self, container: models.Instance) -> InstanceState:
+    def get_container_state(self, container: models.Instance) -> LxdInstanceState:
         try:
-            # Ensure the container object is synced with the server state
-            
-            # Access the state using the raw API endpoint via pylxd's client
             state_response = self.client.api.instances[container.hostname].state.get()
             
             # Check response status and parse JSON metadata into the model
@@ -240,7 +237,7 @@ class LXDManager:
                 # Add basic validation/handling for missing network key if stopped
                 if 'network' not in state_data:
                     state_data['network'] = None
-                return InstanceState.model_validate(state_data)
+                return LxdInstanceState.model_validate(state_data)
             else:
                 raise LXDManagerException(f"Failed to get container state for '{container.name}'. Status: {state_response.status_code}, Reason: {state_response.reason}")
 
