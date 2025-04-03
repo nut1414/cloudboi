@@ -45,7 +45,7 @@ const HistoryMenu: React.FC = () => {
             key: "transaction_status",
             label: "Status",
             render: (item) => (
-                <StatusBadge className="capitalize" status={item.transaction_status} />
+                <StatusBadge status={item.transaction_status} />
             )
         },
     ]
