@@ -1,0 +1,411 @@
+#!/bin/bash
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Script directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPTS_DIR="$SCRIPT_DIR/scripts"
+
+# Function to check if scripts directory exists
+check_scripts_dir() {
+    if [ ! -d "$SCRIPTS_DIR" ]; then
+        echo -e "${RED}Error: Scripts directory not found at $SCRIPTS_DIR${NC}"
+        exit 1
+    fi
+}
+
+# Function to check if running as root
+check_root() {
+    if [[ $(/usr/bin/id -u) -ne 0 ]]; then
+        echo -e "${RED}Error: This command must be run as root${NC}"
+        exit 1
+    fi
+}
+
+# Function to check if snap is installed
+check_snap() {
+    if ! [ -x "$(command -v snap)" ]; then
+        echo -e "${RED}Error: snap is not installed (install using 'sudo apt install snapd')${NC}"
+        exit 1
+    fi
+}
+
+# Function to check if specific snap is installed
+check_snap_installed() {
+    local snap_name="$1"
+    if ! snap list | grep -q "^$snap_name "; then
+        echo -e "${RED}Error: $snap_name snap is not installed${NC}"
+        exit 1
+    fi
+}
+
+# Function to check if snap is not installed
+check_snap_not_installed() {
+    local snap_name="$1"
+    if snap list | grep -q "^$snap_name "; then
+        echo -e "${RED}Error: $snap_name is already installed. Use 'clear-$snap_name' to remove it first if you want to reinitialize.${NC}"
+        exit 1
+    fi
+}
+
+# Function to check if snap exists
+check_snap_exists() {
+    local snap_name="$1"
+    if ! snap list | grep -q "^$snap_name "; then
+        echo -e "${YELLOW}$snap_name is not installed. Nothing to clear.${NC}"
+        exit 0
+    fi
+}
+
+# Function to display help
+show_help() {
+    echo -e "${GREEN}CloudBoi CLI - Infrastructure Management Tool${NC}"
+    echo
+    echo "Usage: $0 <command> [options]"
+    echo
+    echo "Commands:"
+    echo "  install       Install both MAAS and LXD (if not already installed)"
+    echo "  init-maas     Initialize MAAS (Metal As A Service)"
+    echo "  init-lxd      Initialize LXD cluster"
+    echo "  clear-maas    Remove MAAS and its dependencies"
+    echo "  clear-lxd     Remove LXD and its dependencies"
+    echo "  clear-system  Remove both MAAS and LXD from the system"
+    echo "  gen-cloudinit Generate cloud-init configuration"
+    echo "  help          Show this help message"
+    echo
+    echo "Options:"
+    echo "  --username    MAAS admin username (default: admin)"
+    echo "  --password    MAAS admin password (default: admin)"
+    echo "  --email       MAAS admin email (default: admin@example.com)"
+    echo "  --channel     LXD snap channel (default: 5.21/stable)"
+    echo "  --hostname    Node hostname for cloud-init generation"
+    echo "  --force       Skip confirmation prompts"
+}
+
+# Function to parse MAAS arguments
+parse_maas_args() {
+    local username="admin"
+    local password="admin"
+    local email="admin@example.com"
+    local force="no"
+    
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --username)
+                username="$2"
+                shift 2
+                ;;
+            --password)
+                password="$2"
+                shift 2
+                ;;
+            --email)
+                email="$2"
+                shift 2
+                ;;
+            --force)
+                force="yes"
+                shift
+                ;;
+            *)
+                echo -e "${RED}Unknown option: $1${NC}"
+                show_help
+                exit 1
+                ;;
+        esac
+    done
+    
+    echo "$username|$password|$email|$force"
+}
+
+# Function to parse LXD arguments
+parse_lxd_args() {
+    local channel="5.21/stable"
+    local force="no"
+    
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --channel)
+                channel="$2"
+                shift 2
+                ;;
+            --force)
+                force="yes"
+                shift
+                ;;
+            *)
+                echo -e "${RED}Unknown option: $1${NC}"
+                show_help
+                exit 1
+                ;;
+        esac
+    done
+    
+    echo "$channel|$force"
+}
+
+# Function to initialize MAAS
+init_maas() {
+    check_root
+    check_snap
+    check_snap_not_installed "maas"
+    
+    # Parse arguments
+    IFS='|' read -r MAAS_ADMIN_USERNAME MAAS_ADMIN_PASSWORD MAAS_ADMIN_EMAIL FORCE <<< "$(parse_maas_args "$@")"
+    
+    echo -e "${YELLOW}Initializing MAAS with:${NC}"
+    echo "Username: $MAAS_ADMIN_USERNAME"
+    echo "Email: $MAAS_ADMIN_EMAIL"
+    
+    # Export variables for the script
+    export MAAS_ADMIN_USERNAME
+    export MAAS_ADMIN_PASSWORD
+    export MAAS_ADMIN_EMAIL
+    export FORCE
+    
+    # Run the init_maas.sh script
+    "$SCRIPTS_DIR/init_maas.sh"
+}
+
+# Function to initialize LXD
+init_lxd() {
+    check_root
+    check_snap
+    check_snap_not_installed "lxd"
+    
+    # Parse arguments
+    IFS='|' read -r DEFAULT_LXD_CHANNEL FORCE <<< "$(parse_lxd_args "$@")"
+    
+    echo -e "${YELLOW}Initializing LXD with channel: $DEFAULT_LXD_CHANNEL${NC}"
+    
+    # Export variables for the script
+    export DEFAULT_LXD_CHANNEL
+    export FORCE
+    
+    # Run the init_main_lxd.sh script
+    "$SCRIPTS_DIR/init_main_lxd.sh"
+}
+
+# Function to clear MAAS
+clear_maas() {
+    check_root
+    check_snap
+    check_snap_exists "maas"
+    
+    # Parse arguments
+    local force="no"
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --force)
+                force="yes"
+                shift
+                ;;
+            *)
+                echo -e "${RED}Unknown option: $1${NC}"
+                show_help
+                exit 1
+                ;;
+        esac
+    done
+    
+    echo -e "${YELLOW}Warning: This will remove MAAS and all its dependencies${NC}"
+    export FORCE="$force"
+    "$SCRIPTS_DIR/clear_maas.sh"
+}
+
+# Function to clear LXD
+clear_lxd() {
+    check_root
+    check_snap
+    check_snap_exists "lxd"
+    
+    # Parse arguments
+    local force="no"
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --force)
+                force="yes"
+                shift
+                ;;
+            *)
+                echo -e "${RED}Unknown option: $1${NC}"
+                show_help
+                exit 1
+                ;;
+        esac
+    done
+    
+    echo -e "${YELLOW}Warning: This will remove LXD and all its dependencies${NC}"
+    export FORCE="$force"
+    "$SCRIPTS_DIR/clear_lxd.sh"
+}
+
+# Function to clear both MAAS and LXD
+clear_system() {
+    check_root
+    check_snap
+    
+    # Parse arguments
+    local force="no"
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --force)
+                force="yes"
+                shift
+                ;;
+            *)
+                echo -e "${RED}Unknown option: $1${NC}"
+                show_help
+                exit 1
+                ;;
+        esac
+    done
+    
+    # Check if either MAAS or LXD is installed
+    MAAS_INSTALLED=$(snap list | grep -q "^maas " && echo "yes" || echo "no")
+    LXD_INSTALLED=$(snap list | grep -q "^lxd " && echo "yes" || echo "no")
+    
+    if [ "$MAAS_INSTALLED" = "no" ] && [ "$LXD_INSTALLED" = "no" ]; then
+        echo -e "${YELLOW}Neither MAAS nor LXD is installed. Nothing to clear.${NC}"
+        exit 0
+    fi
+    
+    echo -e "${YELLOW}Warning: This will remove the following components:${NC}"
+    if [ "$MAAS_INSTALLED" = "yes" ]; then
+        echo "- MAAS and its dependencies"
+    fi
+    if [ "$LXD_INSTALLED" = "yes" ]; then
+        echo "- LXD and its dependencies"
+    fi
+    
+    # Run clear scripts only for installed components
+    if [ "$MAAS_INSTALLED" = "yes" ]; then
+        export FORCE="$force"
+        "$SCRIPTS_DIR/clear_maas.sh"
+    fi
+    if [ "$LXD_INSTALLED" = "yes" ]; then
+        export FORCE="$force"
+        "$SCRIPTS_DIR/clear_lxd.sh"
+    fi
+    
+    echo -e "${GREEN}System cleared successfully!${NC}"
+}
+
+# Function to generate cloud-init configuration
+gen_cloudinit() {
+    check_root
+    check_snap
+    
+    # Check if required snaps are installed
+    check_snap_installed "maas"
+    check_snap_installed "lxd"
+    
+    # Parse arguments
+    local hostname=""
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --hostname)
+                hostname="$2"
+                shift 2
+                ;;
+            *)
+                echo -e "${RED}Unknown option: $1${NC}"
+                show_help
+                exit 1
+                ;;
+        esac
+    done
+    
+    echo -e "${YELLOW}Generating cloud-init configuration...${NC}"
+    
+    # Run the gen_cloudinit.sh script with hostname if provided
+    if [ -n "$hostname" ]; then
+        "$SCRIPTS_DIR/gen_cloudinit.sh" "$hostname"
+    else
+        "$SCRIPTS_DIR/gen_cloudinit.sh"
+    fi
+}
+
+# Function to install both MAAS and LXD
+install() {
+    check_root
+    check_snap
+    check_snap_not_installed "maas"
+    check_snap_not_installed "lxd"
+    
+    echo -e "${YELLOW}Installing MAAS and LXD...${NC}"
+    
+    # Parse arguments
+    IFS='|' read -r MAAS_ADMIN_USERNAME MAAS_ADMIN_PASSWORD MAAS_ADMIN_EMAIL FORCE <<< "$(parse_maas_args "$@")"
+    IFS='|' read -r DEFAULT_LXD_CHANNEL LXD_FORCE <<< "$(parse_lxd_args "$@")"
+    
+    echo -e "${YELLOW}Installing with:${NC}"
+    echo "MAAS Username: $MAAS_ADMIN_USERNAME"
+    echo "MAAS Email: $MAAS_ADMIN_EMAIL"
+    echo "LXD Channel: $DEFAULT_LXD_CHANNEL"
+    
+    # Export variables for the scripts
+    export MAAS_ADMIN_USERNAME
+    export MAAS_ADMIN_PASSWORD
+    export MAAS_ADMIN_EMAIL
+    export DEFAULT_LXD_CHANNEL
+    export FORCE="$FORCE"
+    
+    # Run the installation scripts
+    "$SCRIPTS_DIR/init_maas.sh"
+    "$SCRIPTS_DIR/init_main_lxd.sh"
+    
+    echo -e "${GREEN}Installation completed successfully!${NC}"
+}
+
+# Main command handling
+if [ $# -eq 0 ]; then
+    show_help
+    exit 0
+fi
+
+# Check if scripts directory exists before proceeding
+check_scripts_dir
+
+case "$1" in
+    install)
+        shift
+        install "$@"
+        ;;
+    init-maas)
+        shift
+        init_maas "$@"
+        ;;
+    init-lxd)
+        shift
+        init_lxd "$@"
+        ;;
+    clear-maas)
+        shift
+        clear_maas "$@"
+        ;;
+    clear-lxd)
+        shift
+        clear_lxd "$@"
+        ;;
+    clear-system)
+        shift
+        clear_system "$@"
+        ;;
+    gen-cloudinit)
+        shift
+        gen_cloudinit "$@"
+        ;;
+    help|--help|-h)
+        show_help
+        ;;
+    *)
+        echo -e "${RED}Unknown command: $1${NC}"
+        show_help
+        exit 1
+        ;;
+esac 
