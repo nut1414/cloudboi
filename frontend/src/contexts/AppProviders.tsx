@@ -2,6 +2,7 @@
 import { ReactNode } from 'react'
 import { UserProvider } from './userContext'
 import { InstanceProvider } from './instanceContext'
+import { BillingProvider } from './billingContext'
 
 interface AppProvidersProps {
   children: ReactNode
@@ -10,9 +11,11 @@ interface AppProvidersProps {
 export const AppProviders = ({ children }: AppProvidersProps) => {
   return (
     <UserProvider>
-      <InstanceProvider>
-        {children}
-      </InstanceProvider>
+      <BillingProvider>
+        <InstanceProvider>
+          {children}
+        </InstanceProvider>
+      </BillingProvider>
     </UserProvider>
   )
 }

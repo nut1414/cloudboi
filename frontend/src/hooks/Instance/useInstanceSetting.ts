@@ -1,7 +1,7 @@
 // useInstanceSetting.ts
 import { useInstance, INSTANCE_ACTIONS } from "../../contexts/instanceContext"
 import { InstanceService } from "../../client"
-import { useCallback, useEffect, useMemo } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { InstanceStatus } from "../../constant/InstanceConstant"
 import { useInstanceList } from "./useInstanceList"
@@ -15,7 +15,6 @@ export const useInstanceSetting = () => {
         dispatch
     } = useInstance()
     const { refreshInstances } = useInstanceList()
-
     const navigate = useNavigate()
     const { userName, instanceName } = useParams<{ userName: string, instanceName: string }>()
 
@@ -44,7 +43,6 @@ export const useInstanceSetting = () => {
                 payload: response.data
             })
         } catch (err) {
-            console.error("Failed to fetch instance details:", err)
             dispatch?.({
                 type: INSTANCE_ACTIONS.FETCH_ERROR,
                 payload: "Failed to fetch instance details"
@@ -78,7 +76,6 @@ export const useInstanceSetting = () => {
             await getInstanceAndUpdate()
             alert(`Instance ${selectedInstance.instance_name} started successfully`)
         } catch (err) {
-            console.error("Failed to start instance:", err)
             dispatch?.({
                 type: INSTANCE_ACTIONS.FETCH_ERROR,
                 payload: "Failed to start the instance"
@@ -99,7 +96,6 @@ export const useInstanceSetting = () => {
             await getInstanceAndUpdate()
             alert(`Instance ${selectedInstance.instance_name} stopped successfully`)
         } catch (err) {
-            console.error("Failed to stop instance:", err)
             dispatch?.({
                 type: INSTANCE_ACTIONS.FETCH_ERROR,
                 payload: "Failed to stop the instance"
@@ -120,7 +116,6 @@ export const useInstanceSetting = () => {
             await getInstanceAndUpdate()
             alert(`Instance ${selectedInstance.instance_name} restarted successfully`)
         } catch (err) {
-            console.error("Failed to restart instance:", err)
             dispatch?.({
                 type: INSTANCE_ACTIONS.FETCH_ERROR,
                 payload: "Failed to restart the instance"
@@ -142,7 +137,6 @@ export const useInstanceSetting = () => {
             refreshInstances()
             navigate(`/user/${userName}/instance`)
         } catch (err) {
-            console.error("Failed to delete instance:", err)
             dispatch?.({
                 type: INSTANCE_ACTIONS.FETCH_ERROR,
                 payload: "Failed to delete the instance"

@@ -9,6 +9,7 @@ from .service.user import UserService
 from .service.instance import InstanceService
 from .service.subscription import SubscriptionService
 from .service.lxd_cluster import LXDClusterService
+from .service.billing import BillingService
 from .sql.operations import *
 
 
@@ -35,6 +36,7 @@ class AppContainer(containers.DeclarativeContainer):
     subscription_opr = providers.Factory(SubscriptionOperation, db_session=db_session)
     user_opr = providers.Factory(UserOperation, db_session=db_session)
     transaction_opr = providers.Factory(TransactionOperation, db_session=db_session)
+    billing_opr = providers.Factory(BillingOperation, db_session=db_session)
 
     # Services
     user_service = providers.Factory(
@@ -56,6 +58,12 @@ class AppContainer(containers.DeclarativeContainer):
     lxd_cluster_service = providers.Factory(
         LXDClusterService,
         lxd_client=lxd_client
+    )
+    billing_service = providers.Factory(
+        BillingService,
+        billing_opr=billing_opr,
+        transaction_opr=transaction_opr,
+        subscription_service=subscription_service
     )
 
     # Workers

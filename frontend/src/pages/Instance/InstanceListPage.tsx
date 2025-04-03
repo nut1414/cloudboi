@@ -9,7 +9,7 @@ import { useInstanceList } from "../../hooks/Instance/useInstanceList"
 import { EllipsisVerticalIcon, ServerIcon } from "@heroicons/react/24/outline"
 import PageContainer from "../../components/Layout/PageContainer"
 
-function InstanceListPage() {
+const InstanceListPage: React.FC = () => {
     const {
         filteredInstances,
         isLoading,
@@ -87,6 +87,7 @@ function InstanceListPage() {
                     emptyStateMessage="No instances found matching your criteria"
                     onCreateNew={handleCreateInstance}
                     keyExtractor={(instance) => instance.instance_id}
+                    unit="instance"
                 />
             </PageContainer>
         </>

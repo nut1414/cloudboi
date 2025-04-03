@@ -6,13 +6,15 @@ import PageContainer from "../../components/Layout/PageContainer"
 import StatusBadge from "../../components/Common/StatusBadge"
 import { useInstanceSetting } from "../../hooks/Instance/useInstanceSetting"
 import SkeletonLoader from "../../components/Common/SkeletonLoader"
+import TabNavigation, { TabItem } from "../../components/Common/Tab/TabNavigation"
+import TabSkeletonLoader from "../../components/Common/Tab/TabSkeletonLoader"
 
 const InstanceSettingPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("AccessMenu")
   const { instance, isLoading, formatUptime } = useInstanceSetting()
 
   // Define tabs with icons for better visual hierarchy
-  const tabs = [
+  const tabs: TabItem[] = [
     { id: "AccessMenu", label: "Access", icon: <CommandLineIcon className="w-5 h-5" /> },
     { id: "PowersMenu", label: "Power", icon: <BoltIcon className="w-5 h-5" /> },
     { id: "NetworkingMenu", label: "Networking", icon: <GlobeAltIcon className="w-5 h-5" /> },
@@ -41,45 +43,6 @@ const InstanceSettingPage: React.FC = () => {
     </div>
   )
 
-  if (isLoading) {
-    return (
-      <PageContainer
-        title={<SkeletonLoader height="h-7" width="w-64" />}
-      >
-        {/* Navigation Tabs Skeleton */}
-        <div className="border-b border-blue-900/30 mb-6">
-          <nav className="flex -mb-px">
-            {Array(tabs.length).fill(0).map((_, index) => (
-              <div
-                key={index}
-                className="mr-8 py-3 flex items-center"
-              >
-                <SkeletonLoader height="h-5" width="w-5" rounded="rounded-md" className="mr-2" />
-                <SkeletonLoader height="h-5" width="w-16" />
-              </div>
-            ))}
-          </nav>
-        </div>
-
-        {/* Content Area Skeleton */}
-        <div className="space-y-6">
-          {/* Form Fields Skeleton */}
-          <div className="space-y-4">
-            <SkeletonLoader height="h-10" rounded="rounded-md" />
-            <SkeletonLoader height="h-10" rounded="rounded-md" />
-            <SkeletonLoader height="h-10" rounded="rounded-md" />
-          </div>
-
-          {/* Action Buttons Skeleton */}
-          <div className="pt-4 flex space-x-3">
-            <SkeletonLoader height="h-10" width="w-32" rounded="rounded-md" />
-            <SkeletonLoader height="h-10" width="w-32" rounded="rounded-md" />
-          </div>
-        </div>
-      </PageContainer>
-    )
-  }
-
   if (!instance) {
     return (
       <PageContainer title="Instance Not Found" subtitle="Error loading instance">
@@ -92,34 +55,23 @@ const InstanceSettingPage: React.FC = () => {
 
   return (
     <PageContainer
-      title={instance.instance_name}
+      title={isLoading ? <SkeletonLoader height="h-7" width="w-64" /> : instance.instance_name}
       subtitle="Instance Settings"
       subtitleIcon={<Cog6ToothIcon className="w-4 h-4" />}
-      rightContent={statusWidget}
+      rightContent={isLoading ? <></> : statusWidget}
     >
-      {/* Navigation Tabs with Active Indicator */}
-      <div className="border-b border-blue-900/30 mb-6">
-        <nav className="flex -mb-px">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`
-                mr-8 py-3 flex items-center border-b-2 transition-colors text-base font-medium
-                ${activeTab === tab.id
-                  ? "border-purple-600 text-purple-600"
-                  : "border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-700"}
-              `}
-            >
-              <span className="mr-2">{tab.icon}</span>
-              {tab.label}
-            </button>
-          ))}
-        </nav>
-      </div>
-
-      {/* Content Area */}
-      <InstanceSettingContent active={activeTab} />
+      {isLoading ? (
+          <TabSkeletonLoader count={tabs.length} />
+        ) : (
+          <>
+            <TabNavigation
+              tabs={tabs}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+            />
+            <InstanceSettingContent active={activeTab} />
+          </>
+        )}
     </PageContainer>
   )
 }

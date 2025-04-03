@@ -2,7 +2,6 @@ import React from "react"
 import { CommandLineIcon } from "@heroicons/react/24/outline"
 import InstanceTerminal from "./InstanceTerminal"
 import { useParams } from "react-router-dom"
-import MenuContainer from "./MenuContainer"
 import { useInstanceSetting } from "../../../hooks/Instance/useInstanceSetting"
 
 const AccessMenu: React.FC = () => {
@@ -10,7 +9,7 @@ const AccessMenu: React.FC = () => {
   const { isInstanceRunning } = useInstanceSetting()
 
   return (
-    <MenuContainer>
+    <>
       <div className="mb-4">
         <h2 className="text-lg font-medium text-gray-200 flex items-center">
           <CommandLineIcon className="w-5 h-5 mr-2 text-purple-500" />
@@ -27,7 +26,7 @@ const AccessMenu: React.FC = () => {
           isRunning={isInstanceRunning || false}
         />
       </div>
-    </MenuContainer>
+    </>
   )
 }
 

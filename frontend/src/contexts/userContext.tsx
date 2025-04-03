@@ -116,7 +116,7 @@ const SessionInitializer = ({ children }: { children: ReactNode }) => {
           type: USER_ACTIONS.SESSION_CHECK_FAILURE, 
           payload: 'Session check failed' 
         })
-        console.error('Error checking session:', error)
+        alert('Error checking session')
       }
     }
 

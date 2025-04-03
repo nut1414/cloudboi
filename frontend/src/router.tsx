@@ -11,7 +11,7 @@ const SignUp = lazy(() => import("./pages/Auth/signUp"))
 const InstanceListPage = lazy(() => import("./pages/Instance/InstanceListPage"))
 const InstanceCreatePage = lazy(() => import("./pages/Instance/InstanceCreatePage"))
 const InstanceSettingPage = lazy(() => import("./pages/Instance/InstanceSettingPage"))
-const Billing = lazy(() => import("./pages/Billing/billing"))
+const UserBillingPage = lazy(() => import("./pages/User/UserBillingPage"))
 const Support = lazy(() => import("./pages/User/support"))
 
 /**
@@ -42,7 +42,7 @@ const routes = [
     children: [
       {
         path: "billing",
-        element: <Billing />,
+        element: <UserBillingPage />,
       },
       {
         path: "support",

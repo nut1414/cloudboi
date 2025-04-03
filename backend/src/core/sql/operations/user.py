@@ -57,6 +57,8 @@ class UserOperation(BaseOperation):
             user_id: Optional[uuid.UUID] = None,
             username: Optional[str] = None
         ) -> UserWalletModel:
+        if user_id is None and username is None:
+            raise ValueError("Either user_id or username must be provided.")
         async with self.session() as db:
             stmt = select(User)
             if user_id is not None:

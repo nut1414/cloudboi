@@ -8,6 +8,7 @@ import {
     XCircleIcon
 } from "@heroicons/react/24/outline"
 import Section from "../../Common/Section"
+import InputField from "../../Common/InputField" // Import the new component
 
 interface SetAuthSectionProps {
     password: string
@@ -44,25 +45,19 @@ const SetAuthSection: React.FC<SetAuthSectionProps> = React.memo(({
 
     return (
         <Section
-          title="Set Authentication"
-          icon={<LockClosedIcon className="w-5 h-5" />}
-          description="Choose a secure root password to access and manage your instance"
+            title="Set Authentication"
+            icon={<LockClosedIcon className="w-5 h-5" />}
+            description="Choose a secure root password to access and manage your instance"
         >
-            <div className="w-full relative mb-6">
-                <input
+            <div className="w-full mb-6">
+                <InputField
                     type={showPassword ? "text" : "password"}
                     value={password}
-                    onChange={(e) => onPasswordChange(e.target.value)}
+                    onChange={onPasswordChange}
                     placeholder="Enter secure password..."
-                    className="w-full p-3 rounded-lg bg-[#23375F] border border-blue-800/30 focus:outline-none focus:ring-2 focus:ring-purple-500 text-white"
+                    endIcon={showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+                    onEndIconClick={togglePasswordVisibility}
                 />
-                <button
-                    onClick={togglePasswordVisibility}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-300 hover:text-purple-400 focus:outline-none"
-                    type="button"
-                >
-                    {showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
-                </button>
             </div>
 
             <div className="w-full">

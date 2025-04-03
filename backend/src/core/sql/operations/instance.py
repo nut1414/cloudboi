@@ -85,6 +85,8 @@ class InstanceOperation(BaseOperation):
         user_id: Optional[uuid.UUID] = None, 
         username: Optional[str] = None
     ) -> UserInstanceModel:
+        if instance_id is None and instance_name is None:
+            raise ValueError("Either instance_id or instance_name must be provided.")
         async with self.session() as db:
             stmt = select(UserInstance)
             if instance_id is not None:
@@ -105,6 +107,8 @@ class InstanceOperation(BaseOperation):
         instance_ids: Optional[List[uuid.UUID]] = None,
         instance_names: Optional[List[str]] = None
     ) -> List[UserInstanceFromDB]:
+        if username is None and user_id is None:
+            raise ValueError("Either username or user_id must be provided.")
         async with self.session() as db:
             stmt = (
                 select(UserInstance)

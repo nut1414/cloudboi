@@ -3,6 +3,8 @@ import { useLocation, Link, useParams, useNavigate } from "react-router-dom"
 import { useAuth } from "../../hooks/User/useAuth"
 import { ArrowLeftStartOnRectangleIcon, Bars3BottomLeftIcon, ChevronDownIcon, Cog6ToothIcon, CreditCardIcon, UserGroupIcon } from "@heroicons/react/24/outline"
 import { CloudIcon } from "@heroicons/react/24/solid"
+import { useUserBilling } from "../../hooks/User/useUserBilling"
+import SkeletonLoader from "../Common/SkeletonLoader"
 
 // Define proper types
 interface NavItemProps {
@@ -15,7 +17,6 @@ interface NavItemProps {
 
 interface SideNavbarProps {
   navItems?: { path: string; label: string; icon?: React.ReactNode }[] // Make nav items customizable
-  creditLimit?: number // Make credit limit customizable
   creditCurrency?: string // Make currency customizable
   logoText?: string // Allow custom logo text
   logoIcon?: React.ReactNode // Allow custom logo icon
@@ -56,24 +57,30 @@ const NavItem: React.FC<NavItemProps> = ({
   )
 }
 
-// Credit card component with flex instead of absolute positioning
-const CreditCard: React.FC<{ creditLimit?: number; currency?: string }> = ({
-  creditLimit = 1000,
-  currency = "CBC"
+// Restyled Credit card component to match the theme in TopUpMenu
+const CreditCard: React.FC<{ balance?: number; currency?: string; isLoading?: boolean }> = ({
+  balance,
+  currency = "CBC",
+  isLoading = false
 }) => (
   <div className="mx-4 my-4">
     <div className="
-      bg-purple-600 
+      bg-[#23375F] 
       rounded-lg shadow-md overflow-hidden
-      flex flex-col p-5
-      border border-purple-500/20
+      flex justify-between items-center p-5
+      border border-blue-800/30
+      transition-all duration-200
+      hover:bg-[#2A3F6A]
     ">
-      <span className="text-sm text-purple-100 font-medium">
-        Available Credit:
-      </span>
-      <span className="text-white text-2xl font-bold mt-2">
-        {creditLimit} {currency}
-      </span>
+      <div className="flex flex-col">
+        <span className="text-sm text-gray-400 font-medium">
+          Current Balance:
+        </span>
+        <span className="text-white text-2xl font-bold mt-1">
+          {isLoading ? <SkeletonLoader variant="light" width="w-24" height="h-7" /> : balance !== undefined ? `${balance} ${currency}` : "Not available"}
+        </span>
+      </div>
+      <CreditCardIcon className="w-8 h-8 text-purple-500" />
     </div>
   </div>
 )
@@ -151,13 +158,13 @@ const UserMenu: React.FC<{
 
 const SideNavbar: React.FC<SideNavbarProps> = ({
   navItems: customNavItems,
-  creditLimit,
-  creditCurrency,
+  creditCurrency = "CBC",
   logoText = "CloudBoi",
   logoIcon = <CloudIcon className="bg-purple-500 w-8 h-8 rounded-md mr-2 flex items-center justify-center" />,
   userRole
 }) => {
   const { userName } = useParams<{ userName: string }>()
+  const { userWallet, isLoading } = useUserBilling()
   const { logout } = useAuth()
   const [isHovering, setIsHovering] = useState<boolean>(false)
 
@@ -189,8 +196,12 @@ const SideNavbar: React.FC<SideNavbarProps> = ({
         </Link>
       </div>
 
-      {/* Credit Card */}
-      <CreditCard creditLimit={creditLimit} currency={creditCurrency} />
+      {/* Credit Card - Updated to use actual user wallet data */}
+      <CreditCard 
+        balance={userWallet?.balance} 
+        currency={creditCurrency} 
+        isLoading={isLoading} 
+      />
 
       {/* Navigation Items */}
       <div className="mt-6 mb-3 px-5 text-gray-400 text-sm uppercase tracking-wider font-medium">

@@ -2,9 +2,9 @@
 
 import type { Options } from '@hey-api/client-axios';
 import { queryOptions, type UseMutationOptions } from '@tanstack/react-query';
-import type { ClusterCreateJoinTokenData, ClusterCreateJoinTokenError, ClusterCreateJoinTokenResponse, ClusterAddMemberData, ClusterAddMemberError, ClusterAddMemberResponse, InstanceGetInstanceData, InstanceCreateInstanceData, InstanceCreateInstanceError, InstanceCreateInstanceResponse, InstanceStartInstanceData, InstanceStartInstanceError, InstanceStartInstanceResponse, InstanceStopInstanceData, InstanceStopInstanceError, InstanceStopInstanceResponse, InstanceDeleteInstanceData, InstanceDeleteInstanceError, InstanceDeleteInstanceResponse, InstanceRestartInstanceData, InstanceRestartInstanceError, InstanceRestartInstanceResponse, UserCreateUserData, UserCreateUserError, UserCreateUserResponse, UserLoginUserData, UserLoginUserError, UserLoginUserResponse, UserLogoutUserError, UserLogoutUserResponse } from '../types.gen';
+import { client, BillingService, ClusterService, InstanceService, RootService, UserService } from '../services.gen';
+import type { BillingTopUpData, BillingTopUpError, BillingTopUpResponse, ClusterCreateJoinTokenData, ClusterCreateJoinTokenError, ClusterCreateJoinTokenResponse, ClusterAddMemberData, ClusterAddMemberError, ClusterAddMemberResponse, InstanceGetInstanceData, InstanceCreateInstanceData, InstanceCreateInstanceError, InstanceCreateInstanceResponse, InstanceStartInstanceData, InstanceStartInstanceError, InstanceStartInstanceResponse, InstanceStopInstanceData, InstanceStopInstanceError, InstanceStopInstanceResponse, InstanceDeleteInstanceData, InstanceDeleteInstanceError, InstanceDeleteInstanceResponse, InstanceRestartInstanceData, InstanceRestartInstanceError, InstanceRestartInstanceResponse, UserCreateUserData, UserCreateUserError, UserCreateUserResponse, UserLoginUserData, UserLoginUserError, UserLoginUserResponse, UserLogoutUserError, UserLogoutUserResponse } from '../types.gen';
 import type { AxiosError } from 'axios';
-import { client, ClusterService, InstanceService, RootService, UserService } from '../services.gen';
 
 type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseURL' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -31,6 +31,96 @@ const createQueryKey = <TOptions extends Options>(id: string, options?: TOptions
         params.query = options.query;
     }
     return params;
+};
+
+export const billingGetBillingOverviewQueryKey = (options?: Options) => [
+    createQueryKey('billingGetBillingOverview', options)
+];
+
+export const billingGetBillingOverviewOptions = (options?: Options) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await BillingService.billingGetBillingOverview({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: billingGetBillingOverviewQueryKey(options)
+    });
+};
+
+export const billingGetAllUserTransactionsQueryKey = (options?: Options) => [
+    createQueryKey('billingGetAllUserTransactions', options)
+];
+
+export const billingGetAllUserTransactionsOptions = (options?: Options) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await BillingService.billingGetAllUserTransactions({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: billingGetAllUserTransactionsQueryKey(options)
+    });
+};
+
+export const billingTopUpQueryKey = (options: Options<BillingTopUpData>) => [
+    createQueryKey('billingTopUp', options)
+];
+
+export const billingTopUpOptions = (options: Options<BillingTopUpData>) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await BillingService.billingTopUp({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: billingTopUpQueryKey(options)
+    });
+};
+
+export const billingTopUpMutation = (options?: Partial<Options<BillingTopUpData>>) => {
+    const mutationOptions: UseMutationOptions<BillingTopUpResponse, AxiosError<BillingTopUpError>, Options<BillingTopUpData>> = {
+        mutationFn: async (localOptions) => {
+            const { data } = await BillingService.billingTopUp({
+                ...options,
+                ...localOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const billingGetUserWalletQueryKey = (options?: Options) => [
+    createQueryKey('billingGetUserWallet', options)
+];
+
+export const billingGetUserWalletOptions = (options?: Options) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await BillingService.billingGetUserWallet({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: billingGetUserWalletQueryKey(options)
+    });
 };
 
 export const clusterCreateJoinTokenQueryKey = (options: Options<ClusterCreateJoinTokenData>) => [

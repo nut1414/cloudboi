@@ -20,6 +20,7 @@ export interface TableProps<T> {
   onCreateNew?: () => void
   keyExtractor?: (item: T, index: number) => string
   skeletonRowCount?: number // Number of skeleton rows to show while loading
+  unit?: string
 }
 
 // Table Header component
@@ -111,6 +112,7 @@ function Table<T>({
   onCreateNew,
   keyExtractor = (_, index) => index.toString(),
   skeletonRowCount = 5,
+  unit = "item",
 }: TableProps<T>) {
   // Render a table row
   const renderRow = React.useCallback((item: T, index: number) => {
@@ -151,7 +153,7 @@ function Table<T>({
   return (
     <>
       <p className="text-gray-300 justify-self-end mb-2 text-sm">
-        Displaying {data.length} {data.length === 1 ? 'instance' : 'instances'}
+        Displaying {data.length} {data.length === 1 ? unit : `${unit}s`}
       </p>
       <div className="bg-[#192A51] rounded-xl shadow-lg overflow-hidden border border-blue-900/50">
         {/* Header Row - always visible but with skeleton content when loading */}

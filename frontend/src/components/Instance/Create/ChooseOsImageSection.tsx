@@ -1,5 +1,5 @@
 import React, { useCallback } from "react"
-import OptionButton from "./OptionButton"
+import OptionButton from "../../Common/OptionButton"
 import SelectDropdown from "./SelectDropdown"
 import { OsType } from "../../../client"
 import { 
@@ -36,7 +36,7 @@ const ChooseOsImageSection: React.FC<ChooseOsImageSectionProps> = React.memo(({
     onImageNameSelect,
     onVersionSelect
 }) => {
-    // OS icon mapping function with simplified implementation
+    // OS icon mapping function remains the same
     const getOsIcon = useCallback((osName: string) => {
         const name = osName.toLowerCase()
         const imgClasses = "w-5 h-5 object-contain rounded-sm filter brightness-95"
@@ -76,7 +76,8 @@ const ChooseOsImageSection: React.FC<ChooseOsImageSectionProps> = React.memo(({
                         label={imageName}
                         icon={getOsIcon(imageName)}
                         isSelected={imageName === selectedImageName}
-                        onClick={() => onImageNameSelect(imageName)} 
+                        onClick={() => onImageNameSelect(imageName)}
+                        className="font-medium"
                     />
                 ))}
             </div>

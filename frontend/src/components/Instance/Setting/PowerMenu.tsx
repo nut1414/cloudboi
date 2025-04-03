@@ -3,9 +3,7 @@ import React from "react"
 import { PowerIcon, ArrowPathIcon } from "@heroicons/react/24/outline"
 import Section from "../../../components/Common/Section"
 import Button from "../../../components/Common/Button"
-import MenuContainer from "./MenuContainer"
 import { useInstanceSetting } from "../../../hooks/Instance/useInstanceSetting"
-import { InstanceStatus } from "../../../constant/InstanceConstant"
 
 const PowerMenu: React.FC = () => {
     const {
@@ -18,7 +16,7 @@ const PowerMenu: React.FC = () => {
     } = useInstanceSetting()
 
     return (
-        <MenuContainer>
+        <>
             <Section
                 title="Power Management"
                 icon={<PowerIcon className="w-5 h-5" />}
@@ -59,7 +57,7 @@ const PowerMenu: React.FC = () => {
                     />
                 </div>
             </Section>
-        </MenuContainer>
+        </>
     )
 }
 
