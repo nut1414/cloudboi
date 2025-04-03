@@ -22,6 +22,7 @@ const Package = lazy(() => import("./pages/Admin/Package/package"))
 const CreatePackage = lazy(() => import("./pages/Admin/Package/createPackage"))
 const EditPackage = lazy(() => import("./pages/Admin/Package/editPackage"))
 const BillingAdmin = lazy(() => import("./pages/Admin/Billing/billing"))
+const AddCredit = lazy(() => import("./pages/Admin/Billing/AddCredit"))
 const UserManage = lazy(() => import("./pages/Admin/User/userManage"))
 
 /**
@@ -91,6 +92,10 @@ const routes = [
       {
         path: "billing",
         element: <BillingAdmin />,
+      },
+      {
+        path: "addcredit",
+        element: <AddCredit />,
       },
       {
         path: ":userName/instance",
