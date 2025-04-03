@@ -1,9 +1,9 @@
-// components/User/Billing/TopUpMenu/TopUpMenu.tsx
-import React, { useState, useMemo, useCallback, useEffect } from "react"
+import React, { useState, useMemo, useCallback } from "react"
 import { PlusCircleIcon, CreditCardIcon } from "@heroicons/react/24/outline"
 import Button from "../../Common/Button"
 import Section from "../../Common/Section"
 import InputField from "../../Common/InputField"
+import OptionButton from "../../Common/OptionButton" // Import the new component
 import { useUserBilling } from "../../../hooks/User/useUserBilling"
 
 const TopUpMenu: React.FC = () => {
@@ -17,15 +17,7 @@ const TopUpMenu: React.FC = () => {
   } = useUserBilling()
 
   // Memoize predefined amounts to prevent recreation on each render
-  const predefinedAmounts = useMemo(() => [
-    { value: 100, category: "standard" },
-    { value: 200, category: "standard" },
-    { value: 500, category: "standard" },
-    { value: 1000, category: "standard" },
-    { value: 2000, category: "premium" },
-    { value: 5000, category: "premium" },
-    { value: 10000, category: "premium" },
-  ], [])
+  const predefinedAmounts = useMemo(() => [100, 200, 500, 1000, 2000, 5000, 10000], [])
 
   // Handle input change
   const handleInputChange = useCallback((value: string) => {
@@ -40,22 +32,6 @@ const TopUpMenu: React.FC = () => {
       setCreditValue("")
     }
   }, [creditValue, handleTopUp])
-
-  // Memoize the amount selection button
-  const AmountButton = useCallback(({ amount }: { amount: { value: number; category: string } }) => (
-    <button
-      key={amount.value}
-      onClick={() => setCreditValue(amount.value)}
-      className={`px-4 py-3 rounded-lg transition-all duration-200 ${creditValue === amount.value
-        ? "bg-purple-600 text-white ring-2 ring-purple-600 ring-opacity-50"
-        : amount.category === "premium"
-          ? "bg-[#2A3F6A] text-gray-200 hover:bg-[#304776]"
-          : "bg-[#23375F] text-gray-300 hover:bg-[#2A3F6A]"
-        }`}
-    >
-      {amount.value.toLocaleString()} CBC
-    </button>
-  ), [creditValue])
 
   // Memoize the entire top-up content to avoid unnecessary re-renders
   const TopUpContent = useMemo(() => {
@@ -105,7 +81,14 @@ const TopUpMenu: React.FC = () => {
 
           <div className="grid grid-cols-4 gap-3">
             {predefinedAmounts.map((amount) => (
-              <AmountButton key={amount.value} amount={amount} />
+              <OptionButton
+                key={amount}
+                label={amount}
+                unit="CBC"
+                variant="prominent"
+                isSelected={creditValue === amount}
+                onClick={() => setCreditValue(amount)}
+              />
             ))}
           </div>
         </div>
@@ -142,8 +125,7 @@ const TopUpMenu: React.FC = () => {
     predefinedAmounts,
     processTopUp,
     handleInputChange,
-    sanitizeNumericInput,
-    AmountButton
+    sanitizeNumericInput
   ])
 
   return (

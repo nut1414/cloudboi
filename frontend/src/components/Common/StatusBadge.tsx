@@ -24,29 +24,29 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({
     className = '',
 }) => {
     // Normalize status to lowercase for matching
-    const normalizedStatus = typeof status === 'string' ? status.toLowerCase() : '';
+    const normalizedStatus = typeof status === 'string' ? status : '';
 
     // Define status styles map for Instance statuses
     const instanceStatusConfig = {
-        [InstanceStatus.RUNNING.toLowerCase()]: {
+        [InstanceStatus.RUNNING]: {
             bg: 'bg-green-700',
             text: 'text-green-100',
             dotColor: 'bg-green-500',
             textOnly: 'text-green-500',
         },
-        [InstanceStatus.STOPPED.toLowerCase()]: {
+        [InstanceStatus.STOPPED]: {
             bg: 'bg-red-700',
             text: 'text-red-100',
             dotColor: 'bg-red-500',
             textOnly: 'text-red-500',
         },
-        [InstanceStatus.FROZEN.toLowerCase()]: {
+        [InstanceStatus.FROZEN]: {
             bg: 'bg-blue-700',
             text: 'text-blue-100',
             dotColor: 'bg-blue-500',
             textOnly: 'text-blue-500',
         },
-        [InstanceStatus.ERROR.toLowerCase()]: {
+        [InstanceStatus.ERROR]: {
             bg: 'bg-red-700',
             text: 'text-red-100',
             dotColor: 'bg-red-500',
@@ -56,43 +56,43 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({
 
     // Define status styles map for Transaction statuses
     const transactionStatusConfig = {
-        [TransactionStatus.SUCCESS.toLowerCase()]: {
+        [TransactionStatus.SUCCESS]: {
             bg: 'bg-green-700',
             text: 'text-green-100',
             dotColor: 'bg-green-500',
             textOnly: 'text-green-500',
         },
-        [TransactionStatus.PAID.toLowerCase()]: {
+        [TransactionStatus.PAID]: {
             bg: 'bg-green-700',
             text: 'text-green-100',
             dotColor: 'bg-green-500',
             textOnly: 'text-green-500',
         },
-        [TransactionStatus.PENDING.toLowerCase()]: {
+        [TransactionStatus.PENDING]: {
             bg: 'bg-blue-700',
             text: 'text-blue-100',
             dotColor: 'bg-blue-500',
             textOnly: 'text-blue-500',
         },
-        [TransactionStatus.SCHEDULED.toLowerCase()]: {
+        [TransactionStatus.SCHEDULED]: {
             bg: 'bg-blue-700',
             text: 'text-blue-100',
             dotColor: 'bg-blue-500',
             textOnly: 'text-blue-500',
         },
-        [TransactionStatus.FAILED.toLowerCase()]: {
+        [TransactionStatus.FAILED]: {
             bg: 'bg-red-700',
             text: 'text-red-100',
             dotColor: 'bg-red-500',
             textOnly: 'text-red-500',
         },
-        [TransactionStatus.OVERDUE.toLowerCase()]: {
+        [TransactionStatus.OVERDUE]: {
             bg: 'bg-red-700',
             text: 'text-red-100',
             dotColor: 'bg-red-500',
             textOnly: 'text-red-500',
         },
-        [TransactionStatus.EXPIRED.toLowerCase()]: {
+        [TransactionStatus.EXPIRED]: {
             bg: 'bg-red-700',
             text: 'text-red-100',
             dotColor: 'bg-red-500',
@@ -130,12 +130,12 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({
 
     return (
         <span
-            className={`font-medium inline-flex items-center ${showBackground ? styles.bg : ''} ${textColor} ${showBackground ? sizeClasses[size] : ''} ${className}`}
+            className={`capitalize font-medium inline-flex items-center ${showBackground ? styles.bg : ''} ${textColor} ${showBackground ? sizeClasses[size] : ''} ${className}`}
         >
             {showDot && (
                 <span className={`${styles.dotColor} ${dotSize[size]} rounded-full ${!showBackground ? 'mr-1.5' : 'mr-1.5'}`}></span>
             )}
-            {status}
+            {status.toLowerCase()}
         </span>
     );
 };

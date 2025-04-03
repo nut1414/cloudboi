@@ -5,6 +5,7 @@ import Table, { TableColumn } from "../../Common/Table"
 import { UserTransactionResponse } from "../../../client"
 import StatusBadge from "../../Common/StatusBadge"
 import { useUserBilling } from "../../../hooks/User/useUserBilling"
+import TransactionAmount from "../../Common/TransactionAmount"
 
 const HistoryMenu: React.FC = () => {
     const {
@@ -34,16 +35,17 @@ const HistoryMenu: React.FC = () => {
             key: "amount",
             label: "Amount",
             render: (item) => (
-                <span className={item.transaction_type === "TOP_UP" ? "text-green-400" : "text-red-400"}>
-                    {item.transaction_type === "TOP_UP" ? "+" : "-"}{item.amount} CBC
-                </span>
+                <TransactionAmount 
+                    amount={item.amount} 
+                    transactionType={item.transaction_type} 
+                />
             )
         },
         {
             key: "transaction_status",
             label: "Status",
             render: (item) => (
-                <StatusBadge status={item.transaction_status} />
+                <StatusBadge className="capitalize" status={item.transaction_status} />
             )
         },
     ]

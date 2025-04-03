@@ -1,6 +1,6 @@
 // components/Instance/Create/ChooseSubscriptionPlanSection.tsx
 import React, { useMemo } from "react"
-import OptionButton from "./OptionButton"
+import OptionButton from "../../Common/OptionButton"
 import { InstancePlan } from "../../../client"
 import { 
   CpuChipIcon, 
@@ -43,7 +43,8 @@ const ChooseSubscriptionPlanSection: React.FC<ChooseSubscriptionPlanSectionProps
                         label={packageOption.instance_package_name}
                         icon={<ScaleIcon className="w-5 h-5" />}
                         isSelected={selectedInstanceType?.instance_plan_id === packageOption.instance_plan_id}
-                        onClick={() => onSelect(packageOption)} 
+                        onClick={() => onSelect(packageOption)}
+                        className="font-medium"
                     />
                 ))}
             </div>

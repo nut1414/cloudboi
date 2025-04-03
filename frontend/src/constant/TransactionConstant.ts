@@ -9,3 +9,8 @@ export const TransactionStatus = {
     OVERDUE: "OVERDUE",
     EXPIRED: "EXPIRED"
 }
+
+export const TransactionType = {
+    TOP_UP: "TOP_UP",
+    SUBSCRIPTION_PAYMENT: "SUBSCRIPTION_PAYMENT"
+}

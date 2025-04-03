@@ -1,6 +1,7 @@
 import { useBilling, BILLING_ACTIONS } from "../../contexts/billingContext"
 import { BillingService, UserTopUpRequest } from "../../client"
 import { useState, useCallback, useMemo } from "react"
+import { TransactionType } from "../../constant/TransactionConstant"
 
 export const useUserBilling = () => {
     const {
@@ -15,9 +16,9 @@ export const useUserBilling = () => {
     // Format transaction type string for display
     const formatTransactionType = useCallback((type: string) => {
         switch (type) {
-            case "TOP_UP":
+            case TransactionType.TOP_UP:
                 return "Top Up"
-            case "SUBSCRIPTION_PAYMENT":
+            case TransactionType.SUBSCRIPTION_PAYMENT:
                 return "Usage / Subscription"
             default:
                 return type
