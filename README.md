@@ -49,6 +49,16 @@ make install
 
 - then run `make dev` to start the project
 
+# Infrastructure Management
+
+CloudBoi provides a CLI tool for managing MAAS and LXD infrastructure. The tool allows you to:
+- Initialize and configure MAAS and LXD clusters
+- Generate cloud-init configurations for new nodes
+- Clear and reinitialize infrastructure components
+- Manage infrastructure with optional force mode to skip confirmation prompts
+
+For detailed instructions on using the infrastructure management tools, see the [Infrastructure README](infrastructure/README.md).
+
 # Contribution
 
 please create a branch with feature as name then request a pull request review on that branch
