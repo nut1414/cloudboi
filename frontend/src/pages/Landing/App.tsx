@@ -1,84 +1,104 @@
-import "./App.css";
-// import Nav from "./components/Nav";
-import NavbarUnLogin from "../../components/Navbar/NavbarUnLogin";
+import React from "react"
+import Section from "../../components/Common/Section"
+import {
+  CloudIcon,
+  ServerIcon,
+  CpuChipIcon,
+  ShieldCheckIcon
+} from "@heroicons/react/24/outline"
+import HeroSection from "../../components/Landing/HeroSection"
+import FeatureCard from "../../components/Landing/FeatureCard"
+import CTASection from "../../components/Landing/CTASection"
 
-function App() {
+const App: React.FC = () => {
+  const features = [
+    {
+      icon: <ServerIcon className="h-12 w-12" />,
+      title: "Flexible Deployments",
+      description: "Launch and configure virtual machines, containers, or bare metal servers through our intuitive interface."
+    },
+    {
+      icon: <CpuChipIcon className="h-12 w-12" />,
+      title: "High Performance",
+      description: "Get the computing power you need with our optimized infrastructure designed for performance."
+    },
+    {
+      icon: <ShieldCheckIcon className="h-12 w-12" />,
+      title: "Secure by Design",
+      description: "Built with security in mind, our platform implements industry best practices to protect your workloads."
+    }
+  ]
+
+  const platformFeatures = [
+    {
+      icon: <ServerIcon className="h-6 w-6" />,
+      label: "Virtual machine management"
+    },
+    {
+      icon: <CpuChipIcon className="h-6 w-6" />,
+      label: "Bare metal provisioning"
+    },
+    {
+      icon: <ShieldCheckIcon className="h-6 w-6" />,
+      label: "Security-focused infrastructure"
+    }
+  ]
+
   return (
     <>
-      <NavbarUnLogin>
-        <ul className="flex space-x-4 items-center">
-          <li>
-            <a
-              href="#"
-              className="bg-[#967AA1] text-white px-4 py-2 rounded-2xl   hover:text-black"
-            >
-              Home
-            </a>
-          </li>
-          <li>
-            <a
-              href="#"
-              className="bg-[#967AA1] text-white px-4 py-2 rounded-2xl   hover:text-black"
-            >
-              About us
-            </a>
-          </li>
-          <li>
-            <a
-              href="#"
-              className="bg-[#967AA1] text-white px-4 py-2 rounded-2xl   hover:text-black"
-            >
-              Pricing
-            </a>
-          </li>
-          <li>
-            <a
-              href="#"
-              className="bg-[#967AA1] text-white px-4 py-2 rounded-2xl   hover:text-black"
-            >
-              Use cases
-            </a>
-          </li>
-          <li>
-            <a
-              href="#"
-              className="bg-[#967AA1] text-white ml-40 px-4 py-2  rounded-2xl  border-transparent border-white border-2   hover:text-black "
-            >
-              Sign In
-            </a>
-          </li>
-        </ul>
-      </NavbarUnLogin>
+      <div className="container mx-auto px-4 py-10">
+        {/* Hero Section */}
+        <HeroSection
+          title="Your Cloud, Your Way"
+          subtitle="Deploy Bare Metal and Virtual Machines with Ease."
+          description="Our cloud platform simplifies infrastructure management
+          for virtual machines, containers, and networking resources.
+          Built with Metal as a Service (MAAS) technology, our solution
+          provides the tools you need to deploy and scale effectively."
+          primaryButton={{
+            label: "Join the waitlist",
+            href: "/register",
+            variant: "purple"
+          }}
+          secondaryButton={{
+            label: "Learn more",
+            href: "/about",
+            variant: "outline"
+          }}
+          platformFeatures={platformFeatures}
+        />
 
-      {/* Large Square Content */}
-      <div className="mr-0 ml-0 mt-[10vh] flex justify-center items-center h-[500px] w-[1200px] bg-[#D5C6E0] rounded-2xl">
-        <div>
-          <h1 className="text-white pb-5 font-bold"> Your Cloud, Your Way </h1>
-          <p className="text-white text-2xl w-[1000px] p-4">
-            {" "}
-            Deploy Bare Metal and Virtual Machines with Ease.
-          </p>
-          <p className="text-white text-2xl w-[1000px] pb-9">
-            With our cloud solution, unlock powerful infrastructure management,
-            whether you're managing virtual machines, containers, or networking
-            for your projects. Our platform, built with Metal as a Service
-            (MAAS), gives you robust and flexible tools to deploy, monitor, and
-            scale your resources—all from a single interface.
-          </p>
-          <ul>
-            <li>
-              <a
-                href="#"
-                className="bg-[#967AA1] text-white px-4 py-2 rounded-2xl  border-transparent hover:border-white border-2   hover:text-black "
-              >
-                Sign up with email
-              </a>
-            </li>
-          </ul>
-        </div>
+        {/* Features Section */}
+        <Section
+          title="Platform Features"
+          icon={<CloudIcon className="h-6 w-6" />}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
+            {features.map((feature, index) => (
+              <FeatureCard
+                key={index}
+                icon={feature.icon}
+                title={feature.title}
+                description={feature.description}
+              />
+            ))}
+          </div>
+        </Section>
+
+        {/* CTA Section */}
+        <CTASection
+          title="Early Access Coming Soon"
+          description="Be among the first to experience CloudBoi. Sign up for early access and updates on our launch."
+          buttonProps={{
+            label: "Join the waitlist",
+            href: "/register",
+            variant: "purple",
+            className: "inline-block"
+          }}
+        />
       </div>
     </>
-  );
+  )
 }
 
-export default App;
+export default App

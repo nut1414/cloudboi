@@ -2,7 +2,7 @@
 import React from "react"
 import { PowerIcon, ArrowPathIcon } from "@heroicons/react/24/outline"
 import Section from "../../../components/Common/Section"
-import Button from "../../../components/Common/Button"
+import Button from "../../../components/Common/Button/Button"
 import { useInstanceSetting } from "../../../hooks/Instance/useInstanceSetting"
 
 const PowerMenu: React.FC = () => {

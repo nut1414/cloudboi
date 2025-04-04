@@ -1,6 +1,6 @@
-import React from "react";
-import { CloudIcon } from "@heroicons/react/24/solid";
-import SkeletonLoader from "./Common/SkeletonLoader";
+import React from "react"
+import { CloudIcon } from "@heroicons/react/24/solid"
+import SkeletonLoader from "./Common/SkeletonLoader"
 
 const GlobalLoading: React.FC = () => {
   return (
@@ -24,7 +24,7 @@ const GlobalLoading: React.FC = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default GlobalLoading;
+export default GlobalLoading

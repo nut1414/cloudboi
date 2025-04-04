@@ -1,13 +1,20 @@
-import { createBrowserRouter } from "react-router-dom"
+import { createBrowserRouter, RouteObject } from "react-router-dom"
 import { lazy } from "react"
 import { publicOnlyGuard, userRouteGuard } from "./guard"
 import { client } from "./client"
 import { API_CONFIG } from "./config/api"
+import { RouterErrorBoundary } from "./components/ErrorBoundary"
 
+// Layouts
 const DefaultLayout = lazy(() => import("./components/Layout/DefaultLayout"))
+const PublicLayout = lazy(() => import("./components/Layout/PublicLayout"))
+
+// Public pages
 const App = lazy(() => import("./pages/Landing/App"))
-const Login = lazy(() => import("./pages/Auth/Login"))
-const SignUp = lazy(() => import("./pages/Auth/signUp"))
+const Login = lazy(() => import("./pages/User/Auth/Login"))
+const Register = lazy(() => import("./pages/User/Auth/Register"))
+
+// User pages
 const InstanceListPage = lazy(() => import("./pages/Instance/InstanceListPage"))
 const InstanceCreatePage = lazy(() => import("./pages/Instance/InstanceCreatePage"))
 const InstanceSettingPage = lazy(() => import("./pages/Instance/InstanceSettingPage"))
@@ -20,20 +27,27 @@ const Support = lazy(() => import("./pages/User/support"))
  * These guards run before the route renders and handle redirects
  * while working with our existing UserContext
  */
-const routes = [
+const routes: RouteObject[] = [
   {
-    index: true,
-    element: <App />,
-  },
-  {
-    path: "/login",
-    element: <Login />,
-    loader: publicOnlyGuard,
-  },
-  {
-    path: "/signup",
-    element: <SignUp />,
-    loader: publicOnlyGuard,
+    path: "/",
+    element: <PublicLayout />,
+    errorElement: <RouterErrorBoundary />,
+    children: [
+      {
+        index: true,
+        element: <App />,
+      },
+      {
+        path: "login",
+        element: <Login />,
+        loader: publicOnlyGuard,
+      },
+      {
+        path: "register",
+        element: <Register />,
+        loader: publicOnlyGuard,
+      },
+    ]
   },
   {
     path: "/user/:userName",
@@ -50,7 +64,7 @@ const routes = [
       },
       {
         path: "setting",
-        element: <>{/* User setting page */}</>,
+        element: <div>User Setting Page</div>,
       },
       {
         path: "instance",

@@ -1,13 +1,14 @@
 import React, { useCallback } from "react"
-import OptionButton from "../../Common/OptionButton"
-import SelectDropdown from "./SelectDropdown"
+import OptionButton from "../../Common/Button/OptionButton"
 import { OsType } from "../../../client"
 import { 
   ComputerDesktopIcon, 
   CheckCircleIcon,
-  CodeBracketIcon // For fallback
+  CodeBracketIcon, // For fallback
+  ViewfinderCircleIcon
 } from "@heroicons/react/24/outline"
 import Section from "../../Common/Section"
+import DropdownButton, { DropdownItemProps } from "../../Common/Button/DropdownButton"
 
 // Image from https://www.dropbox.com/s/uhl8sz1gwse2zd6/distro_icons.zip?dl=0
 import ubuntuImg from "../../../assets/icons/128_ubuntu.png"
@@ -64,6 +65,12 @@ const ChooseOsImageSection: React.FC<ChooseOsImageSectionProps> = React.memo(({
         )
     }, [])
 
+    // Create dropdown items from availableVersions
+    const versionItems: DropdownItemProps[] = availableVersions.map(version => ({
+        content: version,
+        onClick: () => onVersionSelect(version)
+    }))
+
     return (
         <Section 
           title="Choose an operating system"
@@ -83,23 +90,34 @@ const ChooseOsImageSection: React.FC<ChooseOsImageSectionProps> = React.memo(({
             </div>
             
             {selectedImageName && (
-                <div className="mt-4 mb-4">
-                    <SelectDropdown
-                        label="Version"
-                        options={availableVersions}
-                        selectedOption={selectedVersion}
-                        onSelect={onVersionSelect}
-                    />
-                </div>
-            )}
-            
-            {selectedOsType && (
-                <div className="mt-4 bg-blue-900/20 p-4 rounded-lg border border-blue-800/30 text-gray-300">
-                    <div className="flex items-center gap-2">
-                        <CheckCircleIcon className="w-5 h-5 text-purple-400" />
-                        <p className="font-medium">
-                            Selected: <span className="text-white">{selectedOsType.os_image_name} {selectedOsType.os_image_version}</span>
-                        </p>
+                <div className="mt-4 mb-6">
+                    <div className="flex flex-col space-y-2">
+                        <div className="flex items-center mb-2">
+                            <ViewfinderCircleIcon className="w-5 h-5 text-purple-400 mr-2" />
+                            <span className="text-gray-200 font-medium">Version</span>
+                        </div>
+                        
+                        <DropdownButton
+                            content={selectedVersion || "Select Version"}
+                            items={versionItems}
+                            variant="none"
+                            className="bg-[#2A3F6A] border border-blue-800/40 text-gray-200 hover:bg-[#304776] focus:outline-none focus:ring-2 focus:ring-purple-500 rounded-md py-2.5"
+                            position="bottom-left"
+                            buttonType="default"
+                            hasBorder={false}
+                        />
+                        
+                        {selectedOsType && (
+                            <div className="flex items-center mt-2 px-3 py-2 bg-purple-900/20 rounded-md border-l-2 border-purple-500">
+                                <CheckCircleIcon className="w-5 h-5 text-purple-400 mr-2" />
+                                <span className="text-white">
+                                    <span className="text-gray-300">Selected: </span>
+                                    <span className="font-medium">
+                                        {selectedOsType.os_image_name} {selectedOsType.os_image_version}
+                                    </span>
+                                </span>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

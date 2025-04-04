@@ -37,11 +37,6 @@ class BillingService:
     
     async def get_all_user_transactions(self) -> List[UserTransactionResponse]:
         result = await self.transaction_opr.get_all_user_transactions(username=user_session_ctx.get().username)
-        if not result:
-            raise HTTPException(
-                status_code=500,
-                detail="Failed to retrieve transactions",
-            )
         return [UserTransactionResponse(
             transaction_id=transaction.transaction_id,
             transaction_type=transaction.transaction_type,

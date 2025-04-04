@@ -1,4 +1,5 @@
-import React, { useMemo } from "react"
+// InstanceCreatePage.tsx
+import React from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import ChooseOsImageSection from "../../components/Instance/Create/ChooseOsImageSection"
 import ChooseSubscriptionPlanSection from "../../components/Instance/Create/ChooseSubscriptionPlanSection"
@@ -7,7 +8,7 @@ import SetHostnameSection from "../../components/Instance/Create/SetHostnameSect
 import BillSummarySection from "../../components/Instance/Create/BillSummarySection"
 import { useInstanceCreate } from "../../hooks/Instance/useInstanceCreate"
 import { ArrowPathIcon, PlusCircleIcon, RocketLaunchIcon } from "@heroicons/react/24/outline"
-import Button from "../../components/Common/Button"
+import Button from "../../components/Common/Button/Button"
 import SkeletonLoader from "../../components/Common/SkeletonLoader"
 import Section from "../../components/Common/Section"
 import PageContainer from "../../components/Layout/PageContainer"
@@ -17,7 +18,7 @@ const InstanceCreatePage: React.FC = () => {
     const navigate = useNavigate()
     const { 
         instanceDetails,
-        formData,
+        formValues,
         isLoading,
         error,
         isSubmitting,
@@ -76,7 +77,7 @@ const InstanceCreatePage: React.FC = () => {
                     <SkeletonLoader height="h-12" width="w-48" />
                 </div>
             </PageContainer>
-        );
+        )
     }
 
     // Submit button for the form
@@ -94,7 +95,7 @@ const InstanceCreatePage: React.FC = () => {
                 disabled={!isFormValid || isSubmitting}
             />
         </div>
-    );
+    )
 
     return (
         <PageContainer 
@@ -106,7 +107,7 @@ const InstanceCreatePage: React.FC = () => {
                 <>
                     <ChooseOsImageSection 
                         osImages={instanceDetails.os_image} 
-                        selectedOsType={formData.os_type}
+                        selectedOsType={formValues.os_type}
                         selectedImageName={selectedImageName}
                         selectedVersion={selectedVersion}
                         uniqueImageNames={uniqueImageNames}
@@ -117,24 +118,24 @@ const InstanceCreatePage: React.FC = () => {
                     
                     <ChooseSubscriptionPlanSection 
                         instancePackages={instanceDetails.instance_package}
-                        selectedInstanceType={formData.instance_plan}
+                        selectedInstanceType={formValues.instance_plan}
                         onSelect={handleInstancePlanSelect}
                     />
                     
                     <SetAuthSection 
-                        password={formData.root_password || ''}
+                        password={formValues.root_password || ''}
                         onPasswordChange={handleRootPasswordChange}
                     />
                     
                     <SetHostnameSection 
-                        hostname={formData.instance_name || ''}
+                        hostname={formValues.instance_name || ''}
                         onHostnameChange={handleInstanceNameChange}
                     />
                     
                     <BillSummarySection 
-                        selectedPackage={formData.instance_plan}
-                        selectedOs={formData.os_type}
-                        instanceName={formData.instance_name}
+                        selectedPackage={formValues.instance_plan}
+                        selectedOs={formValues.os_type}
+                        instanceName={formValues.instance_name}
                     />
                     
                     {submitButton}

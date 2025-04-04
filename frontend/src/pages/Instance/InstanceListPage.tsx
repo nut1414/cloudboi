@@ -1,13 +1,71 @@
-import React from "react"
-import TopNavbar from "../../components/Navbar/TopNavbar"
+import React, { useState } from "react"
+import TopNavbar from "../../components/Common/Navbar/TopNavbar"
 import Table from "../../components/Common/Table"
 import { TableColumn } from "../../components/Common/Table"
 import StatusBadge from "../../components/Common/StatusBadge"
-import Button from "../../components/Common/Button"
+import Button from "../../components/Common/Button/Button"
 import { UserInstanceResponse } from "../../client"
 import { useInstanceList } from "../../hooks/Instance/useInstanceList"
-import { EllipsisVerticalIcon, ServerIcon } from "@heroicons/react/24/outline"
+import { EllipsisVerticalIcon, ServerIcon, PlusIcon, MagnifyingGlassIcon, BellIcon } from "@heroicons/react/24/outline"
 import PageContainer from "../../components/Layout/PageContainer"
+import { useParams, useNavigate } from "react-router-dom"
+import InputField from "../../components/Common/InputField"
+
+// Notification Badge component
+interface NotificationBadgeProps {
+    count: number
+    onClick?: () => void
+}
+
+const NotificationBadge: React.FC<NotificationBadgeProps> = ({ count, onClick }) => (
+    <button
+        className="relative hover:opacity-80 transition-opacity w-6 h-6 text-gray-300"
+        onClick={onClick}
+        aria-label={`Notifications: ${count} unread`}
+    >
+        <BellIcon />
+        {count > 0 && (
+            <span className="absolute -top-1 -right-1 bg-purple-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {count > 9 ? '9+' : count}
+            </span>
+        )}
+    </button>
+)
+
+// SearchBar component refactored to use InputField
+interface SearchBarProps {
+    placeholder?: string
+    onSearch?: (query: string) => void
+    className?: string
+    initialValue?: string
+    width?: string
+}
+
+const SearchBar: React.FC<SearchBarProps> = ({
+    placeholder = "Search by instance name...",
+    onSearch = () => { },
+    className = "",
+    initialValue = "",
+    width = "w-64",
+}) => {
+    const [query, setQuery] = useState(initialValue)
+
+    const handleInputChange = (newQuery: string) => {
+        setQuery(newQuery)
+        onSearch(newQuery)
+    }
+
+    return (
+        <div className={`${className} ${width}`}>
+            <InputField
+                value={query}
+                onChange={handleInputChange}
+                placeholder={placeholder}
+                endIcon={<MagnifyingGlassIcon className="w-5 h-5" />}
+            />
+        </div>
+    )
+}
 
 const InstanceListPage: React.FC = () => {
     const {
@@ -18,6 +76,10 @@ const InstanceListPage: React.FC = () => {
         handleViewInstance,
         handleInstanceAction
     } = useInstanceList()
+
+    const { userName } = useParams<{ userName: string }>()
+    const navigate = useNavigate()
+    const [notificationCount] = useState(3) // Example notification count
 
     // Define table columns with rendering functions
     const columns: TableColumn<UserInstanceResponse>[] = [
@@ -68,12 +130,39 @@ const InstanceListPage: React.FC = () => {
         }
     ]
 
+    // Define left and right sections for TopNavbar
+    const leftSection = (
+        <SearchBar
+            onSearch={handleSearch}
+            width="w-56 md:w-64 lg:w-80"
+            placeholder="Search by instance name..."
+        />
+    )
+
+    const rightSection = (
+        <div className="flex items-center gap-3">
+            <Button
+                href={`/user/${userName}/instance/create`}
+                label="Create Instance"
+                variant="secondary"
+                icon={<PlusIcon className="w-4 h-4" />}
+            />
+            <NotificationBadge
+                count={notificationCount}
+                onClick={() => navigate(`/user/${userName}/notifications`)}
+            />
+        </div>
+    )
+
     return (
         <>
             <TopNavbar
-                onSearch={handleSearch}
+                leftSection={leftSection}
+                rightSection={rightSection}
+                variant="default"
+                stickyTop={true}
             />
-            <PageContainer 
+            <PageContainer
                 title="Instance Management"
                 subtitle="Manage your cloud instances"
                 subtitleIcon={<ServerIcon className="w-4 h-4" />}
@@ -84,7 +173,7 @@ const InstanceListPage: React.FC = () => {
                     data={filteredInstances}
                     isLoading={isLoading}
                     onRowClick={handleViewInstance}
-                    emptyStateMessage="No instances found matching your criteria"
+                    emptyStateMessage="No instances found"
                     onCreateNew={handleCreateInstance}
                     keyExtractor={(instance) => instance.instance_id}
                     unit="instance"
