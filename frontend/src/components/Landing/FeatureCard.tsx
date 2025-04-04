@@ -1,10 +1,10 @@
 // FeatureCard component update
-import React from "react";
+import React from "react"
 
 interface FeatureCardProps {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
+  icon: React.ReactNode
+  title: string
+  description: string
 }
 
 const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description }) => {
@@ -18,7 +18,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description }) =
         {description}
       </p>
     </div>
-  );
-};
+  )
+}
 
-export default FeatureCard;
+export default FeatureCard

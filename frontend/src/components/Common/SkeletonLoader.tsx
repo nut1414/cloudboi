@@ -1,11 +1,11 @@
-import React from "react";
+import React from "react"
 
 interface SkeletonLoaderProps {
-  height?: string;
-  width?: string;
-  className?: string;
-  rounded?: string;
-  variant?: "default" | "light" | "dark" | "purple" | "blue" | "contrast";
+  height?: string
+  width?: string
+  className?: string
+  rounded?: string
+  variant?: "default" | "light" | "dark" | "purple" | "blue" | "contrast"
 }
 
 const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
@@ -22,13 +22,13 @@ const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
     purple: "bg-purple-500/30", // Purple to match your theme's accent color
     blue: "bg-blue-500/30", // Brighter blue for better visibility
     contrast: "bg-gray-500/50" // Medium gray with higher opacity for more contrast
-  };
+  }
 
   return (
     <div 
       className={`animate-pulse ${variantClasses[variant]} ${height} ${width} ${className}`}
     ></div>
-  );
-};
+  )
+}
 
-export default SkeletonLoader;
+export default SkeletonLoader

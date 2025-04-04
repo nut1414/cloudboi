@@ -39,9 +39,9 @@ export function createContextProvider<T extends BaseContextState>(
     value, 
     reducer 
   }: { 
-    children: ReactNode; 
-    initialState: T; 
-    value?: Partial<T>; 
+    children: ReactNode 
+    initialState: T 
+    value?: Partial<T> 
     reducer: Reducer<T, ReducerAction<T>> 
   }) => {
     const [state, dispatch] = useReducer(reducer, { ...initialState, ...(value || {}) })
@@ -64,9 +64,9 @@ export function createContextProvider<T extends BaseContextState>(
     initialState, 
     value 
   }: { 
-    children: ReactNode; 
-    initialState: T; 
-    value?: Partial<T>; 
+    children: ReactNode 
+    initialState: T 
+    value?: Partial<T> 
   }) => {
     const [state, setState] = useState<T>({ ...initialState, ...(value || {}) })
     

@@ -1,20 +1,20 @@
 // HeroSection component update
-import React from "react";
-import { CloudIcon } from "@heroicons/react/24/outline";
-import Button, { ButtonProps } from "../Common/Button/Button";
+import React from "react"
+import { CloudIcon } from "@heroicons/react/24/outline"
+import Button, { ButtonProps } from "../Common/Button/Button"
 
 interface FeatureItem {
-  icon: React.ReactNode;
-  label: string;
+  icon: React.ReactNode
+  label: string
 }
 
 interface HeroSectionProps {
-  title: string;
-  subtitle: string;
-  description: string;
-  primaryButton: ButtonProps;
-  secondaryButton: ButtonProps;
-  platformFeatures: FeatureItem[];
+  title: string
+  subtitle: string
+  description: string
+  primaryButton: ButtonProps
+  secondaryButton: ButtonProps
+  platformFeatures: FeatureItem[]
 }
 
 const HeroSection: React.FC<HeroSectionProps> = ({
@@ -54,8 +54,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({
         <PlatformCard features={platformFeatures} />
       </div>
     </div>
-  );
-};
+  )
+}
 
 const PlatformCard: React.FC<{ features: FeatureItem[] }> = ({ features }) => {
   return (
@@ -78,7 +78,7 @@ const PlatformCard: React.FC<{ features: FeatureItem[] }> = ({ features }) => {
         </ul>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default HeroSection;
+export default HeroSection

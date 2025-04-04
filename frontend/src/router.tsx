@@ -1,25 +1,25 @@
-import { createBrowserRouter, RouteObject } from "react-router-dom";
-import { lazy } from "react";
-import { publicOnlyGuard, userRouteGuard } from "./guard";
-import { client } from "./client";
-import { API_CONFIG } from "./config/api";
-import { RouterErrorBoundary } from "./components/ErrorBoundary";
+import { createBrowserRouter, RouteObject } from "react-router-dom"
+import { lazy } from "react"
+import { publicOnlyGuard, userRouteGuard } from "./guard"
+import { client } from "./client"
+import { API_CONFIG } from "./config/api"
+import { RouterErrorBoundary } from "./components/ErrorBoundary"
 
 // Layouts
-const DefaultLayout = lazy(() => import("./components/Layout/DefaultLayout"));
-const PublicLayout = lazy(() => import("./components/Layout/PublicLayout"));
+const DefaultLayout = lazy(() => import("./components/Layout/DefaultLayout"))
+const PublicLayout = lazy(() => import("./components/Layout/PublicLayout"))
 
 // Public pages
-const App = lazy(() => import("./pages/Landing/App"));
-const Login = lazy(() => import("./pages/User/Auth/Login"));
-const Register = lazy(() => import("./pages/User/Auth/Register"));
+const App = lazy(() => import("./pages/Landing/App"))
+const Login = lazy(() => import("./pages/User/Auth/Login"))
+const Register = lazy(() => import("./pages/User/Auth/Register"))
 
 // User pages
-const InstanceListPage = lazy(() => import("./pages/Instance/InstanceListPage"));
-const InstanceCreatePage = lazy(() => import("./pages/Instance/InstanceCreatePage"));
-const InstanceSettingPage = lazy(() => import("./pages/Instance/InstanceSettingPage"));
-const UserBillingPage = lazy(() => import("./pages/User/UserBillingPage"));
-const Support = lazy(() => import("./pages/User/support"));
+const InstanceListPage = lazy(() => import("./pages/Instance/InstanceListPage"))
+const InstanceCreatePage = lazy(() => import("./pages/Instance/InstanceCreatePage"))
+const InstanceSettingPage = lazy(() => import("./pages/Instance/InstanceSettingPage"))
+const UserBillingPage = lazy(() => import("./pages/User/UserBillingPage"))
+const Support = lazy(() => import("./pages/User/support"))
 
 /**
  * Route configuration with authentication guards
@@ -90,10 +90,10 @@ const routes: RouteObject[] = [
       },
     ],
   },
-];
+]
 
-client.setConfig(API_CONFIG);
+client.setConfig(API_CONFIG)
 
-const router = createBrowserRouter(routes);
+const router = createBrowserRouter(routes)
 
-export default router;
+export default router

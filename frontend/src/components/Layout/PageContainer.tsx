@@ -1,12 +1,12 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode } from "react"
 
 interface PageContainerProps {
-  title: ReactNode;
-  subtitle?: string;
-  subtitleIcon?: ReactNode;
-  children: ReactNode;
-  rightContent?: ReactNode;
-  maxWidth?: string;
+  title: ReactNode
+  subtitle?: string
+  subtitleIcon?: ReactNode
+  children: ReactNode
+  rightContent?: ReactNode
+  maxWidth?: string
 }
 
 const PageContainer: React.FC<PageContainerProps> = ({
@@ -47,7 +47,7 @@ const PageContainer: React.FC<PageContainerProps> = ({
         {children}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default PageContainer;
+export default PageContainer

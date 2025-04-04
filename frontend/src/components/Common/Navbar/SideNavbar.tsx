@@ -132,7 +132,7 @@ const SideNavbar: React.FC<SideNavbarProps> = ({
       ),
       onClick: logout
     }
-  ];
+  ]
 
   return (
     <nav className="

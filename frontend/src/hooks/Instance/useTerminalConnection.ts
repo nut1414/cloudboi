@@ -111,7 +111,7 @@ const useWebSocket = (
     const wsRef = useRef<WebSocket | null>(null)
     const [connected, setConnected] = useState(false)
     const [error, setError] = useState<string | null>(null)
-    const textEncoder = new TextEncoder();
+    const textEncoder = new TextEncoder()
   
     // Send terminal dimensions through WebSocket as control message
     const updateTerminalSize = useCallback(() => {
@@ -146,9 +146,9 @@ const useWebSocket = (
     useEffect(() => {
         // Don't connect if instance is not running or if apiBaseUrl/instanceName is null
         if (!isRunning || !apiBaseUrl || !instanceName) {
-            setConnected(false);
-            setError(null);
-            return;
+            setConnected(false)
+            setError(null)
+            return
         }
         
         const connectWebSocket = () => {

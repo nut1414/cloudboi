@@ -1,18 +1,18 @@
 // src/components/Auth/AuthForm.tsx
-import React, { ReactNode } from 'react';
-import { Link } from 'react-router-dom';
-import { InformationCircleIcon } from '@heroicons/react/24/outline';
+import React, { ReactNode } from 'react'
+import { Link } from 'react-router-dom'
+import { InformationCircleIcon } from '@heroicons/react/24/outline'
 
 type AuthFormProps = {
-  title: string;
-  subtitle: string;
-  onSubmit: (e: React.FormEvent) => void;
-  error?: string | null;
-  children: ReactNode;
-  footerText: string;
-  footerLinkText: string;
-  footerLinkPath: string;
-};
+  title: string
+  subtitle: string
+  onSubmit: (e: React.FormEvent) => void
+  error?: string | null
+  children: ReactNode
+  footerText: string
+  footerLinkText: string
+  footerLinkPath: string
+}
 
 const AuthForm: React.FC<AuthFormProps> = ({
   title,
@@ -55,7 +55,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default AuthForm;
+export default AuthForm

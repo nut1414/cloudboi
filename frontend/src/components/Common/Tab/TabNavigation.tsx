@@ -1,16 +1,16 @@
 // components/Common/TabNavigation.tsx
-import React from "react";
+import React from "react"
 
 export interface TabItem {
-  id: string;
-  label: string;
-  icon?: React.ReactNode;
+  id: string
+  label: string
+  icon?: React.ReactNode
 }
 
 interface TabNavigationProps {
-  tabs: TabItem[];
-  activeTab: string;
-  setActiveTab: (id: string) => void;
+  tabs: TabItem[]
+  activeTab: string
+  setActiveTab: (id: string) => void
 }
 
 const TabNavigation: React.FC<TabNavigationProps> = ({ 
@@ -39,7 +39,7 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
         ))}
       </nav>
     </div>
-  );
-};
+  )
+}
 
-export default TabNavigation;
+export default TabNavigation

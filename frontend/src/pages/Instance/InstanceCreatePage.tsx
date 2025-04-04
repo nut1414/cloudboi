@@ -76,7 +76,7 @@ const InstanceCreatePage: React.FC = () => {
                     <SkeletonLoader height="h-12" width="w-48" />
                 </div>
             </PageContainer>
-        );
+        )
     }
 
     // Submit button for the form
@@ -94,7 +94,7 @@ const InstanceCreatePage: React.FC = () => {
                 disabled={!isFormValid || isSubmitting}
             />
         </div>
-    );
+    )
 
     return (
         <PageContainer 

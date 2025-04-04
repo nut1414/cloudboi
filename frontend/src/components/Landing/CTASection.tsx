@@ -1,11 +1,11 @@
 // CTASection component update
-import React from "react";
-import Button, { ButtonProps } from "../Common/Button/Button";
+import React from "react"
+import Button, { ButtonProps } from "../Common/Button/Button"
 
 interface CTASectionProps {
-  title: string;
-  description: string;
-  buttonProps: ButtonProps;
+  title: string
+  description: string
+  buttonProps: ButtonProps
 }
 
 const CTASection: React.FC<CTASectionProps> = ({ title, description, buttonProps }) => {
@@ -24,7 +24,7 @@ const CTASection: React.FC<CTASectionProps> = ({ title, description, buttonProps
         className={buttonProps.className}
       />
     </section>
-  );
-};
+  )
+}
 
-export default CTASection;
+export default CTASection

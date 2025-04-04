@@ -1,19 +1,19 @@
 // components/Common/StatusBadge.tsx
-import React from 'react';
-import { InstanceStatus } from '../../constant/InstanceConstant';
-import { TransactionStatus } from '../../constant/TransactionConstant';
+import React from 'react'
+import { InstanceStatus } from '../../constant/InstanceConstant'
+import { TransactionStatus } from '../../constant/TransactionConstant'
 
-export type InstanceStatusType = typeof InstanceStatus[keyof typeof InstanceStatus];
-export type TransactionStatusType = typeof TransactionStatus[keyof typeof TransactionStatus];
+export type InstanceStatusType = typeof InstanceStatus[keyof typeof InstanceStatus]
+export type TransactionStatusType = typeof TransactionStatus[keyof typeof TransactionStatus]
 
-export type StatusType = InstanceStatusType | TransactionStatusType;
+export type StatusType = InstanceStatusType | TransactionStatusType
 
 interface StatusBadgeProps {
-    status: StatusType;
-    showDot?: boolean;
-    showBackground?: boolean;
-    size?: 'sm' | 'md' | 'lg';
-    className?: string;
+    status: StatusType
+    showDot?: boolean
+    showBackground?: boolean
+    size?: 'sm' | 'md' | 'lg'
+    className?: string
 }
 
 const StatusBadge: React.FC<StatusBadgeProps> = ({
@@ -24,7 +24,7 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({
     className = '',
 }) => {
     // Normalize status to lowercase for matching
-    const normalizedStatus = typeof status === 'string' ? status : '';
+    const normalizedStatus = typeof status === 'string' ? status : ''
 
     // Define status styles map for Instance statuses
     const instanceStatusConfig = {
@@ -52,7 +52,7 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({
             dotColor: 'bg-red-500',
             textOnly: 'text-red-500',
         },
-    };
+    }
 
     // Define status styles map for Transaction statuses
     const transactionStatusConfig = {
@@ -98,10 +98,10 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({
             dotColor: 'bg-red-500',
             textOnly: 'text-red-500',
         },
-    };
+    }
 
     // Merge both config objects
-    const mergedConfig = { ...instanceStatusConfig, ...transactionStatusConfig };
+    const mergedConfig = { ...instanceStatusConfig, ...transactionStatusConfig }
 
     // Get styles based on status or default to gray if not found
     const styles = mergedConfig[normalizedStatus] || {
@@ -109,24 +109,24 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({
         text: 'text-gray-100',
         dotColor: 'bg-gray-500',
         textOnly: 'text-gray-500',
-    };
+    }
 
     // Size variations
     const sizeClasses = {
         sm: 'text-xs px-1.5 py-0.5 rounded',
         md: 'text-xs px-2 py-1 rounded-full',
         lg: 'text-sm px-3 py-1.5 rounded-full',
-    };
+    }
 
     // Dot size based on badge size
     const dotSize = {
         sm: 'h-1.5 w-1.5',
         md: 'h-2 w-2',
         lg: 'h-2.5 w-2.5',
-    };
+    }
 
     // Determine text color based on the background setting
-    const textColor = showBackground ? styles.text : styles.textOnly;
+    const textColor = showBackground ? styles.text : styles.textOnly
 
     return (
         <span
@@ -137,7 +137,7 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({
             )}
             {status.toLowerCase()}
         </span>
-    );
-};
+    )
+}
 
-export default StatusBadge;
+export default StatusBadge

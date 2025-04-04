@@ -1,10 +1,10 @@
-import React, { ReactNode } from "react";
-import { Outlet } from "react-router-dom";
-import PublicNavbar from "../Public/PublicNavbar";
-import PublicFooter from "../Public/PublicFooter";
+import React, { ReactNode } from "react"
+import { Outlet } from "react-router-dom"
+import PublicNavbar from "../Public/PublicNavbar"
+import PublicFooter from "../Public/PublicFooter"
 
 interface PublicLayoutProps {
-  children?: ReactNode;
+  children?: ReactNode
 }
 
 const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
@@ -16,7 +16,7 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
       </main>
       <PublicFooter />
     </div>
-  );
-};
+  )
+}
 
-export default PublicLayout;
+export default PublicLayout
