@@ -1,7 +1,7 @@
 // components/User/Billing/OverviewMenu/OverviewMenu.tsx
 import React, { useEffect, useState, useMemo } from "react"
 import { CreditCardIcon, CurrencyDollarIcon, ChartBarIcon } from "@heroicons/react/24/outline"
-import Button from "../../Common/Button"
+import Button from "../../Common/Button/Button"
 import Section from "../../Common/Section"
 import { useUserBilling } from "../../../hooks/User/useUserBilling"
 

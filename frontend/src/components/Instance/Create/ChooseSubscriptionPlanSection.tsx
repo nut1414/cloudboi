@@ -1,6 +1,6 @@
 // components/Instance/Create/ChooseSubscriptionPlanSection.tsx
 import React, { useMemo } from "react"
-import OptionButton from "../../Common/OptionButton"
+import OptionButton from "../../Common/Button/OptionButton"
 import { InstancePlan } from "../../../client"
 import { 
   CpuChipIcon, 

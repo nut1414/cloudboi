@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react"
 import { useLocation, Link, useParams, useNavigate } from "react-router-dom"
-import { useAuth } from "../../hooks/User/useAuth"
+import { useAuth } from "../../../hooks/User/useAuth"
 import { ArrowLeftStartOnRectangleIcon, Bars3BottomLeftIcon, ChevronDownIcon, Cog6ToothIcon, CreditCardIcon, UserGroupIcon } from "@heroicons/react/24/outline"
 import { CloudIcon } from "@heroicons/react/24/solid"
-import { useUserBilling } from "../../hooks/User/useUserBilling"
-import SkeletonLoader from "../Common/SkeletonLoader"
+import { useUserBilling } from "../../../hooks/User/useUserBilling"
+import SkeletonLoader from "../SkeletonLoader"
 
 // Define proper types
 interface NavItemProps {

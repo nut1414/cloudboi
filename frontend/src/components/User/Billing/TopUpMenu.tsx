@@ -1,9 +1,9 @@
 import React, { useState, useMemo, useCallback } from "react"
 import { PlusCircleIcon, CreditCardIcon } from "@heroicons/react/24/outline"
-import Button from "../../Common/Button"
+import Button from "../../Common/Button/Button"
 import Section from "../../Common/Section"
 import InputField from "../../Common/InputField"
-import OptionButton from "../../Common/OptionButton" // Import the new component
+import OptionButton from "../../Common/Button/OptionButton" // Import the new component
 import { useUserBilling } from "../../../hooks/User/useUserBilling"
 
 const TopUpMenu: React.FC = () => {

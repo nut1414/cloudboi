@@ -1,5 +1,5 @@
 import React from "react"
-import { Button } from "./Button" // Import the unified Button component
+import { Button } from "./Button/Button" // Import the unified Button component
 import SkeletonLoader from "./SkeletonLoader" // Import the skeleton loader
 
 // Types for the table

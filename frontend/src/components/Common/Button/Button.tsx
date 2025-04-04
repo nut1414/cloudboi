@@ -52,7 +52,7 @@ export const Button: React.FC<ButtonProps> = ({
       className={buttonStyles}
     >
       {icon && <span>{icon}</span>}
-      <span>{label}</span>
+      <span className="flex-grow">{label}</span>
     </button>
   )
 

@@ -7,7 +7,7 @@ import SetHostnameSection from "../../components/Instance/Create/SetHostnameSect
 import BillSummarySection from "../../components/Instance/Create/BillSummarySection"
 import { useInstanceCreate } from "../../hooks/Instance/useInstanceCreate"
 import { ArrowPathIcon, PlusCircleIcon, RocketLaunchIcon } from "@heroicons/react/24/outline"
-import Button from "../../components/Common/Button"
+import Button from "../../components/Common/Button/Button"
 import SkeletonLoader from "../../components/Common/SkeletonLoader"
 import Section from "../../components/Common/Section"
 import PageContainer from "../../components/Layout/PageContainer"
