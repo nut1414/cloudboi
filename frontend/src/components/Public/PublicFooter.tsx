@@ -1,6 +1,6 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { CloudIcon } from "@heroicons/react/24/solid";
+import React from "react"
+import { Link } from "react-router-dom"
+import { CloudIcon } from "@heroicons/react/24/solid"
 
 const PublicFooter: React.FC = () => {
   return (
@@ -16,7 +16,7 @@ const PublicFooter: React.FC = () => {
               Your cloud infrastructure solution for powerful, flexible computing resources.
             </p>
           </div>
-          
+
           <div>
             <h3 className="text-white font-semibold mb-4">Product</h3>
             <ul className="space-y-2">
@@ -25,7 +25,7 @@ const PublicFooter: React.FC = () => {
               <li><Link to="/use-cases" className="text-gray-400 hover:text-white transition-colors">Use Cases</Link></li>
             </ul>
           </div>
-          
+
           <div>
             <h3 className="text-white font-semibold mb-4">Resources</h3>
             <ul className="space-y-2">
@@ -34,7 +34,7 @@ const PublicFooter: React.FC = () => {
               <li><Link to="/blog" className="text-gray-400 hover:text-white transition-colors">Blog</Link></li>
             </ul>
           </div>
-          
+
           <div>
             <h3 className="text-white font-semibold mb-4">Company</h3>
             <ul className="space-y-2">
@@ -44,13 +44,13 @@ const PublicFooter: React.FC = () => {
             </ul>
           </div>
         </div>
-        
+
         <div className="border-t border-blue-900/30 mt-8 pt-4 text-center text-gray-400">
           <p>© {new Date().getFullYear()} CloudBoi. All rights reserved.</p>
         </div>
       </div>
     </footer>
-  );
-};
+  )
+}
 
-export default PublicFooter;
+export default PublicFooter

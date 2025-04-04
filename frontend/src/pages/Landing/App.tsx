@@ -1,14 +1,14 @@
-import React from "react";
-import Section from "../../components/Common/Section";
-import { 
-  CloudIcon, 
-  ServerIcon, 
-  CpuChipIcon, 
-  ShieldCheckIcon 
-} from "@heroicons/react/24/outline";
-import HeroSection from "../../components/Landing/HeroSection";
-import FeatureCard from "../../components/Landing/FeatureCard";
-import CTASection from "../../components/Landing/CTASection";
+import React from "react"
+import Section from "../../components/Common/Section"
+import {
+  CloudIcon,
+  ServerIcon,
+  CpuChipIcon,
+  ShieldCheckIcon
+} from "@heroicons/react/24/outline"
+import HeroSection from "../../components/Landing/HeroSection"
+import FeatureCard from "../../components/Landing/FeatureCard"
+import CTASection from "../../components/Landing/CTASection"
 
 const App: React.FC = () => {
   const features = [
@@ -27,7 +27,7 @@ const App: React.FC = () => {
       title: "Secure by Design",
       description: "Built with security in mind, our platform implements industry best practices to protect your workloads."
     }
-  ];
+  ]
 
   const platformFeatures = [
     {
@@ -42,13 +42,13 @@ const App: React.FC = () => {
       icon: <ShieldCheckIcon className="h-6 w-6" />,
       label: "Security-focused infrastructure"
     }
-  ];
+  ]
 
   return (
     <>
       <div className="container mx-auto px-4 py-10">
         {/* Hero Section */}
-        <HeroSection 
+        <HeroSection
           title="Your Cloud, Your Way"
           subtitle="Deploy Bare Metal and Virtual Machines with Ease."
           description="Our cloud platform simplifies infrastructure management
@@ -69,13 +69,13 @@ const App: React.FC = () => {
         />
 
         {/* Features Section */}
-        <Section 
-          title="Platform Features" 
+        <Section
+          title="Platform Features"
           icon={<CloudIcon className="h-6 w-6" />}
         >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
             {features.map((feature, index) => (
-              <FeatureCard 
+              <FeatureCard
                 key={index}
                 icon={feature.icon}
                 title={feature.title}
@@ -86,7 +86,7 @@ const App: React.FC = () => {
         </Section>
 
         {/* CTA Section */}
-        <CTASection 
+        <CTASection
           title="Early Access Coming Soon"
           description="Be among the first to experience CloudBoi. Sign up for early access and updates on our launch."
           buttonProps={{
@@ -98,7 +98,7 @@ const App: React.FC = () => {
         />
       </div>
     </>
-  );
-};
+  )
+}
 
-export default App;
+export default App

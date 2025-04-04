@@ -8,7 +8,7 @@ import {
   ViewfinderCircleIcon
 } from "@heroicons/react/24/outline"
 import Section from "../../Common/Section"
-import DropdownButton from "../../Common/Button/DropdownButton"
+import DropdownButton, { DropdownItemProps } from "../../Common/Button/DropdownButton"
 
 // Image from https://www.dropbox.com/s/uhl8sz1gwse2zd6/distro_icons.zip?dl=0
 import ubuntuImg from "../../../assets/icons/128_ubuntu.png"
@@ -66,8 +66,8 @@ const ChooseOsImageSection: React.FC<ChooseOsImageSectionProps> = React.memo(({
     }, [])
 
     // Create dropdown items from availableVersions
-    const versionItems = availableVersions.map(version => ({
-        label: version,
+    const versionItems: DropdownItemProps[] = availableVersions.map(version => ({
+        content: version,
         onClick: () => onVersionSelect(version)
     }))
 
@@ -98,7 +98,7 @@ const ChooseOsImageSection: React.FC<ChooseOsImageSectionProps> = React.memo(({
                         </div>
                         
                         <DropdownButton
-                            label={selectedVersion || "Select Version"}
+                            content={selectedVersion || "Select Version"}
                             items={versionItems}
                             variant="none"
                             className="bg-[#2A3F6A] border border-blue-800/40 text-gray-200 hover:bg-[#304776] focus:outline-none focus:ring-2 focus:ring-purple-500 rounded-md py-2.5"

@@ -1,10 +1,14 @@
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import { useLocation, Link, useParams, useNavigate } from "react-router-dom"
 import { useAuth } from "../../../hooks/User/useAuth"
-import { ArrowLeftStartOnRectangleIcon, Bars3BottomLeftIcon, ChevronDownIcon, Cog6ToothIcon, CreditCardIcon, UserGroupIcon } from "@heroicons/react/24/outline"
+import { ArrowLeftStartOnRectangleIcon, Bars3BottomLeftIcon, Cog6ToothIcon, CreditCardIcon, UserGroupIcon } from "@heroicons/react/24/outline"
 import { CloudIcon } from "@heroicons/react/24/solid"
 import { useUserBilling } from "../../../hooks/User/useUserBilling"
 import SkeletonLoader from "../SkeletonLoader"
+import { DropdownItemProps } from "../Button/DropdownButton"
+import { useUser } from "../../../contexts/userContext"
+import { NavLogo } from "./NavLogo"
+import { NavUser } from "./NavUser"
 
 // Define proper types
 interface NavItemProps {
@@ -12,16 +16,16 @@ interface NavItemProps {
   label: string
   userName: string | undefined
   isHovering: boolean
-  icon?: React.ReactNode // Optional icon prop
+  icon?: React.ReactNode
 }
 
 interface SideNavbarProps {
-  navItems?: { path: string; label: string; icon?: React.ReactNode }[] // Make nav items customizable
-  creditCurrency?: string // Make currency customizable
-  logoText?: string // Allow custom logo text
-  logoIcon?: React.ReactNode // Allow custom logo icon
-  onLogout?: () => void // Logout callback
-  userRole?: string // User role to display
+  navItems?: { path: string; label: string; icon?: React.ReactNode }[]
+  creditCurrency?: string
+  logoText?: string
+  logoIcon?: React.ReactNode
+  onLogout?: () => void
+  userRole?: string
 }
 
 // NavItem component with better relative styling
@@ -85,85 +89,14 @@ const CreditCard: React.FC<{ balance?: number; currency?: string; isLoading?: bo
   </div>
 )
 
-// User menu component
-const UserMenu: React.FC<{
-  userName: string | undefined
-  userRole?: string
-  onLogout: () => Promise<void>
-}> = ({ userName, userRole = "User Account", onLogout }) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const navigate = useNavigate()
-
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
-
-  // Close menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement
-      if (isMenuOpen && !target.closest('.user-profile-section')) {
-        setIsMenuOpen(false)
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [isMenuOpen])
-
-  return (
-    <div className="user-profile-section relative mt-auto border-t border-blue-800/30 p-4">
-      <div
-        className="flex items-center space-x-3 cursor-pointer"
-        onClick={toggleMenu}
-      >
-        <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold">
-          {userName?.charAt(0).toUpperCase()}
-        </div>
-        <div className="flex flex-col flex-grow">
-          <span className="text-white font-medium">{userName}</span>
-          <span className="text-gray-400 text-sm">{userRole}</span>
-        </div>
-        {/* Dropdown arrow - rotates when open */}
-        <div className={`transform transition-transform duration-300 ${isMenuOpen ? 'rotate-180' : ''}`}>
-          <ChevronDownIcon className="h-5 w-5" />
-        </div>
-      </div>
-
-      {/* Drop-up menu */}
-      {isMenuOpen && (
-        <div className="absolute bottom-20 left-4 right-4 bg-[#23375F] rounded-lg shadow-lg border border-blue-800/30 overflow-hidden transition-all duration-300">
-          <div className="py-2">
-            <Link to={`/user/${userName}/profile`} className="block px-4 py-2 text-white hover:bg-blue-800 transition-colors">
-              View Profile
-            </Link>
-            <Link to={`/user/${userName}/preferences`} className="block px-4 py-2 text-white hover:bg-blue-800 transition-colors">
-              Preferences
-            </Link>
-            <div className="border-t border-blue-800/30 my-1"></div>
-            <button
-              onClick={async () => {
-                await onLogout()
-                navigate("/login")
-              }}
-              className="block w-full text-left px-4 py-2 text-red-400 hover:bg-blue-800 transition-colors"
-            >
-              <ArrowLeftStartOnRectangleIcon className="h-5 w-5 inline-block mr-2" />
-              Logout
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
-
 const SideNavbar: React.FC<SideNavbarProps> = ({
   navItems: customNavItems,
   creditCurrency = "CBC",
   logoText = "CloudBoi",
-  logoIcon = <CloudIcon className="bg-purple-500 w-8 h-8 rounded-md mr-2 flex items-center justify-center" />,
-  userRole
+  logoIcon = <CloudIcon className="bg-purple-500 w-8 h-8 rounded-md flex items-center justify-center" />,
 }) => {
   const { userName } = useParams<{ userName: string }>()
+  const { user } = useUser()
   const { userWallet, isLoading } = useUserBilling()
   const { logout } = useAuth()
   const [isHovering, setIsHovering] = useState<boolean>(false)
@@ -179,6 +112,28 @@ const SideNavbar: React.FC<SideNavbarProps> = ({
   // Use provided navItems or fall back to defaults
   const navItems = customNavItems || defaultNavItems
 
+  // User menu dropdown items for sidebar specifically
+  const userMenuItems: DropdownItemProps[] = [
+    {
+      content: "View Profile",
+      href: `/user/${userName}/profile`
+    },
+    {
+      content: "Preferences",
+      href: `/user/${userName}/preferences`
+    },
+    { divider: true },
+    {
+      content: (
+        <div className="flex items-center text-red-400">
+          <ArrowLeftStartOnRectangleIcon className="h-5 w-5 mr-2" />
+          Logout
+        </div>
+      ),
+      onClick: logout
+    }
+  ];
+
   return (
     <nav className="
       h-screen min-h-screen w-72 
@@ -188,19 +143,21 @@ const SideNavbar: React.FC<SideNavbarProps> = ({
       border-r border-blue-900/50
       flex-shrink-0 
     ">
-      {/* Logo Section */}
+      {/* Logo Section - Using the common NavLogo component */}
       <div className="p-6 border-b border-blue-800/30">
-        <Link to="/" className="text-white text-3xl font-bold flex items-center">
-          {logoIcon}
-          {logoText}
-        </Link>
+        <NavLogo
+          logo={logoIcon}
+          logoText={logoText}
+          variant="default"
+          className="text-3xl"
+        />
       </div>
 
       {/* Credit Card - Updated to use actual user wallet data */}
-      <CreditCard 
-        balance={userWallet?.balance} 
-        currency={creditCurrency} 
-        isLoading={isLoading} 
+      <CreditCard
+        balance={userWallet?.balance}
+        currency={creditCurrency}
+        isLoading={isLoading}
       />
 
       {/* Navigation Items */}
@@ -225,12 +182,19 @@ const SideNavbar: React.FC<SideNavbarProps> = ({
         ))}
       </ul>
 
-      {/* User Profile Section with Drop-up Menu */}
-      <UserMenu
-        userName={userName}
-        userRole={userRole}
-        onLogout={logout}
-      />
+      {/* User Profile Section with UserMenu component */}
+      <div className="mt-auto border-t border-blue-800/30 p-4">
+        <NavUser
+          username={userName}
+          userRole={user?.role || undefined}
+          logout={logout}
+          variant="none"
+          position="top-left"
+          fullWidth={true}
+          className="p-0"
+          customMenuItems={userMenuItems}
+        />
+      </div>
     </nav>
   )
 }
