@@ -1,8 +1,9 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, RouteObject } from "react-router-dom";
 import { lazy } from "react";
 import { publicOnlyGuard, userRouteGuard } from "./guard";
 import { client } from "./client";
 import { API_CONFIG } from "./config/api";
+import { RouterErrorBoundary } from "./components/ErrorBoundary";
 
 // Layouts
 const DefaultLayout = lazy(() => import("./components/Layout/DefaultLayout"));
@@ -26,10 +27,11 @@ const Support = lazy(() => import("./pages/User/support"));
  * These guards run before the route renders and handle redirects
  * while working with our existing UserContext
  */
-const routes = [
+const routes: RouteObject[] = [
   {
     path: "/",
     element: <PublicLayout />,
+    errorElement: <RouterErrorBoundary />,
     children: [
       {
         index: true,
