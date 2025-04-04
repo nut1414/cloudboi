@@ -27,7 +27,7 @@ const InstanceSettingPage: React.FC = () => {
       <div className="flex items-center space-x-3 text-gray-300 text-sm">
         <div className="flex flex-col">
           <span className="text-gray-400">Status:</span>
-          <StatusBadge status={instance.instance_status.toLowerCase()} size="sm" />
+          <StatusBadge status={instance.instance_status} size="sm" />
         </div>
         <div className="h-8 w-px bg-blue-800/30"></div>
         <div className="flex flex-col">

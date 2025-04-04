@@ -1,9 +1,9 @@
-// useInstanceCreate.ts
+// useInstanceCreate.ts - updated with react-hook-form
 import { useState, useEffect, useMemo, useCallback } from "react"
+import { useForm } from "react-hook-form"
 import { InstanceService } from "../../client"
 import {
     InstanceCreateRequest,
-    InstanceDetails,
     OsType,
     InstancePlan
 } from "../../client"
@@ -22,8 +22,88 @@ export const useInstanceCreate = () => {
         refreshInstances
     } = useInstanceList()
 
+    // Form setup with react-hook-form
+    const { 
+        register, 
+        handleSubmit: formSubmit, 
+        watch, 
+        setValue, 
+        formState: { errors, isValid }
+    } = useForm<InstanceCreateRequest>({
+        mode: "onChange",
+        defaultValues: {
+            root_password: "",
+            instance_name: ""
+        },
+        // Add validation rules
+        resolver: (values) => {
+            const errors: Record<string, any> = {};
+            
+            // Validate OS type
+            if (!values.os_type) {
+                errors.os_type = {
+                    type: "required",
+                    message: "Please select an operating system"
+                };
+            }
+            
+            // Validate instance plan
+            if (!values.instance_plan) {
+                errors.instance_plan = {
+                    type: "required",
+                    message: "Please select an instance plan"
+                };
+            }
+            
+            // Validate root password
+            if (!values.root_password) {
+                errors.root_password = {
+                    type: "required",
+                    message: "Password is required"
+                };
+            } else {
+                const passwordTests = [
+                    { test: values.root_password.length >= 8, message: "Password must be at least 8 characters" },
+                    { test: /[A-Z]/.test(values.root_password), message: "Password must contain an uppercase letter" },
+                    { test: /[a-z]/.test(values.root_password), message: "Password must contain a lowercase letter" },
+                    { test: /[0-9]/.test(values.root_password), message: "Password must contain a number" },
+                    { test: /[!@#$%^&*()_+\-=\[\]{}':"\\|,.<>\/?]/.test(values.root_password), message: "Password must contain a special character" }
+                ];
+                
+                const failedTest = passwordTests.find(test => !test.test);
+                if (failedTest) {
+                    errors.root_password = {
+                        type: "pattern",
+                        message: failedTest.message
+                    };
+                }
+            }
+            
+            // Validate instance name
+            if (!values.instance_name) {
+                errors.instance_name = {
+                    type: "required",
+                    message: "Hostname is required"
+                };
+            } else if (!/^[a-z0-9-]+$/.test(values.instance_name)) {
+                errors.instance_name = {
+                    type: "pattern",
+                    message: "Hostname can only contain lowercase letters, numbers, and hyphens"
+                };
+            }
+            
+            return {
+                values,
+                errors
+            };
+        }
+    });
+
+
+    // Get form values
+    const formValues = watch()
+
     // States
-    const [formData, setFormData] = useState<Partial<InstanceCreateRequest>>({})
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
     const [selectedImageName, setSelectedImageName] = useState<string>("")
     const [selectedVersion, setSelectedVersion] = useState<string>("")
@@ -54,22 +134,22 @@ export const useInstanceCreate = () => {
         }
     }, [dispatch])
 
-    // Update form handlers with useCallback
+    // Update form handlers with useCallback and setValue
     const handleOsTypeSelect = useCallback((osType: OsType) => {
-        setFormData(prev => ({ ...prev, os_type: osType }))
-    }, [])
+        setValue("os_type", osType, { shouldValidate: true })
+    }, [setValue])
 
     const handleInstancePlanSelect = useCallback((instancePlan: InstancePlan) => {
-        setFormData(prev => ({ ...prev, instance_plan: instancePlan }))
-    }, [])
+        setValue("instance_plan", instancePlan, { shouldValidate: true })
+    }, [setValue])
 
     const handleRootPasswordChange = useCallback((password: string) => {
-        setFormData(prev => ({ ...prev, root_password: password }))
-    }, [])
+        setValue("root_password", password, { shouldValidate: true })
+    }, [setValue])
 
     const handleInstanceNameChange = useCallback((name: string) => {
-        setFormData(prev => ({ ...prev, instance_name: name }))
-    }, [])
+        setValue("instance_name", name, { shouldValidate: true })
+    }, [setValue])
 
     // Get unique image names with useMemo
     const uniqueImageNames = useMemo(() => {
@@ -90,7 +170,8 @@ export const useInstanceCreate = () => {
     const handleImageNameSelect = useCallback((imageName: string) => {
         setSelectedImageName(imageName)
         setSelectedVersion("") // Reset version when image changes
-    }, [])
+        setValue("os_type", null as any, { shouldValidate: true }) // Reset OS type
+    }, [setValue])
 
     // Handle version selection
     const handleVersionSelect = useCallback((version: string) => {
@@ -106,69 +187,57 @@ export const useInstanceCreate = () => {
         }
     }, [instanceDetails?.os_image, selectedImageName, handleOsTypeSelect])
 
-    // Check if all required fields are filled
-    const isFormValid = useMemo(() => {
-        const requiredFields = [
-            formData.os_type,
-            formData.instance_plan,
-            formData.instance_name,
-            formData.root_password
-        ]
-        return requiredFields.every(field => field != null)
-    }, [formData.os_type, formData.instance_plan, formData.instance_name, formData.root_password])
-
     // Create instance
     const createInstance = useCallback(async () => {
-        if (!isFormValid) {
-            dispatch?.({
-                type: INSTANCE_ACTIONS.SET_ERROR,
-                payload: "Please fill all required fields"
-            })
-            return {
-                success: false,
-                error: "Please fill all required fields"
+        let result = { success: false, data: null as any, error: null };
+        
+        await formSubmit(async (data) => {
+            setIsSubmitting(true);
+            dispatch?.({ type: INSTANCE_ACTIONS.SET_ERROR, payload: null });
+
+            try {
+                const response = await InstanceService.instanceCreateInstance({
+                    body: data
+                });
+
+                refreshInstances();
+                result = {
+                    success: true,
+                    data: response.data,
+                    error: null
+                };
+            } catch (err: any) {
+                const errorMessage = err.response?.data?.detail?.[0]?.msg ||
+                    "Failed to create instance. Please try again.";
+
+                dispatch?.({ type: INSTANCE_ACTIONS.SET_ERROR, payload: errorMessage });
+                result = {
+                    success: false,
+                    data: null,
+                    error: errorMessage
+                };
+            } finally {
+                setIsSubmitting(false);
             }
-        }
+        })();
+        
+        return result;
+    }, [formSubmit, dispatch, refreshInstances]);
 
-        setIsSubmitting(true)
-        dispatch?.({ type: INSTANCE_ACTIONS.SET_ERROR, payload: null })
-
-        try {
-            const response = await InstanceService.instanceCreateInstance({
-                body: formData as InstanceCreateRequest
-            })
-
-            refreshInstances()
-
-            return {
-                success: true,
-                data: response.data
-            }
-        } catch (err: any) {
-            const errorMessage = err.response?.data?.detail?.[0]?.msg ||
-                "Failed to create instance. Please try again."
-
-            dispatch?.({ type: INSTANCE_ACTIONS.SET_ERROR, payload: errorMessage })
-            return {
-                success: false,
-                error: errorMessage
-            }
-        } finally {
-            setIsSubmitting(false)
-        }
-    }, [formData, isFormValid, dispatch])
 
     return {
         instanceDetails,
+        formValues,
+        isLoading,
+        error,
+        isSubmitting,
+        isFormValid: isValid,
+        errors,
+        register,
         selectedImageName,
         selectedVersion,
         uniqueImageNames,
         availableVersions,
-        formData,
-        isLoading,
-        error,
-        isSubmitting,
-        isFormValid,
         handleOsTypeSelect,
         handleInstancePlanSelect,
         handleRootPasswordChange,

@@ -1,4 +1,5 @@
-import React, { useMemo } from "react"
+// InstanceCreatePage.tsx
+import React from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import ChooseOsImageSection from "../../components/Instance/Create/ChooseOsImageSection"
 import ChooseSubscriptionPlanSection from "../../components/Instance/Create/ChooseSubscriptionPlanSection"
@@ -17,7 +18,7 @@ const InstanceCreatePage: React.FC = () => {
     const navigate = useNavigate()
     const { 
         instanceDetails,
-        formData,
+        formValues,
         isLoading,
         error,
         isSubmitting,
@@ -106,7 +107,7 @@ const InstanceCreatePage: React.FC = () => {
                 <>
                     <ChooseOsImageSection 
                         osImages={instanceDetails.os_image} 
-                        selectedOsType={formData.os_type}
+                        selectedOsType={formValues.os_type}
                         selectedImageName={selectedImageName}
                         selectedVersion={selectedVersion}
                         uniqueImageNames={uniqueImageNames}
@@ -117,24 +118,24 @@ const InstanceCreatePage: React.FC = () => {
                     
                     <ChooseSubscriptionPlanSection 
                         instancePackages={instanceDetails.instance_package}
-                        selectedInstanceType={formData.instance_plan}
+                        selectedInstanceType={formValues.instance_plan}
                         onSelect={handleInstancePlanSelect}
                     />
                     
                     <SetAuthSection 
-                        password={formData.root_password || ''}
+                        password={formValues.root_password || ''}
                         onPasswordChange={handleRootPasswordChange}
                     />
                     
                     <SetHostnameSection 
-                        hostname={formData.instance_name || ''}
+                        hostname={formValues.instance_name || ''}
                         onHostnameChange={handleInstanceNameChange}
                     />
                     
                     <BillSummarySection 
-                        selectedPackage={formData.instance_plan}
-                        selectedOs={formData.os_type}
-                        instanceName={formData.instance_name}
+                        selectedPackage={formValues.instance_plan}
+                        selectedOs={formValues.os_type}
+                        instanceName={formValues.instance_name}
                     />
                     
                     {submitButton}

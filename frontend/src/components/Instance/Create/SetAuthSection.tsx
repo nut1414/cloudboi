@@ -1,3 +1,4 @@
+// components/Instance/Create/SetAuthSection.tsx
 import React, { useState, useCallback, useMemo } from "react"
 import {
     LockClosedIcon,
@@ -8,7 +9,7 @@ import {
     XCircleIcon
 } from "@heroicons/react/24/outline"
 import Section from "../../Common/Section"
-import InputField from "../../Common/InputField" // Import the new component
+import InputField from "../../Common/InputField"
 
 interface SetAuthSectionProps {
     password: string
@@ -34,7 +35,7 @@ const SetAuthSection: React.FC<SetAuthSectionProps> = React.memo(({
     const passwordChecks = useMemo(() => {
         return PASSWORD_REQUIREMENTS.reduce((acc, { key, test }) => ({
             ...acc,
-            [key]: test(password)
+            [key]: test(password || '')
         }), {} as Record<string, boolean>)
     }, [password])
 
@@ -42,6 +43,11 @@ const SetAuthSection: React.FC<SetAuthSectionProps> = React.memo(({
     const togglePasswordVisibility = useCallback(() => {
         setShowPassword(prev => !prev)
     }, [])
+
+    // Handle password change
+    const handleChange = useCallback((newPassword: string) => {
+        onPasswordChange(newPassword)
+    }, [onPasswordChange])
 
     return (
         <Section
@@ -53,7 +59,7 @@ const SetAuthSection: React.FC<SetAuthSectionProps> = React.memo(({
                 <InputField
                     type={showPassword ? "text" : "password"}
                     value={password}
-                    onChange={onPasswordChange}
+                    onChange={handleChange}
                     placeholder="Enter secure password..."
                     endIcon={showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
                     onEndIconClick={togglePasswordVisibility}
