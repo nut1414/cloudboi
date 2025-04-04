@@ -173,7 +173,7 @@ const InstanceListPage: React.FC = () => {
                     data={filteredInstances}
                     isLoading={isLoading}
                     onRowClick={handleViewInstance}
-                    emptyStateMessage="No instances found matching your criteria"
+                    emptyStateMessage="No instances found"
                     onCreateNew={handleCreateInstance}
                     keyExtractor={(instance) => instance.instance_id}
                     unit="instance"
