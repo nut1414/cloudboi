@@ -43,6 +43,20 @@ class InstanceOperation(BaseOperation):
             result = (await db.execute(stmt)).scalar_one_or_none()
             return self.to_pydantic(UserInstanceModel, result)
     
+    async def get_instance_by_id(self, instance_id: uuid.UUID) -> UserInstanceFromDB:
+        """Get an instance by ID with related data, without user restrictions."""
+        async with self.session() as db:
+            stmt = (
+                select(UserInstance)
+                .options(
+                    selectinload(UserInstance.instance_plan),
+                    selectinload(UserInstance.os_type)
+                )
+                .where(UserInstance.instance_id == instance_id)
+            )
+            result = (await db.execute(stmt)).scalar_one_or_none()
+            return self.to_pydantic(UserInstanceFromDB, result)
+    
     async def upsert_user_instance(self, user_instance: UserInstanceModel) -> UserInstanceModel:
         async with self.session() as db:
             if user_instance.instance_id is None:

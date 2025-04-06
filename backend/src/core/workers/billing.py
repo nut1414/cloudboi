@@ -5,6 +5,7 @@ from apscheduler.triggers.interval import IntervalTrigger
 from ..service.subscription import SubscriptionService
 from ..utils.logging import logger
 from ..config import BillingConfig
+from ..utils.permission import worker_context
 
 
 class BillingWorker:
@@ -23,12 +24,14 @@ class BillingWorker:
     async def overdue_subscriptions_job(self):
         """Process all overdue subscriptions by attempting to bill them again."""
         try:
-            overdues = await self.subscription_service.get_overdue_subscriptions()
-            if not overdues:
-                logger.info("No overdue subscriptions found")
-                return
-            await self.subscription_service.process_overdue_subscriptions(overdues)
-            logger.info("Finished processing overdue subscriptions")
+            # Use worker context to bypass normal authentication
+            with worker_context():
+                overdues = await self.subscription_service.get_overdue_subscriptions()
+                if not overdues:
+                    logger.info("No overdue subscriptions found")
+                    return
+                await self.subscription_service.process_overdue_subscriptions(overdues)
+                logger.info("Finished processing overdue subscriptions")
         except Exception as e:
             logger.error(f"Error processing overdue subscriptions: {str(e)}")
 
@@ -36,12 +39,14 @@ class BillingWorker:
         """Process all expired subscriptions by applying penalties."""
         try:
             logger.info("Processing expired subscriptions")
-            expireds = await self.subscription_service.get_expired_subscriptions()
-            if not expireds:
-                logger.info("No expired subscriptions found")
-                return
-            await self.subscription_service.process_expired_subscriptions(expired_subscriptions=expireds)
-            logger.info("Finished processing expired subscriptions")
+            # Use worker context to bypass normal authentication
+            with worker_context():
+                expireds = await self.subscription_service.get_expired_subscriptions()
+                if not expireds:
+                    logger.info("No expired subscriptions found")
+                    return
+                await self.subscription_service.process_expired_subscriptions(expired_subscriptions=expireds)
+                logger.info("Finished processing expired subscriptions")
         except Exception as e:
             logger.error(f"Error processing expired subscriptions: {str(e)}")
 

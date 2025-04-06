@@ -7,9 +7,12 @@ from ..sql.operations.billing import BillingOperation
 from .subscription import SubscriptionService
 from ..utils.dependencies import user_session_ctx
 from ..utils.datetime import DateTimeUtils
+from ..utils.permission import require_roles
 from ..models.billing import UserBillingOverviewResponse, UserTopUpRequest, UserTopUpResponse
 from ..models.transaction import UserTransactionResponse, Transaction
 from ..models.user import UserWalletResponse
+from ..constants.user_const import UserRole
+
 
 class BillingService:
     def __init__(
@@ -22,6 +25,7 @@ class BillingService:
         self.transaction_opr = transaction_opr
         self.subscription_service = subscription_service
 
+    @require_roles([UserRole.ADMIN, UserRole.USER])
     async def get_user_billing_overview(self) -> UserBillingOverviewResponse:
         result = await self.billing_opr.get_user_billing_overview(user_id=user_session_ctx.get().user_id)
         if not result:
@@ -35,6 +39,7 @@ class BillingService:
             all_time_payment=result.all_time_payment,
         )
     
+    @require_roles([UserRole.ADMIN, UserRole.USER])
     async def get_all_user_transactions(self) -> List[UserTransactionResponse]:
         result = await self.transaction_opr.get_all_user_transactions(username=user_session_ctx.get().username)
         return [UserTransactionResponse(
@@ -46,6 +51,7 @@ class BillingService:
             last_updated_at=DateTimeUtils.to_bkk_string(transaction.last_updated_at),
         ) for transaction in result]
     
+    @require_roles([UserRole.ADMIN, UserRole.USER])
     async def top_up(self, top_up_request: UserTopUpRequest) -> UserTopUpResponse:
         transaction = self.subscription_service._create_topup_transaction(
             user_id=user_session_ctx.get().user_id,
@@ -70,6 +76,7 @@ class BillingService:
             last_updated_at=DateTimeUtils.to_bkk_string(result.last_updated_at),
         )
     
+    @require_roles([UserRole.ADMIN, UserRole.USER])
     async def get_user_wallet(self) -> UserWalletResponse:
         result = await self.subscription_service.get_user_wallet(user_id=user_session_ctx.get().user_id)
         if not result:

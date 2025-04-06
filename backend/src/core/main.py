@@ -7,7 +7,6 @@ from .routers import user, instance, lxd_cluster, billing
 from .utils.logging import logger, configure_logging
 from .startup import lifespan
 from .container import AppContainer
-from .utils.dependencies import configure_auth
 
 
 def custom_generate_unique_id(route: APIRoute):
@@ -30,9 +29,6 @@ modules = [
 ]
 for module in modules:
     container.wire(modules=[module])
-
-# Configure auth system with a provider function that returns the user service
-configure_auth(lambda: container.user_service())
 
 configure_logging()
 
