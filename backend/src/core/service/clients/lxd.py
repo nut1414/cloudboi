@@ -111,7 +111,8 @@ class LXDClient(BaseInstanceClient[models.Instance]):
         
         cpu_ratio = delta_cpu_usage_ns / total_available_cpu_time_ns
         
-        cpu_usage_percent = cpu_ratio * 100
+        # clip the cpu usage to 100%
+        cpu_usage_percent = min(cpu_ratio * 100, 100)
 
         return BaseInstanceState(
             cpu=CPUUsage(
