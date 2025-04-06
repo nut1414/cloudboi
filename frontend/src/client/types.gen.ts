@@ -8,6 +8,18 @@ export type AddMemberResponse = {
     success: boolean;
 };
 
+export type AdminUser = {
+    user_id: string;
+    username: string;
+    email: string;
+    role: UserRole;
+    instances: Array<UserInstance>;
+};
+
+export type AdminUsersResponse = {
+    users: Array<AdminUser>;
+};
+
 export type AllTimePayment = {
     sum_amount: number;
     total_cycle: number;
@@ -94,6 +106,18 @@ export type UserCreateResponse = {
     created_at: Date;
 };
 
+export type UserInstance = {
+    instance_id?: (string | null);
+    user_id?: (string | null);
+    instance_plan_id: number;
+    os_type_id: number;
+    hostname: string;
+    lxd_node_name: string;
+    status: string;
+    created_at?: (Date | null);
+    last_updated_at: Date;
+};
+
 export type UserInstanceResponse = {
     instance_id: string;
     instance_name: string;
@@ -110,6 +134,11 @@ export type UserLoginRequest = {
 
 export type UserLoginResponse = {
     message: string;
+};
+
+export type UserRole = {
+    role_id: number;
+    role_name: string;
 };
 
 export type UserSessionResponse = {
@@ -152,6 +181,10 @@ export type ValidationError = {
     msg: string;
     type: string;
 };
+
+export type AdminGetAllUsersResponse = (AdminUsersResponse);
+
+export type AdminGetAllUsersError = unknown;
 
 export type BillingGetBillingOverviewResponse = (UserBillingOverviewResponse);
 
@@ -282,6 +315,40 @@ export type UserGetUserSessionError = unknown;
 export type UserLogoutUserResponse = (UserLoginResponse);
 
 export type UserLogoutUserError = unknown;
+
+export type AdminGetAllUsersResponseTransformer = (data: any) => Promise<AdminGetAllUsersResponse>;
+
+export type AdminUsersResponseModelResponseTransformer = (data: any) => AdminUsersResponse;
+
+export type AdminUserModelResponseTransformer = (data: any) => AdminUser;
+
+export type UserInstanceModelResponseTransformer = (data: any) => UserInstance;
+
+export const UserInstanceModelResponseTransformer: UserInstanceModelResponseTransformer = data => {
+    if (data?.last_updated_at) {
+        data.last_updated_at = new Date(data.last_updated_at);
+    }
+    return data;
+};
+
+export const AdminUserModelResponseTransformer: AdminUserModelResponseTransformer = data => {
+    if (Array.isArray(data?.instances)) {
+        data.instances.forEach(UserInstanceModelResponseTransformer);
+    }
+    return data;
+};
+
+export const AdminUsersResponseModelResponseTransformer: AdminUsersResponseModelResponseTransformer = data => {
+    if (Array.isArray(data?.users)) {
+        data.users.forEach(AdminUserModelResponseTransformer);
+    }
+    return data;
+};
+
+export const AdminGetAllUsersResponseTransformer: AdminGetAllUsersResponseTransformer = async (data) => {
+    AdminUsersResponseModelResponseTransformer(data);
+    return data;
+};
 
 export type InstanceListInstancesResponseTransformer = (data: any) => Promise<InstanceListInstancesResponse>;
 

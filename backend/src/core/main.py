@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routers import user, instance, lxd_cluster, billing
+from .routers import user, instance, lxd_cluster, billing, admin
 from .utils.logging import logger, configure_logging
 from .startup import lifespan
 from .container import AppContainer
@@ -26,6 +26,7 @@ modules = [
     instance,
     lxd_cluster,
     billing,
+    admin,
 ]
 for module in modules:
     container.wire(modules=[module])
@@ -69,6 +70,7 @@ app.include_router(user.router)
 app.include_router(instance.router)
 app.include_router(lxd_cluster.router)
 app.include_router(billing.router)
+app.include_router(admin.router)
 
 @app.get("/", tags=["root"])
 async def root():
