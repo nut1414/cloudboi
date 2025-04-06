@@ -1,21 +1,22 @@
 // useInstanceSetting.ts
 import { useInstance, INSTANCE_ACTIONS } from "../../contexts/instanceContext"
 import { InstanceService } from "../../client"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { InstanceStatus } from "../../constant/InstanceConstant"
 import { useInstanceList } from "./useInstanceList"
 import { formatDateTime, formatUptime } from "../../utils/dateTime"
 import { parseInstanceState } from "../../utils/instanceState"
 
-// 5 minutes
-const STATUS_POLLING_INTERVAL = 300000
+// 30 seconds
+const STATUS_POLLING_INTERVAL = 30000
 
 export const useInstanceSetting = () => {
     const {
         userInstances,
         selectedInstance,
         instanceState,
+        statePollingInterval,
         isLoading,
         error,
         dispatch
@@ -23,7 +24,6 @@ export const useInstanceSetting = () => {
     const { refreshInstances } = useInstanceList()
     const navigate = useNavigate()
     const { userName, instanceName } = useParams<{ userName: string, instanceName: string }>()
-    const [statePollingInterval, setStatePollingInterval] = useState<number | null>(null)
 
     const getInstanceAndUpdate = useCallback(async () => {
         if (!instanceName) return
@@ -73,7 +73,7 @@ export const useInstanceSetting = () => {
         }
     }, [instanceName, dispatch])
 
-
+    
     useEffect(() => {
         if (!selectedInstance) {
             getInstanceAndUpdate()
@@ -81,31 +81,13 @@ export const useInstanceSetting = () => {
     }, [selectedInstance, getInstanceAndUpdate])
 
     const isInstanceRunning = useMemo(() => {
-        return selectedInstance && selectedInstance.instance_status === InstanceStatus.RUNNING
+        return selectedInstance?.instance_status === InstanceStatus.RUNNING
     }, [selectedInstance])
-    const isInstanceStopped = useMemo(() => {
-        return selectedInstance && selectedInstance.instance_status === InstanceStatus.STOPPED
-    }, [selectedInstance])
-  
-  // Start polling instance state when instance is running
-    useEffect(() => {
-        if (isInstanceRunning && !statePollingInterval) {
-            getInstanceStateAndUpdate() // Initial fetch
-            const interval = setInterval(getInstanceStateAndUpdate, STATUS_POLLING_INTERVAL)
-            setStatePollingInterval(interval)
-        } else if (!isInstanceRunning && statePollingInterval) {
-            clearInterval(statePollingInterval)
-            setStatePollingInterval(null)
-            dispatch?.({ type: INSTANCE_ACTIONS.SET_INSTANCE_STATE, payload: null })
-        }
 
-        return () => {
-            if (statePollingInterval) {
-                clearInterval(statePollingInterval)
-            }
-        }
-    }, [isInstanceRunning, statePollingInterval, getInstanceStateAndUpdate])
-            
+    const isInstanceStopped = useMemo(() => {
+        return selectedInstance?.instance_status === InstanceStatus.STOPPED
+    }, [selectedInstance])
+
     // Start instance
     const startInstance = useCallback(async () => {
         if (!selectedInstance) return
@@ -198,10 +180,35 @@ export const useInstanceSetting = () => {
         return formatDateTime(utcDate);
     }, []);
   
-  const parsedInstanceState = useMemo(() => {
-    if (!instanceState) return null
-    return parseInstanceState(instanceState)
-  }, [instanceState])
+    // Start polling when instance is running
+    useEffect(() => {
+        // Start new polling interval
+        if (!statePollingInterval) {
+            getInstanceStateAndUpdate() // Initial fetch
+            const interval = window.setInterval(getInstanceStateAndUpdate, STATUS_POLLING_INTERVAL)
+            dispatch?.({
+                type: INSTANCE_ACTIONS.SET_STATE_POLLING_INTERVAL,
+                payload: interval
+            })
+        }
+
+        // Cleanup function
+        return () => {
+            if (statePollingInterval) {
+                clearInterval(statePollingInterval)
+                dispatch?.({
+                    type: INSTANCE_ACTIONS.SET_STATE_POLLING_INTERVAL,
+                    payload: null
+                })
+            }
+        }
+    }, [])
+
+  
+    const parsedInstanceState = useMemo(() => {
+        if (!instanceState) return null
+        return parseInstanceState(instanceState)
+    }, [instanceState])
 
     return {
         instance: selectedInstance,

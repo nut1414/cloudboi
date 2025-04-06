@@ -16,7 +16,7 @@ const MonitorMenu: React.FC = () => {
         <Section
             title="Resource Monitor"
             icon={<ChartBarIcon className="w-5 h-5" />}
-            description="Monitor instance resource usage in real-time."
+            description="Monitor current instance resource usage."
             rightContent={
                 <button
                     onClick={handleRefresh}

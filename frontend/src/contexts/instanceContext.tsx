@@ -9,6 +9,7 @@ interface InstanceContextState extends BaseContextState {
   selectedInstance: UserInstanceResponse | null
   instanceDetails: InstanceDetails | null
   instanceState: BaseInstanceState | null
+  statePollingInterval: number | null
   isLoading: boolean
   error: string | null
   dispatch?: React.Dispatch<ReducerAction<InstanceContextState>>
@@ -20,6 +21,7 @@ export const INSTANCE_ACTIONS = {
   SET_SELECTED_INSTANCE: 'SET_SELECTED_INSTANCE',
   SET_INSTANCE_DETAILS: 'SET_INSTANCE_DETAILS',
   SET_INSTANCE_STATE: 'SET_INSTANCE_STATE',
+  SET_STATE_POLLING_INTERVAL: 'SET_STATE_POLLING_INTERVAL',
   SET_LOADING: 'SET_LOADING',
   SET_ERROR: 'SET_ERROR',
   START_FETCH: 'START_FETCH',
@@ -52,6 +54,11 @@ const instanceReducer = (
       return {
         ...state,
         instanceState: action.payload,
+      }
+    case INSTANCE_ACTIONS.SET_STATE_POLLING_INTERVAL:
+      return {
+        ...state,
+        statePollingInterval: action.payload,
       }
     case INSTANCE_ACTIONS.SET_LOADING:
       return {
@@ -92,6 +99,7 @@ const initialState: InstanceContextState = {
   selectedInstance: null,
   instanceDetails: null,
   instanceState: null,
+  statePollingInterval: null,
   isLoading: true,
   error: null,
 }
