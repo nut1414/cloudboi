@@ -9,13 +9,14 @@ import { DropdownItemProps } from "../Button/DropdownButton"
 import { useUser } from "../../../contexts/userContext"
 import { NavLogo } from "./NavLogo"
 import { NavUser } from "./NavUser"
+import { UserSessionResponse } from "../../../client"
 
 // Define proper types
-interface NavItemProps {
+export interface NavItemProps {
   path: string
   label: string
-  userName: string | undefined
-  isHovering: boolean
+  user?: UserSessionResponse
+  isHovering?: boolean
   icon?: React.ReactNode
 }
 
@@ -32,7 +33,7 @@ interface SideNavbarProps {
 const NavItem: React.FC<NavItemProps> = ({
   path,
   label,
-  userName,
+  user,
   isHovering,
   icon
 }) => {
@@ -47,7 +48,7 @@ const NavItem: React.FC<NavItemProps> = ({
       ${isHovering ? "hover:bg-blue-800" : ""}
     `}>
       <Link
-        to={`/user/${userName}/${path}`}
+        to={user?.role === "admin" ? `/admin/${path}` : `/user/${user?.username}/${path}`}
         className={`
           flex items-center py-3 px-5 text-lg font-medium
           transition-all duration-200 w-full
@@ -102,7 +103,7 @@ const SideNavbar: React.FC<SideNavbarProps> = ({
   const [isHovering, setIsHovering] = useState<boolean>(false)
 
   // Default navigation items - can be overridden via props
-  const defaultNavItems = [
+  const defaultNavItems: NavItemProps[] = [
     { path: "instance", label: "Manage", icon: <Bars3BottomLeftIcon className="h-5 w-5" /> },
     { path: "billing", label: "Billing", icon: <CreditCardIcon className="h-5 w-5" /> },
     { path: "support", label: "Support", icon: <UserGroupIcon className="h-5 w-5" /> },
@@ -175,7 +176,7 @@ const SideNavbar: React.FC<SideNavbarProps> = ({
             key={item.path}
             path={item.path}
             label={item.label}
-            userName={userName}
+            user={user || undefined}
             isHovering={isHovering}
             icon={item.icon}
           />

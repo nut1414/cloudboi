@@ -5,7 +5,7 @@ import { useUser, USER_ACTIONS } from '../../contexts/userContext'
 import { useNavigate } from 'react-router-dom'
 
 export const useAuth = () => {
-  const { dispatch, error: contextError } = useUser()
+  const { user, dispatch, error: contextError } = useUser()
   const navigate = useNavigate()
   
   // Shared state
@@ -102,7 +102,7 @@ export const useAuth = () => {
     try {
       await loginUser(data.username, data.password)
       // Redirect to dashboard after successful login
-      navigate(`/user/${data.username}/instance`, { replace: true })
+      navigate( user?.role === "admin" ? `/admin/system` : `/user/${data.username}/instance`, { replace: true })
     } catch (err: any) {
       // Error is already set in the context by the login function
     } finally {

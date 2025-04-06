@@ -1,6 +1,6 @@
 import { createBrowserRouter, RouteObject } from "react-router-dom"
 import { lazy } from "react"
-import { publicOnlyGuard, userRouteGuard } from "./guard"
+import { publicOnlyGuard, userRouteGuard, adminRouteGuard } from "./guard"
 import { client } from "./client"
 import { API_CONFIG } from "./config/api"
 import { RouterErrorBoundary } from "./components/ErrorBoundary"
@@ -8,6 +8,7 @@ import { RouterErrorBoundary } from "./components/ErrorBoundary"
 // Layouts
 const DefaultLayout = lazy(() => import("./components/Layout/DefaultLayout"))
 const PublicLayout = lazy(() => import("./components/Layout/PublicLayout"))
+const AdminLayout = lazy(() => import("./components/Layout/AdminLayout"))
 
 // Public pages
 const App = lazy(() => import("./pages/Landing/App"))
@@ -20,6 +21,9 @@ const InstanceCreatePage = lazy(() => import("./pages/Instance/InstanceCreatePag
 const InstanceSettingPage = lazy(() => import("./pages/Instance/InstanceSettingPage"))
 const UserBillingPage = lazy(() => import("./pages/User/UserBillingPage"))
 const Support = lazy(() => import("./pages/User/support"))
+
+// Admin pages
+const UserManagePage = lazy(() => import("./pages/Admin/UserManagePage"))
 
 /**
  * Route configuration with authentication guards
@@ -87,6 +91,33 @@ const routes: RouteObject[] = [
             ],
           },
         ],
+      },
+    ],
+  },
+  {
+    path: "/admin",
+    element: <AdminLayout />,
+    loader: adminRouteGuard,
+    children: [
+      {
+        path: "system",
+        element: <div>System Page</div>,
+      },
+      {
+        path: "users",
+        element: <UserManagePage />,
+      },
+      {
+        path: "plans",
+        element: <div>Plans Page</div>,
+      },
+      {
+        path: "billing",
+        element: <div>Billing Page</div>,
+      },
+      {
+        path: "credits",
+        element: <div>Credits Page</div>,
       },
     ],
   },

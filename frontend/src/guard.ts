@@ -38,10 +38,26 @@ export async function userRouteGuard({ params }: LoaderFunctionArgs) {
     return redirect('/login')
   }
   
-  // Prevent accessing another user's routes
+  // Allow admins to access any user's routes, but redirect normal users if they try to access another user's routes
   if (isAuthenticated && user?.username && user.username !== "" && userName !== user.username) {
-    return redirect(`/user/${user.username}/instance`)
+    // Check if the user is an admin
+    const isAdmin = user?.role === "admin"
+    
+    // If not admin, redirect to their own user route
+    if (!isAdmin) {
+      return redirect(`/user/${user.username}/instance`)
+    }
   }
   
+  return { user }
+}
+
+export async function adminRouteGuard() {
+  const { user, isAuthenticated } = await checkAuthStatus()
+  
+  if (!isAuthenticated || user?.role !== "admin") {
+    return redirect('/login')
+  }
+
   return { user }
 }

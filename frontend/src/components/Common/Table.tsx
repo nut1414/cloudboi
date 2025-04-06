@@ -1,7 +1,7 @@
-import React from "react"
+import React, { useState, ReactNode } from "react"
 import { Button } from "./Button/Button" // Import the unified Button component
 import SkeletonLoader from "./SkeletonLoader" // Import the skeleton loader
-import { ArchiveBoxXMarkIcon } from "@heroicons/react/24/outline" // Import the icon for the empty state
+import { ArchiveBoxXMarkIcon, ChevronRightIcon, ChevronDownIcon } from "@heroicons/react/24/outline" // Import the icons
 
 // Types for the table
 export interface TableColumn<T> {
@@ -9,6 +9,7 @@ export interface TableColumn<T> {
   label: string
   width?: string
   render?: (item: T) => React.ReactNode
+  align?: 'left' | 'center' | 'right'
 }
 
 export interface TableProps<T> {
@@ -22,6 +23,11 @@ export interface TableProps<T> {
   keyExtractor?: (item: T, index: number) => string
   skeletonRowCount?: number // Number of skeleton rows to show while loading
   unit?: string
+  // Support for expandable rows
+  expandableRows?: boolean
+  renderExpanded?: (item: T) => React.ReactNode
+  isRowExpanded?: (item: T) => boolean
+  onRowExpand?: (item: T, isExpanded: boolean) => void
 }
 
 // Table Header component
@@ -30,24 +36,39 @@ interface TableHeaderProps {
   isLoading?: boolean
 }
 
-export const TableHeader: React.FC<TableHeaderProps> = ({ columns, isLoading = false }) => (
-  <div className={`grid grid-cols-${columns.length} text-gray-300 text-lg py-4 font-medium border-b border-blue-800/30 px-6 bg-[#192A51]`}
-    style={{ gridTemplateColumns: `repeat(${columns.length}, 1fr)` }}>
-    {columns.map((column) => (
-      <span
-        key={column.key}
-        className="flex justify-between items-center"
-        style={column.width ? { width: column.width } : {}}
-      >
-        {isLoading ? (
-          <SkeletonLoader height="h-6" width="w-24" />
-        ) : (
-          column.label
-        )}
-      </span>
-    ))}
-  </div>
-)
+export const TableHeader: React.FC<TableHeaderProps> = ({ columns, isLoading = false }) => {
+  // Create the grid template columns based on width properties
+  const gridTemplateColumns = React.useMemo(() => {
+    return columns.map(col => {
+      // If the width is a digit-based value (like px, rem, etc.), use it directly
+      if (col.width && /^[0-9]+/.test(col.width)) {
+        return col.width;
+      }
+      // Otherwise use fraction units
+      return col.width || '1fr';
+    }).join(' ');
+  }, [columns]);
+
+  return (
+    <div 
+      className="grid gap-4 text-gray-300 text-lg py-4 font-medium border-b border-blue-800/30 px-6 bg-[#192A51]"
+      style={{ gridTemplateColumns }}
+    >
+      {columns.map((column) => (
+        <span
+          key={column.key}
+          className={`flex items-center ${column.align === 'center' ? 'justify-center' : column.align === 'right' ? 'justify-end' : 'justify-start'}`}
+        >
+          {isLoading ? (
+            <SkeletonLoader height="h-6" width="w-24" />
+          ) : (
+            column.label
+          )}
+        </span>
+      ))}
+    </div>
+  )
+}
 
 // Empty State component
 interface EmptyStateProps {
@@ -77,28 +98,56 @@ interface SkeletonRowProps {
   columns: TableColumn<any>[]
 }
 
-export const SkeletonRow: React.FC<SkeletonRowProps> = ({ columns }) => (
-  <div
-    className="grid text-gray-300 bg-[#23375F] border-b border-blue-800/30 py-3 px-6"
-    style={{ gridTemplateColumns: `repeat(${columns.length}, 1fr)` }}
-  >
-    {columns.map((column, idx) => (
-      <span
-        key={`skeleton-${column.key}-${idx}`}
-        className="flex justify-between items-center"
-      >
-        <SkeletonLoader
-          height="h-4"
-          width={idx === 0 ? "w-32" : "w-20"}
-          rounded="rounded-md"
-        />
-      </span>
-    ))}
-  </div>
-)
+export const SkeletonRow: React.FC<SkeletonRowProps> = ({ columns }) => {
+  // Create the grid template columns based on width properties
+  const gridTemplateColumns = React.useMemo(() => {
+    return columns.map(col => {
+      // If the width is a digit-based value (like px, rem, etc.), use it directly
+      if (col.width && /^[0-9]+/.test(col.width)) {
+        return col.width;
+      }
+      // Otherwise use fraction units
+      return col.width || '1fr';
+    }).join(' ');
+  }, [columns]);
+
+  return (
+    <div
+      className="grid gap-4 text-gray-300 bg-[#23375F] border-b border-blue-800/30 py-3 px-6"
+      style={{ gridTemplateColumns }}
+    >
+      {columns.map((column, idx) => (
+        <span
+          key={`skeleton-${column.key}-${idx}`}
+          className={`flex items-center ${column.align === 'center' ? 'justify-center' : column.align === 'right' ? 'justify-end' : 'justify-start'}`}
+        >
+          <SkeletonLoader
+            height="h-4"
+            width={idx === 0 ? "w-32" : "w-20"}
+            rounded="rounded-md"
+          />
+        </span>
+      ))}
+    </div>
+  )
+}
 
 // Use the shared Button component instead of ActionButton
 export const ActionButton = Button // For backward compatibility
+
+// Grid for cards in expanded rows
+export interface CardGridProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export const CardGrid: React.FC<CardGridProps> = ({ children, className = '' }) => {
+  return (
+    <div className={`grid gap-3 grid-cols-1 md:grid-cols-2 mt-2 ${className}`}>
+      {children}
+    </div>
+  );
+};
 
 // Generic Table component
 function Table<T>({
@@ -112,35 +161,120 @@ function Table<T>({
   keyExtractor = (_, index) => index.toString(),
   skeletonRowCount = 5,
   unit = "item",
+  // Support for expandable rows
+  expandableRows = false,
+  renderExpanded,
+  isRowExpanded = () => false,
+  onRowExpand,
 }: TableProps<T>) {
-  // Render a table row
+  // Create the grid template columns based on width properties
+  const gridTemplateColumns = React.useMemo(() => {
+    return columns.map(col => {
+      // If the width is a digit-based value (like px, rem, etc.), use it directly
+      if (col.width && /^[0-9]+/.test(col.width)) {
+        return col.width;
+      }
+      // Otherwise use fraction units
+      return col.width || '1fr';
+    }).join(' ');
+  }, [columns]);
+
+  // Internal expanded state if not provided externally
+  const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({});
+
+  // Handle row click for expansion
+  const handleRowClick = (item: T, index: number) => {
+    const rowKey = typeof keyExtractor === 'function'
+      ? keyExtractor(item, index)
+      : index.toString();
+
+    if (expandableRows && renderExpanded) {
+      // Toggle expansion
+      const newState = !isRowExpanded(item);
+      
+      // If external control is provided, use it
+      if (onRowExpand) {
+        onRowExpand(item, newState);
+      } 
+      // Otherwise use internal state
+      else {
+        setExpandedRows(prev => ({
+          ...prev,
+          [rowKey]: newState
+        }));
+      }
+    } 
+    // Regular row click handler
+    else if (onRowClick) {
+      onRowClick(item);
+    }
+  };
+
+  // Check if a row is expanded
+  const checkRowExpanded = (item: T, index: number): boolean => {
+    if (!expandableRows) return false;
+    
+    const rowKey = typeof keyExtractor === 'function'
+      ? keyExtractor(item, index)
+      : index.toString();
+      
+    // Use external control if provided
+    if (onRowExpand) {
+      return isRowExpanded(item);
+    }
+    
+    // Otherwise use internal state
+    return expandedRows[rowKey] || false;
+  };
+
+  // Render a table row with possible expanded content
   const renderRow = React.useCallback((item: T, index: number) => {
     const rowKey = typeof keyExtractor === 'function'
       ? keyExtractor(item, index)
-      : index.toString()
+      : index.toString();
+    
+    const isExpanded = checkRowExpanded(item, index);
 
     return (
-      <div
-        key={rowKey}
-        className={`grid text-gray-300 bg-[#23375F] hover:bg-blue-800 transition-colors border-b border-blue-800/30 py-3 px-6 ${onRowClick ? 'cursor-pointer' : ''}`}
-        style={{ gridTemplateColumns: `repeat(${columns.length}, 1fr)` }}
-        onClick={() => onRowClick && onRowClick(item)}
-      >
-        {columns.map((column) => (
-          <span
-            key={`${rowKey}-${column.key}`}
-            className="flex justify-between items-center"
+      <React.Fragment key={`row-fragment-${rowKey}`}>
+        <div
+          key={rowKey}
+          className={`grid gap-4 text-gray-300 bg-[#23375F] hover:bg-blue-800/80 transition-colors border-b ${isExpanded ? 'border-indigo-600/50' : 'border-blue-800/30'} py-3 px-6 ${onRowClick || expandableRows ? 'cursor-pointer' : ''} ${isExpanded ? 'bg-[#2A3C69]' : ''}`}
+          style={{ gridTemplateColumns }}
+          onClick={() => handleRowClick(item, index)}
+        >
+          {columns.map((column) => (
+            <span
+              key={`${rowKey}-${column.key}`}
+              className={`flex items-center overflow-hidden ${column.align === 'center' ? 'justify-center' : column.align === 'right' ? 'justify-end' : 'justify-start'}`}
+            >
+              {column.render
+                ? column.render(item)
+                : (item as any)[column.key] !== undefined
+                  ? String((item as any)[column.key])
+                  : ''}
+            </span>
+          ))}
+        </div>
+        
+        {/* Expanded content with transition */}
+        {expandableRows && renderExpanded && (
+          <div 
+            className={`transition-all duration-300 ease-in-out overflow-hidden
+              ${isExpanded 
+                ? 'max-h-[2000px] border-b border-indigo-600/30 bg-[#192A51]/90 py-4 opacity-100' 
+                : 'max-h-0 py-0 border-transparent opacity-0'}`}
           >
-            {column.render
-              ? column.render(item)
-              : (item as any)[column.key] !== undefined
-                ? String((item as any)[column.key])
-                : ''}
-          </span>
-        ))}
-      </div>
+            {isExpanded && (
+              <div className="px-6 pb-2">
+                {renderExpanded(item)}
+              </div>
+            )}
+          </div>
+        )}
+      </React.Fragment>
     )
-  }, [columns, onRowClick, keyExtractor])
+  }, [columns, onRowClick, keyExtractor, gridTemplateColumns, expandableRows, renderExpanded, isRowExpanded, onRowExpand, expandedRows])
 
   // Render skeleton rows
   const renderSkeletonRows = React.useCallback(() => {
@@ -174,5 +308,15 @@ function Table<T>({
     </>
   )
 }
+
+// Expansion indicator component
+export const ExpandIndicator: React.FC<{ isExpanded: boolean, className?: string }> = ({ 
+  isExpanded, 
+  className = "" 
+}) => (
+  <span className={`text-indigo-300 transform transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''} ${className}`}>
+    <ChevronRightIcon className="h-4 w-4" />
+  </span>
+);
 
 export default React.memo(Table) as typeof Table
