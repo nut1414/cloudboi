@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, WebSocket
+from fastapi import APIRouter, Depends, WebSocket
 from dependency_injector.wiring import Provide, inject
 from fastapi.websockets import WebSocketState
 
@@ -8,7 +8,7 @@ from ..service.helpers.instance_helper import InstanceHelper
 from ..utils.logging import logger
 from ..utils.dependencies import get_current_user, get_current_user_ws
 from ..service.instance import InstanceService
-from ..models.instance import InstanceDetails, InstanceCreateRequest, InstanceCreateResponse, UserInstanceResponse, InstanceControlResponse, BaseInstanceState
+from ..models.instance import BaseInstanceState, InstanceDetails, InstanceCreateRequest, InstanceCreateResponse, UserInstanceResponse, InstanceControlResponse
 from ..container import AppContainer
 
 

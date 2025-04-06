@@ -213,17 +213,20 @@ class InstanceService:
 
     async def get_instance_state(
         self,
-        instance_id: Optional[uuid.UUID] = None,
         instance_name: Optional[str] = None
     ) -> BaseInstanceState:
         instance = InstanceHelper.to_instance_upsert_model(
-            await self.get_instance(instance_id=instance_id, instance_name=instance_name)
+            await self.get_instance(instance_name=instance_name)
         )
+        
+        if not instance:
+            raise HTTPException(status_code=404, detail="Instance not found")
+        if instance.status != "Running":
+            raise HTTPException(status_code=400, detail="Instance is not running")
         
         # Get instance state from LXD
         try:
-            state = await self.lxd_client.get_instance_state(instance)
-            return BaseInstanceState.from_lxd_state(state)
+            return await self.lxd_client.get_instance_state(instance_name)
         except Exception as e:
             raise HTTPException(
                 status_code=500,

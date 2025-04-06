@@ -1,12 +1,13 @@
 import asyncio
-from datetime import datetime
 from fastapi import WebSocket
 from pylxd import models
+
+from ....core.config import LXDClientConfig
 
 from ...commons.exception import create_exception_class
 from .websocket import LXDWebSocketManager, LXDWebSocketSession
 from .base_instance_client import BaseInstanceClient
-from ...models.instance import InstanceCreateRequest, UserInstance, LxdInstanceState
+from ...models.instance import BaseInstanceState, CPUUsage, InstanceCreateRequest, MemoryUsage, UserInstance, LxdInstanceState
 from ....infra.managers.lxd import LXDManager
 from ...utils.decorator import create_decorator
 from ...utils.datetime import DateTimeUtils
@@ -81,10 +82,48 @@ class LXDClient(BaseInstanceClient[models.Instance]):
         )
     
     @_resolve_instance()
-    async def get_instance_state(self, instance_identifier: models.Instance) -> LxdInstanceState:
-        return await asyncio.to_thread(
+    async def get_instance_state(self, instance_identifier: models.Instance) -> BaseInstanceState:
+        cpu_cores = int(instance_identifier.config['limits.cpu'])
+        memory_config = instance_identifier.config['limits.memory']
+        
+        # convert memory_total from GB to bytes by sanitizing the string (if MB or GB is in the string)
+        memory_unit = memory_config[-2:]
+        memory_amount = int(memory_config[:-2])
+        memory_total = memory_amount * 1024 * 1024 if memory_unit == 'MB' else memory_amount * 1024 * 1024 * 1024
+        
+        time_delta_s = LXDClientConfig.CPU_USAGE_MEASUREMENT_INTERVAL
+        
+        state1 = await asyncio.to_thread(
             self.lxd_manager.get_container_state,
             instance_identifier
+        )
+        await asyncio.sleep(time_delta_s)
+        state2 = await asyncio.to_thread(
+            self.lxd_manager.get_container_state,
+            instance_identifier
+        )
+        
+        # since cpu usage is nanoseconds, 
+
+        delta_cpu_usage_ns = state2.cpu.usage - state1.cpu.usage
+        
+        total_available_cpu_time_ns = time_delta_s * cpu_cores * 1000000000
+        
+        cpu_ratio = delta_cpu_usage_ns / total_available_cpu_time_ns
+        
+        cpu_usage_percent = cpu_ratio * 100
+
+        return BaseInstanceState(
+            cpu=CPUUsage(
+                usage=cpu_usage_percent,
+                cores=cpu_cores
+            ),
+            memory=MemoryUsage(
+                usage=state1.memory.usage,
+                total=memory_total
+            ),
+            disk=state2.disk,
+            network=state2.network
         )
     
     @_resolve_instance()

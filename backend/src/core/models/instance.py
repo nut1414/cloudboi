@@ -3,18 +3,26 @@ from typing import List, Optional, Dict
 import uuid
 from .base_model import BaseModel
 
-class CPUUsage(BaseModel):
-    usage: int
+class CPUUsageTime(BaseModel):
+    usage: int # in nanoseconds
 
 class DiskUsage(BaseModel):
-    usage: int
+    usage: int # in bytes
+
+class MemoryUsageRaw(BaseModel):
+    usage: int # in bytes
+    usage_peak: int # in bytes
+    swap_usage: int # in bytes
+    swap_usage_peak: int # in bytes
+    
 
 class MemoryUsage(BaseModel):
-    usage: int
-    usage_peak: int
-    swap_usage: int
-    swap_usage_peak: int
+    usage: int # in bytes
+    total: int # in bytes
 
+class CPUUsage(BaseModel):
+    usage: float # in percentage
+    cores: int
 class NetworkAddress(BaseModel):
     family: str
     address: str
@@ -40,26 +48,18 @@ class LxdInstanceState(BaseModel):
     status: str
     status_code: int
     disk: Dict[str, DiskUsage]
-    memory: MemoryUsage
+    memory: MemoryUsageRaw
     network: Optional[Dict[str, NetworkInterface]] = None # Network might be null if stopped/not configured
     pid: int
     processes: int
-    cpu: CPUUsage 
+    cpu: CPUUsageTime # in nanoseconds
 
 class BaseInstanceState(BaseModel):
     network: Optional[Dict[str, NetworkInterface]] = None 
-    memory: MemoryUsage
     disk: Dict[str, DiskUsage]  
+    memory: MemoryUsage
     cpu: CPUUsage  
 
-    @classmethod
-    def from_lxd_state(cls, state: LxdInstanceState) -> "BaseInstanceState":
-        return cls(
-            network=state.network,
-            memory=state.memory,
-            disk=state.disk,
-            cpu=state.cpu
-        )
 
 class UserInstance(BaseModel):
     instance_id: Optional[uuid.UUID] = None

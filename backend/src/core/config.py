@@ -36,3 +36,7 @@ class BillingConfig:
     # Check for expired subscriptions every x minutes
     EXPIRE_CHECK_INTERVAL_MINUTES = 1
     EXPIRE_MAX_INSTANCES = 2
+    
+class LXDClientConfig:
+    # Time interval in seconds between state measurements for calculating CPU usage
+    CPU_USAGE_MEASUREMENT_INTERVAL = 0.5

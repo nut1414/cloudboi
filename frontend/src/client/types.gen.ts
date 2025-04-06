@@ -18,15 +18,16 @@ export type BaseInstanceState = {
     network?: ({
     [key: string]: NetworkInterface;
 } | null);
-    memory: MemoryUsage;
     disk: {
         [key: string]: DiskUsage;
     };
+    memory: MemoryUsage;
     cpu: CPUUsage;
 };
 
 export type CPUUsage = {
     usage: number;
+    cores: number;
 };
 
 export type CreateJoinTokenRequest = {
@@ -80,9 +81,7 @@ export type InstancePlan = {
 
 export type MemoryUsage = {
     usage: number;
-    usage_peak: number;
-    swap_usage: number;
-    swap_usage_peak: number;
+    total: number;
 };
 
 export type NetworkAddress = {
