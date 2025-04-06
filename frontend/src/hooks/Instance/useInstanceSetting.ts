@@ -58,7 +58,7 @@ export const useInstanceSetting = () => {
         }
     }, [selectedInstance, userInstances, dispatch])
 
-    const getInstanceState = useCallback(async () => {
+    const getInstanceStateAndUpdate = useCallback(async () => {
         if (!instanceName) return
         try {
             const response = await InstanceService.instanceGetInstanceState({
@@ -90,8 +90,8 @@ export const useInstanceSetting = () => {
   // Start polling instance state when instance is running
     useEffect(() => {
         if (isInstanceRunning && !statePollingInterval) {
-            getInstanceState() // Initial fetch
-            const interval = setInterval(getInstanceState, STATUS_POLLING_INTERVAL)
+            getInstanceStateAndUpdate() // Initial fetch
+            const interval = setInterval(getInstanceStateAndUpdate, STATUS_POLLING_INTERVAL)
             setStatePollingInterval(interval)
         } else if (!isInstanceRunning && statePollingInterval) {
             clearInterval(statePollingInterval)
@@ -104,7 +104,7 @@ export const useInstanceSetting = () => {
                 clearInterval(statePollingInterval)
             }
         }
-    }, [isInstanceRunning, statePollingInterval, getInstanceState])
+    }, [isInstanceRunning, statePollingInterval, getInstanceStateAndUpdate])
             
     // Start instance
     const startInstance = useCallback(async () => {
@@ -211,7 +211,7 @@ export const useInstanceSetting = () => {
         isInstanceStopped,
         error,
         getInstanceAndUpdate,
-        getInstanceState,
+        getInstanceStateAndUpdate,
         startInstance,
         stopInstance,
         restartInstance,

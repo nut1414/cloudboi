@@ -6,21 +6,28 @@ interface SectionProps {
   icon: ReactNode
   description?: string
   children: ReactNode
+  rightContent?: ReactNode
 }
 
 const Section: React.FC<SectionProps> = ({
   title,
   icon,
   description,
-  children
+  children,
+  rightContent
 }) => {
   return (
     <div className="bg-[#192A51] rounded-xl p-6 border border-blue-900/30">
-      <h2 className="text-xl font-medium text-white flex items-center gap-2 mb-4">
-        <span className="text-purple-400">{icon}</span>
-        {title}
-      </h2>
-      {description && <p className="text-gray-300 mb-6">{description}</p>}
+      <div className="flex justify-between items-start mb-4">
+        <div>
+          <h2 className="text-xl font-medium text-white flex items-center gap-2">
+            <span className="text-purple-400">{icon}</span>
+            {title}
+          </h2>
+          {description && <p className="text-gray-300 mt-2">{description}</p>}
+        </div>
+        {rightContent}
+      </div>
       {children}
     </div>
   )

@@ -1,6 +1,6 @@
 // InstanceSettingPage.tsx
 import React, { useState } from "react"
-import { Cog6ToothIcon, CommandLineIcon, BoltIcon, GlobeAltIcon, TrashIcon } from "@heroicons/react/24/outline"
+import { Cog6ToothIcon, CommandLineIcon, BoltIcon, GlobeAltIcon, TrashIcon, ChartBarIcon } from "@heroicons/react/24/outline"
 import InstanceSettingContent from "../../components/Instance/Setting/InstanceSettingContent"
 import PageContainer from "../../components/Layout/PageContainer"
 import StatusBadge from "../../components/Common/StatusBadge"
@@ -18,6 +18,7 @@ const InstanceSettingPage: React.FC = () => {
     { id: "AccessMenu", label: "Access", icon: <CommandLineIcon className="w-5 h-5" /> },
     { id: "PowersMenu", label: "Power", icon: <BoltIcon className="w-5 h-5" /> },
     { id: "NetworkingMenu", label: "Networking", icon: <GlobeAltIcon className="w-5 h-5" /> },
+    { id: "MonitorMenu", label: "Monitor", icon: <ChartBarIcon className="w-5 h-5" /> },
     { id: "DestroyMenu", label: "Destroy", icon: <TrashIcon className="w-5 h-5" /> },
   ]
 
