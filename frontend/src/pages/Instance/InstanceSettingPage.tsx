@@ -1,5 +1,5 @@
 // InstanceSettingPage.tsx
-import React, { useState, useEffect } from "react"
+import React, { useState } from "react"
 import { Cog6ToothIcon, CommandLineIcon, BoltIcon, GlobeAltIcon, TrashIcon } from "@heroicons/react/24/outline"
 import InstanceSettingContent from "../../components/Instance/Setting/InstanceSettingContent"
 import PageContainer from "../../components/Layout/PageContainer"
@@ -11,7 +11,7 @@ import TabSkeletonLoader from "../../components/Common/Tab/TabSkeletonLoader"
 
 const InstanceSettingPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("AccessMenu")
-  const { instance, isLoading, formatUptime } = useInstanceSetting()
+  const { instance, isLoading, getFormattedUptime } = useInstanceSetting()
 
   // Define tabs with icons for better visual hierarchy
   const tabs: TabItem[] = [
@@ -37,7 +37,7 @@ const InstanceSettingPage: React.FC = () => {
         <div className="h-8 w-px bg-blue-800/30"></div>
         <div className="flex flex-col">
           <span className="text-gray-400">Uptime:</span>
-          <span>{formatUptime(instance.last_updated_at)}</span>
+          <span>{getFormattedUptime(instance.last_updated_at)}</span>
         </div>
       </div>
     </div>

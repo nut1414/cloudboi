@@ -1,6 +1,6 @@
 // src/contexts/instanceContext.tsx
 import { ReactNode } from "react"
-import { UserInstanceResponse, InstanceDetails } from "../client"
+import { UserInstanceResponse, InstanceDetails, BaseInstanceState } from "../client"
 import { createContextProvider, BaseContextState, ReducerAction } from './baseContext'
 
 // Define the specific state for instance context
@@ -8,6 +8,7 @@ interface InstanceContextState extends BaseContextState {
   userInstances: UserInstanceResponse[] | null
   selectedInstance: UserInstanceResponse | null
   instanceDetails: InstanceDetails | null
+  instanceState: BaseInstanceState | null
   isLoading: boolean
   error: string | null
   dispatch?: React.Dispatch<ReducerAction<InstanceContextState>>
@@ -18,6 +19,7 @@ export const INSTANCE_ACTIONS = {
   SET_USER_INSTANCES: 'SET_USER_INSTANCES',
   SET_SELECTED_INSTANCE: 'SET_SELECTED_INSTANCE',
   SET_INSTANCE_DETAILS: 'SET_INSTANCE_DETAILS',
+  SET_INSTANCE_STATE: 'SET_INSTANCE_STATE',
   SET_LOADING: 'SET_LOADING',
   SET_ERROR: 'SET_ERROR',
   START_FETCH: 'START_FETCH',
@@ -45,6 +47,11 @@ const instanceReducer = (
       return {
         ...state,
         instanceDetails: action.payload,
+      }
+    case INSTANCE_ACTIONS.SET_INSTANCE_STATE:
+      return {
+        ...state,
+        instanceState: action.payload,
       }
     case INSTANCE_ACTIONS.SET_LOADING:
       return {
@@ -84,6 +91,7 @@ const initialState: InstanceContextState = {
   userInstances: null,
   selectedInstance: null,
   instanceDetails: null,
+  instanceState: null,
   isLoading: true,
   error: null,
 }
