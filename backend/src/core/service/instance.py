@@ -222,7 +222,7 @@ class InstanceService:
         
         # Get instance state from LXD
         try:
-            state = await self.lxd_client.get_instance_state(instance.hostname)
+            state = await self.lxd_client.get_instance_state(instance)
             return BaseInstanceState.from_lxd_state(state)
         except Exception as e:
             raise HTTPException(
