@@ -175,34 +175,3 @@ require_instance_ownership = create_decorator(
     precondition_check=check_instance_ownership,
     skip_if_check_fails=False
 )
-
-# Example usage:
-"""
-from ..utils.permission import require_roles, worker_context, require_instance_ownership
-from ..constants.user_const import UserRole
-
-class ExampleService:
-    # Using string literals (backwards compatible)
-    @require_roles(["admin"])
-    async def admin_only_method_old(self, param1, param2):
-        return "Admin operation completed"
-    
-    # Using enum values (preferred for maintainability)
-    @require_roles([UserRole.ADMIN])
-    async def admin_only_method(self, param1, param2):
-        return "Admin operation completed"
-    
-    @require_roles([UserRole.ADMIN, UserRole.USER])
-    async def any_user_method(self, param1):
-        return "Operation completed"
-    
-    @require_roles([UserRole.ADMIN, UserRole.WORKER])
-    async def worker_method(self):
-        return "Worker operation"
-        
-    # Check instance ownership (admins and workers bypass)
-    @require_instance_ownership()
-    async def manage_instance(self, instance_id=None, instance_name=None):
-        return "Instance operation completed"
-"""
-

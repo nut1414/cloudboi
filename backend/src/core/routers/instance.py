@@ -124,7 +124,7 @@ async def websocket_instance(
     instance_service: InstanceService = Depends(Provide[AppContainer.instance_service]),
 ):
     try:
-        await instance_service.websocket_session(instance_name, websocket)
+        await instance_service.websocket_session(instance_name=instance_name, client_ws=websocket)
     except Exception as e:
         logger.error(f"Failed to create websocket session: {str(e)}")
         if websocket.client_state != WebSocketState.DISCONNECTED:
