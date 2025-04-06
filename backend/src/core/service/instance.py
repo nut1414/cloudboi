@@ -15,8 +15,7 @@ from ..models.instance import (
     UserInstanceResponse,
     InstanceControlResponse,
     BaseInstanceState,
-    LxdInstanceState,
-    BaseInstanceState
+    LxdInstanceState
 )
 from ..sql.operations import InstanceOperation
 from ..utils.dependencies import user_session_ctx
