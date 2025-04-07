@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react"
 import { Outlet } from "react-router-dom"
 import SideNavbar, { NavItemProps } from "../Common/Navbar/SideNavbar"
-import { ComputerDesktopIcon, UserGroupIcon, CreditCardIcon } from "@heroicons/react/24/outline"
+import { ComputerDesktopIcon, UserGroupIcon, CreditCardIcon, ClipboardDocumentIcon, CurrencyDollarIcon } from "@heroicons/react/24/outline"
 import { useUser } from "../../contexts/userContext"
 
 interface AdminLayoutProps {
@@ -26,7 +26,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
         {
             path: "plans",
             label: "Plans",
-            icon: <CreditCardIcon className="h-5 w-5" />
+            icon: <ClipboardDocumentIcon className="h-5 w-5" />
         },
         {
             path: "billing",
@@ -36,7 +36,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
         {
             path: "credits",
             label: "Credits",
-            icon: <CreditCardIcon className="h-5 w-5" />
+            icon: <CurrencyDollarIcon className="h-5 w-5" />
         },
     ]
 

@@ -1,13 +1,12 @@
-import React, { useState, ReactNode } from "react"
+import React, { useState, ReactNode, useEffect, useRef } from "react"
 import { Button } from "./Button/Button" // Import the unified Button component
 import SkeletonLoader from "./SkeletonLoader" // Import the skeleton loader
-import { ArchiveBoxXMarkIcon, ChevronRightIcon, ChevronDownIcon } from "@heroicons/react/24/outline" // Import the icons
+import { ArchiveBoxXMarkIcon, ChevronRightIcon } from "@heroicons/react/24/outline" // Import the icons
 
 // Types for the table
 export interface TableColumn<T> {
   key: string
   label: string
-  width?: string
   render?: (item: T) => React.ReactNode
   align?: 'left' | 'center' | 'right'
 }
@@ -37,36 +36,23 @@ interface TableHeaderProps {
 }
 
 export const TableHeader: React.FC<TableHeaderProps> = ({ columns, isLoading = false }) => {
-  // Create the grid template columns based on width properties
-  const gridTemplateColumns = React.useMemo(() => {
-    return columns.map(col => {
-      // If the width is a digit-based value (like px, rem, etc.), use it directly
-      if (col.width && /^[0-9]+/.test(col.width)) {
-        return col.width;
-      }
-      // Otherwise use fraction units
-      return col.width || '1fr';
-    }).join(' ');
-  }, [columns]);
-
   return (
-    <div 
-      className="grid gap-4 text-gray-300 text-lg py-4 font-medium border-b border-blue-800/30 px-6 bg-[#192A51]"
-      style={{ gridTemplateColumns }}
-    >
-      {columns.map((column) => (
-        <span
-          key={column.key}
-          className={`flex items-center ${column.align === 'center' ? 'justify-center' : column.align === 'right' ? 'justify-end' : 'justify-start'}`}
-        >
-          {isLoading ? (
-            <SkeletonLoader height="h-6" width="w-24" />
-          ) : (
-            column.label
-          )}
-        </span>
-      ))}
-    </div>
+    <thead className="bg-[#192A51]">
+      <tr className="text-gray-300 text-lg font-medium border-b border-blue-800/30">
+        {columns.map((column, index) => (
+          <th
+            key={column.key}
+            className={`py-4 ${index === 0 ? 'pl-8 pr-4' : 'px-4'} ${column.align === 'center' ? 'text-center' : column.align === 'right' ? 'text-right' : 'text-left'}`}
+          >
+            {isLoading ? (
+              <SkeletonLoader height="h-6" width="w-24" />
+            ) : (
+              column.label
+            )}
+          </th>
+        ))}
+      </tr>
+    </thead>
   )
 }
 
@@ -80,17 +66,21 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   message = "No items found",
   onCreateNew
 }) => (
-  <div className="flex flex-col items-center justify-center py-12 bg-[#23375F] text-gray-300">
-    <ArchiveBoxXMarkIcon className="w-16 h-16 text-gray-400 mb-4" />
-    <p className="text-gray-300 mb-4">{message}</p>
-    {onCreateNew && (
-      <Button
-        variant="purple"
-        label="Create New"
-        onClick={onCreateNew}
-      />
-    )}
-  </div>
+  <tr>
+    <td colSpan={100} className="py-12 bg-[#23375F] text-gray-300">
+      <div className="flex flex-col items-center justify-center">
+        <ArchiveBoxXMarkIcon className="w-16 h-16 text-gray-400 mb-4" />
+        <p className="text-gray-300 mb-4">{message}</p>
+        {onCreateNew && (
+          <Button
+            variant="purple"
+            label="Create New"
+            onClick={onCreateNew}
+          />
+        )}
+      </div>
+    </td>
+  </tr>
 )
 
 // Skeleton Row component
@@ -99,36 +89,21 @@ interface SkeletonRowProps {
 }
 
 export const SkeletonRow: React.FC<SkeletonRowProps> = ({ columns }) => {
-  // Create the grid template columns based on width properties
-  const gridTemplateColumns = React.useMemo(() => {
-    return columns.map(col => {
-      // If the width is a digit-based value (like px, rem, etc.), use it directly
-      if (col.width && /^[0-9]+/.test(col.width)) {
-        return col.width;
-      }
-      // Otherwise use fraction units
-      return col.width || '1fr';
-    }).join(' ');
-  }, [columns]);
-
   return (
-    <div
-      className="grid gap-4 text-gray-300 bg-[#23375F] border-b border-blue-800/30 py-3 px-6"
-      style={{ gridTemplateColumns }}
-    >
+    <tr className="text-gray-300 bg-[#23375F] border-b border-blue-800/30">
       {columns.map((column, idx) => (
-        <span
+        <td
           key={`skeleton-${column.key}-${idx}`}
-          className={`flex items-center ${column.align === 'center' ? 'justify-center' : column.align === 'right' ? 'justify-end' : 'justify-start'}`}
+          className={`py-3 ${idx === 0 ? 'pl-8 pr-4' : 'px-4'} ${column.align === 'center' ? 'text-center' : column.align === 'right' ? 'text-right' : 'text-left'}`}
         >
           <SkeletonLoader
             height="h-4"
             width={idx === 0 ? "w-32" : "w-20"}
             rounded="rounded-md"
           />
-        </span>
+        </td>
       ))}
-    </div>
+    </tr>
   )
 }
 
@@ -146,6 +121,43 @@ export const CardGrid: React.FC<CardGridProps> = ({ children, className = '' }) 
     <div className={`grid gap-3 grid-cols-1 md:grid-cols-2 mt-2 ${className}`}>
       {children}
     </div>
+  );
+};
+
+// Animated Expandable Row
+interface ExpandableRowProps {
+  columns: number;
+  isExpanded: boolean;
+  children: React.ReactNode;
+}
+
+const ExpandableRow: React.FC<ExpandableRowProps> = ({ columns, isExpanded, children }) => {
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [height, setHeight] = useState<number | undefined>(undefined);
+  
+  useEffect(() => {
+    if (contentRef.current) {
+      const contentHeight = contentRef.current.scrollHeight;
+      setHeight(isExpanded ? contentHeight : 0);
+    }
+  }, [isExpanded, children]);
+
+  return (
+    <tr className="bg-[#192A51]/90 border-b border-indigo-600/30 overflow-hidden">
+      <td colSpan={columns} className="p-0 transition-all duration-300 ease-in-out">
+        <div 
+          style={{ maxHeight: height ? `${height}px` : '0px' }}
+          className="overflow-hidden transition-all duration-300 ease-in-out"
+        >
+          <div 
+            ref={contentRef} 
+            className={`px-6 py-4 transition-opacity duration-300 ${isExpanded ? 'opacity-100' : 'opacity-0'}`}
+          >
+            {children}
+          </div>
+        </div>
+      </td>
+    </tr>
   );
 };
 
@@ -167,18 +179,6 @@ function Table<T>({
   isRowExpanded = () => false,
   onRowExpand,
 }: TableProps<T>) {
-  // Create the grid template columns based on width properties
-  const gridTemplateColumns = React.useMemo(() => {
-    return columns.map(col => {
-      // If the width is a digit-based value (like px, rem, etc.), use it directly
-      if (col.width && /^[0-9]+/.test(col.width)) {
-        return col.width;
-      }
-      // Otherwise use fraction units
-      return col.width || '1fr';
-    }).join(' ');
-  }, [columns]);
-
   // Internal expanded state if not provided externally
   const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({});
 
@@ -237,44 +237,37 @@ function Table<T>({
 
     return (
       <React.Fragment key={`row-fragment-${rowKey}`}>
-        <div
+        <tr
           key={rowKey}
-          className={`grid gap-4 text-gray-300 bg-[#23375F] hover:bg-blue-800/80 transition-colors border-b ${isExpanded ? 'border-indigo-600/50' : 'border-blue-800/30'} py-3 px-6 ${onRowClick || expandableRows ? 'cursor-pointer' : ''} ${isExpanded ? 'bg-[#2A3C69]' : ''}`}
-          style={{ gridTemplateColumns }}
+          className={`text-gray-300 bg-[#23375F] hover:bg-blue-800/80 transition-colors border-b ${isExpanded ? 'border-indigo-600/50' : 'border-blue-800/30'} ${onRowClick || expandableRows ? 'cursor-pointer' : ''} ${isExpanded ? 'bg-[#2A3C69]' : ''}`}
           onClick={() => handleRowClick(item, index)}
         >
-          {columns.map((column) => (
-            <span
+          {columns.map((column, idx) => (
+            <td
               key={`${rowKey}-${column.key}`}
-              className={`flex items-center overflow-hidden ${column.align === 'center' ? 'justify-center' : column.align === 'right' ? 'justify-end' : 'justify-start'}`}
+              className={`py-3 ${idx === 0 ? 'pl-8 pr-4' : 'px-4'} overflow-hidden ${column.align === 'center' ? 'text-center' : column.align === 'right' ? 'text-right' : 'text-left'}`}
             >
               {column.render
                 ? column.render(item)
                 : (item as any)[column.key] !== undefined
                   ? String((item as any)[column.key])
                   : ''}
-            </span>
+            </td>
           ))}
-        </div>
+        </tr>
         
-        {/* Expanded content with transition */}
+        {/* Always render the expandable row but control its height */}
         {expandableRows && renderExpanded && (
-          <div 
-            className={`transition-all duration-300 ease-in-out overflow-hidden
-              ${isExpanded 
-                ? 'max-h-[2000px] border-b border-indigo-600/30 bg-[#192A51]/90 py-4 opacity-100' 
-                : 'max-h-0 py-0 border-transparent opacity-0'}`}
+          <ExpandableRow 
+            columns={columns.length} 
+            isExpanded={isExpanded}
           >
-            {isExpanded && (
-              <div className="px-6 pb-2">
-                {renderExpanded(item)}
-              </div>
-            )}
-          </div>
+            {renderExpanded(item)}
+          </ExpandableRow>
         )}
       </React.Fragment>
     )
-  }, [columns, onRowClick, keyExtractor, gridTemplateColumns, expandableRows, renderExpanded, isRowExpanded, onRowExpand, expandedRows])
+  }, [columns, onRowClick, keyExtractor, expandableRows, renderExpanded, isRowExpanded, onRowExpand, expandedRows])
 
   // Render skeleton rows
   const renderSkeletonRows = React.useCallback(() => {
@@ -289,21 +282,25 @@ function Table<T>({
         Displaying {data.length} {data.length === 1 ? unit : `${unit}s`}
       </p>
       <div className="bg-[#192A51] rounded-xl shadow-lg overflow-hidden border border-blue-900/50">
-        {/* Header Row - always visible but with skeleton content when loading */}
-        <TableHeader columns={columns} isLoading={isLoading} />
+        <table className="w-full table-auto">
+          {/* Header Row - always visible but with skeleton content when loading */}
+          <TableHeader columns={columns} isLoading={isLoading} />
 
-        {/* Content */}
-        {isLoading ? (
-          // Show skeleton rows instead of the spinning loader
-          renderSkeletonRows()
-        ) : data.length === 0 ? (
-          <EmptyState
-            message={emptyStateMessage}
-            onCreateNew={onCreateNew}
-          />
-        ) : (
-          data.map(renderRow)
-        )}
+          {/* Content */}
+          <tbody>
+            {isLoading ? (
+              // Show skeleton rows instead of the spinning loader
+              renderSkeletonRows()
+            ) : data.length === 0 ? (
+              <EmptyState
+                message={emptyStateMessage}
+                onCreateNew={onCreateNew}
+              />
+            ) : (
+              data.map(renderRow)
+            )}
+          </tbody>
+        </table>
       </div>
     </>
   )

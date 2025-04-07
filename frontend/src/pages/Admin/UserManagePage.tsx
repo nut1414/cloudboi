@@ -118,13 +118,11 @@ const UserManagePage: React.FC = () => {
     {
       key: "expand",
       label: "",
-      render: (user) => <ExpandIndicator isExpanded={isRowExpanded(user)} />,
-      width: "20px"
+      render: (user) => <ExpandIndicator isExpanded={isRowExpanded(user)} />
     },
     {
       key: "username",
       label: "Username",
-      width: "1fr",
       render: (user) => (
         <div className="truncate max-w-full" title={user.username}>
           {user.username}
@@ -134,7 +132,6 @@ const UserManagePage: React.FC = () => {
     {
       key: "email",
       label: "Email",
-      width: "1fr",
       render: (user) => (
         <div className="truncate max-w-full" title={user.email}>
           {user.email}
@@ -144,7 +141,6 @@ const UserManagePage: React.FC = () => {
     {
       key: "instances_count",
       label: "No. of Instances",
-      width: "1fr",
       align: "center",
       render: (user) => (
         <div className="flex justify-center items-center">
@@ -155,7 +151,6 @@ const UserManagePage: React.FC = () => {
     {
       key: "instances_status",
       label: "Status Breakdown",
-      width: "1fr",
       render: (user) => {
         const { running, stopped, frozen, error } = getInstanceStatusCounts(user.instances)
         
@@ -174,7 +169,6 @@ const UserManagePage: React.FC = () => {
             {stopped > 0 && (
               <StatusBadge 
                 status="Stopped" 
-                variant="table-status"
                 showDot={false}
                 size="sm"
               >
@@ -184,7 +178,6 @@ const UserManagePage: React.FC = () => {
             {frozen > 0 && (
               <StatusBadge 
                 status="Frozen" 
-                variant="table-status"
                 showDot={false}
                 size="sm"
               >
@@ -194,7 +187,6 @@ const UserManagePage: React.FC = () => {
             {error > 0 && (
               <StatusBadge 
                 status="Error" 
-                variant="table-status"
                 showDot={false}
                 size="sm"
               >
@@ -211,10 +203,10 @@ const UserManagePage: React.FC = () => {
     {
       key: "role",
       label: "Role",
-      width: "1fr",
+      align: "center",
       render: (user) => (
         <div className="flex justify-center items-center">
-          <span className={user.role.role_name === 'admin' ? 'text-purple-300' : 'text-blue-300'}>
+          <span>
             {user.role.role_name}
           </span>
         </div>
@@ -223,12 +215,12 @@ const UserManagePage: React.FC = () => {
     {
       key: "actions",
       label: "",
-      width: "120px",
       render: (user) => (
         <div className="flex justify-center w-full">
           <Button 
             label="View Instances"
-            variant="table-action"
+            variant="secondary"
+            size="small"
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
               e.stopPropagation();
               handleViewUserInstances(user);

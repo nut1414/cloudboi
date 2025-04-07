@@ -12,6 +12,7 @@ export interface ButtonProps {
   variant?: 'primary' | 'secondary' | 'outline' | 'purple' | 'table-action' | 'text-link'
   hasBorder?: boolean
   disabled?: boolean
+  size?: 'default' | 'small' | 'xs'
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -22,7 +23,8 @@ export const Button: React.FC<ButtonProps> = ({
   icon,
   variant = 'primary',
   hasBorder = false,
-  disabled = false
+  disabled = false,
+  size = 'default'
 }) => {
   // Define variant styles
   const variantStyles = {
@@ -32,6 +34,13 @@ export const Button: React.FC<ButtonProps> = ({
     outline: "bg-transparent border-2 border-blue-800/30 text-gray-300 hover:bg-blue-800/20",
     'table-action': "bg-green-500/20 text-green-300 hover:bg-green-500/30 rounded-full whitespace-nowrap text-sm py-1 px-3",
     'text-link': "bg-transparent text-blue-300 hover:text-blue-100 hover:underline text-sm"
+  }
+
+  // Size styles
+  const sizeStyles = {
+    default: "px-4 py-2",
+    small: "px-3.5 py-1.5 text-sm",
+    xs: "px-2 py-0.5 text-xs"
   }
 
   // Base button styles that apply to all variants except table-action and text-link
@@ -56,7 +65,7 @@ export const Button: React.FC<ButtonProps> = ({
   } else {
     buttonStyles = `
       ${variantStyles[variant]} 
-      px-4 py-2 
+      ${sizeStyles[size]}
       rounded-lg
       transition-colors duration-200 
       flex items-center gap-2

@@ -88,6 +88,7 @@ export const useAuth = () => {
       await UserService.userLogoutUser()
       
       dispatch?.({ type: USER_ACTIONS.LOGOUT })
+      navigate('/login', { replace: true })
     } catch (error: any) {
       const errorMessage = error.response?.data?.detail || 'Logout failed'
       dispatch?.({ type: USER_ACTIONS.SET_ERROR, payload: errorMessage })
