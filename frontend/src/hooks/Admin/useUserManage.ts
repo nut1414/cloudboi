@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo, useCallback } from 'react'
 import { useAdmin, ADMIN_ACTIONS } from '../../contexts/adminContext'
 import { AdminService } from '../../client'
-import { AdminUser, UserInstance } from '../../client/types.gen'
+import { AdminUser, UserInstanceFromDB } from '../../client/types.gen'
 import { useNavigate } from 'react-router-dom'
 import { InstanceStatus } from '../../constant/InstanceConstant'
 
@@ -87,7 +87,7 @@ export const useUserManage = () => {
   }, [navigate])
 
   // Navigate to specific instance detail page
-  const navigateToInstanceDetail = useCallback((username: string, instance: UserInstance) => {
+  const navigateToInstanceDetail = useCallback((username: string, instance: UserInstanceFromDB) => {
     navigate(`/user/${username}/instance/${instance.hostname}`)
   }, [navigate])
 
@@ -101,7 +101,7 @@ export const useUserManage = () => {
   }, [expandedRows, handleRowExpand, navigateToUserInstances])
 
   // Group and sort instances by status
-  const getSortedInstances = useCallback((instances: UserInstance[]) => {
+  const getSortedInstances = useCallback((instances: UserInstanceFromDB[]) => {
     // Group instances by status
     const instancesByStatus = instances.reduce((acc, instance) => {
       const status = instance.status.toLowerCase();
@@ -110,7 +110,7 @@ export const useUserManage = () => {
       }
       acc[status].push(instance);
       return acc;
-    }, {} as Record<string, UserInstance[]>);
+    }, {} as Record<string, UserInstanceFromDB[]>);
 
     // Define status order with values from InstanceStatus constant
     const statusOrder = [
@@ -131,7 +131,7 @@ export const useUserManage = () => {
   }, [])
 
   // Count instances by status
-  const getInstanceStatusCounts = useCallback((instances: UserInstance[]) => {
+  const getInstanceStatusCounts = useCallback((instances: UserInstanceFromDB[]) => {
     return {
       running: instances.filter(i => 
         i.status.toLowerCase() === InstanceStatus.RUNNING.toLowerCase()

@@ -1,6 +1,6 @@
 // pages/Admin/UserManagePage.tsx
 import React from "react"
-import { AdminUser, UserInstance } from "../../client/types.gen"
+import { AdminUser, UserInstanceFromDB } from "../../client/types.gen"
 import Table, { TableColumn, ExpandIndicator, CardGrid } from "../../components/Common/Table"
 import PageContainer from "../../components/Layout/PageContainer"
 import TopNavbar from "../../components/Common/Navbar/TopNavbar"
@@ -53,10 +53,10 @@ const InstancesContent = ({
   navigateToInstanceDetail, 
   getSortedInstances 
 }: { 
-  instances: UserInstance[], 
+  instances: UserInstanceFromDB[], 
   username: string,
-  navigateToInstanceDetail: (username: string, instance: UserInstance) => void,
-  getSortedInstances: (instances: UserInstance[]) => UserInstance[]
+  navigateToInstanceDetail: (username: string, instance: UserInstanceFromDB) => void,
+  getSortedInstances: (instances: UserInstanceFromDB[]) => UserInstanceFromDB[]
 }) => {
   
   if (instances.length === 0) {
@@ -74,8 +74,22 @@ const InstancesContent = ({
           title={instance.hostname}
           rightHeader={<StatusBadge status={instance.status} />}
           detailItems={[
-            { label: "Plan ID", value: instance.instance_plan_id.toString() },
-            { label: "OS Type", value: instance.os_type_id.toString() },
+            { 
+              label: "Plan", 
+              value: `${instance.instance_plan.instance_package_name} (${instance.instance_plan.vcpu_amount} vCPU, ${instance.instance_plan.ram_amount} RAM)` 
+            },
+            { 
+              label: "OS", 
+              value: `${instance.os_type.os_image_name} ${instance.os_type.os_image_version}` 
+            },
+            { 
+              label: "Storage", 
+              value: `${instance.instance_plan.storage_amount} GB` 
+            },
+            { 
+              label: "Cost", 
+              value: `$${instance.instance_plan.cost_hour}/hour` 
+            },
             { label: "Node", value: instance.lxd_node_name },
             { 
               label: "Created", 
@@ -158,8 +172,7 @@ const UserManagePage: React.FC = () => {
           <div className="flex items-center space-x-2 flex-wrap">
             {running > 0 && (
               <StatusBadge 
-                status="Running" 
-                variant="table-status"
+                status="Running"
                 showDot={false}
                 size="sm"
               >

@@ -13,7 +13,7 @@ export type AdminUser = {
     username: string;
     email: string;
     role: UserRole;
-    instances: Array<UserInstance>;
+    instances: Array<UserInstanceFromDB>;
 };
 
 export type AdminUsersResponse = {
@@ -155,7 +155,7 @@ export type UserCreateResponse = {
     created_at: Date;
 };
 
-export type UserInstance = {
+export type UserInstanceFromDB = {
     instance_id?: (string | null);
     user_id?: (string | null);
     instance_plan_id: number;
@@ -165,6 +165,8 @@ export type UserInstance = {
     status: string;
     created_at?: (Date | null);
     last_updated_at: Date;
+    instance_plan: InstancePlan;
+    os_type: OsType;
 };
 
 export type UserInstanceResponse = {
@@ -408,9 +410,9 @@ export type AdminUsersResponseModelResponseTransformer = (data: any) => AdminUse
 
 export type AdminUserModelResponseTransformer = (data: any) => AdminUser;
 
-export type UserInstanceModelResponseTransformer = (data: any) => UserInstance;
+export type UserInstanceFromDBModelResponseTransformer = (data: any) => UserInstanceFromDB;
 
-export const UserInstanceModelResponseTransformer: UserInstanceModelResponseTransformer = data => {
+export const UserInstanceFromDBModelResponseTransformer: UserInstanceFromDBModelResponseTransformer = data => {
     if (data?.last_updated_at) {
         data.last_updated_at = new Date(data.last_updated_at);
     }
@@ -419,7 +421,7 @@ export const UserInstanceModelResponseTransformer: UserInstanceModelResponseTran
 
 export const AdminUserModelResponseTransformer: AdminUserModelResponseTransformer = data => {
     if (Array.isArray(data?.instances)) {
-        data.instances.forEach(UserInstanceModelResponseTransformer);
+        data.instances.forEach(UserInstanceFromDBModelResponseTransformer);
     }
     return data;
 };

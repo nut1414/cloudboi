@@ -6,6 +6,7 @@ import uuid
 
 from .base import BaseOperation
 from ..tables.user import User
+from ..tables.user_instance import UserInstance
 from ...models.admin import AdminUsersWithDetails
 
 
@@ -13,7 +14,8 @@ class AdminOperation(BaseOperation):
     async def get_all_users_with_details(self) -> List[AdminUsersWithDetails]:
         async with self.session() as db:
             stmt = select(User).options(
-                selectinload(User.user_instances),
+                selectinload(User.user_instances).selectinload(UserInstance.instance_plan),
+                selectinload(User.user_instances).selectinload(UserInstance.os_type),
                 selectinload(User.role)
             )
             result = (await db.execute(stmt)).scalars().all()
