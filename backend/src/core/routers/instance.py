@@ -29,15 +29,16 @@ async def instance_details(
     return await instance_service.get_all_instance_details()
 
 @router.get(
-    "/list",
+    "/list/{username}",
     response_model=List[UserInstanceResponse],
     dependencies=[Depends(get_current_user)]
 )
 @inject
 async def list_instances(
+    username: str,
     instance_service: InstanceService = Depends(Provide[AppContainer.instance_service])
 ):
-    return await instance_service.get_all_user_instances()
+    return await instance_service.get_all_user_instances(username=username)
 
 @router.get(
     "/{instance_name}",

@@ -2,6 +2,7 @@ import React, { ReactNode } from "react"
 import { Outlet } from "react-router-dom"
 import SideNavbar, { NavItemProps } from "../Common/Navbar/SideNavbar"
 import { ComputerDesktopIcon, UserGroupIcon, CreditCardIcon } from "@heroicons/react/24/outline"
+import { useUser } from "../../contexts/userContext"
 
 interface AdminLayoutProps {
   children?: ReactNode
@@ -10,6 +11,7 @@ interface AdminLayoutProps {
 const AdminLayout: React.FC<AdminLayoutProps> = ({
   children,
 }) => {
+    const { user } = useUser()
     const adminNavItems: NavItemProps[] = [
         {
             path: "system",
@@ -40,7 +42,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
 
     return (
         <div className="flex w-screen h-screen">
-            <SideNavbar navItems={adminNavItems} />
+            <SideNavbar 
+                navItems={adminNavItems} 
+                username={user?.username || undefined} 
+                showCreditSection={false}
+            />
             <main className="flex-grow overflow-auto transition-all duration-300">
                 {children || <Outlet />}
             </main>

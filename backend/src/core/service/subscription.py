@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 import uuid
 
 from ..sql.operations import TransactionOperation, SubscriptionOperation, UserOperation
@@ -97,9 +97,11 @@ class SubscriptionService:
         )
     
     @require_roles([UserRole.ADMIN, UserRole.USER, UserRole.WORKER])
-    async def get_user_wallet(self, user_id: uuid.UUID) -> UserWallet:
-        """Get the user's wallet information."""
-        user_wallet = await self.user_opr.get_user_wallet(user_id=user_id)
+    async def get_user_wallet(self, user_id: Optional[uuid.UUID] = None, username: Optional[str] = None) -> UserWallet:
+        if user_id is None and username is None:
+            raise ValueError("Either user_id or username must be provided.")
+            
+        user_wallet = await self.user_opr.get_user_wallet(user_id=user_id, username=username)
         if not user_wallet:
             raise ValueError("User wallet not found.")
         return user_wallet

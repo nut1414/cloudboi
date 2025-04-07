@@ -11,7 +11,7 @@ from ..models.instance import InstanceCreateRequest, InstanceCreateResponse, Ins
 from ..sql.operations import InstanceOperation
 from ..utils.dependencies import user_session_ctx
 from .helpers.instance_helper import InstanceHelper
-from ..utils.permission import require_roles, require_instance_ownership
+from ..utils.permission import require_roles, require_instance_ownership, require_account_ownership
 from ..constants.user_const import UserRole
 
 
@@ -42,8 +42,9 @@ class InstanceService:
         )
     
     @require_roles([UserRole.ADMIN, UserRole.USER])
-    async def get_all_user_instances(self) -> List[UserInstanceResponse]:
-        result_db = await self.instance_opr.get_user_instances(username=user_session_ctx.get().username)
+    @require_account_ownership()
+    async def get_all_user_instances(self, username: str) -> List[UserInstanceResponse]:
+        result_db = await self.instance_opr.get_user_instances(username=username)
         return [InstanceHelper.to_instance_response_model(instance) for instance in result_db]
     
     @require_roles([UserRole.ADMIN, UserRole.USER])
@@ -103,13 +104,13 @@ class InstanceService:
         if not instance_id and not instance_name:
             raise ValueError("Instance ID or name is required")
         
-        # Ownership is already checked by decorator, so we can use direct lookup
-        if instance_id:
-            instance = await self.instance_opr.get_instance_by_id(instance_id)
-        else:
-            instance = await self.instance_opr.get_instance_by_name(instance_name)
-            
-        return instance
+        if not instance_id:
+            instance_id = (await self.instance_opr.get_instance_by_name(instance_name)).instance_id
+        
+        instances = await self.instance_opr.get_user_instances(instance_ids=[instance_id])
+        if not instances:
+            raise HTTPException(status_code=404, detail="Instance not found")
+        return instances[0]
         
     
     @require_roles([UserRole.ADMIN, UserRole.USER])

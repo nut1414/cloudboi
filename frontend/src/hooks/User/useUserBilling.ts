@@ -1,17 +1,65 @@
 import { useBilling, BILLING_ACTIONS } from "../../contexts/billingContext"
-import { BillingService, UserTopUpRequest } from "../../client"
-import { useState, useCallback, useMemo } from "react"
+import { BillingService, UserTopUpRequest, UserWalletResponse } from "../../client"
+import { useState, useCallback, useEffect } from "react"
 import { TransactionType } from "../../constant/TransactionConstant"
+import { useParams } from "react-router-dom"
+import { useUser } from "../../contexts/userContext"
 
 export const useUserBilling = () => {
     const {
-        userWallet,
+        userWallets,
         userTransactions,
         userBillingOverview,
         isLoading,
         error,
         dispatch
     } = useBilling()
+
+    const { userName } = useParams<{ userName: string }>()
+    const { isAuthenticated } = useUser()
+    
+    // Get the current user's wallet from the wallets map
+    const userWallet = userName ? userWallets[userName] || null : null
+    
+    // Function to fetch user wallet
+    const fetchUserWallet = useCallback(async (username: string): Promise<UserWalletResponse | null> => {
+        if (!dispatch || !username) return null
+
+        try {
+            dispatch({ type: BILLING_ACTIONS.START_FETCH })
+
+            const walletResponse = await BillingService.billingGetUserWallet({
+                path: { username }
+            })
+
+            const walletData = walletResponse.data ?? null
+            
+            dispatch({
+                type: BILLING_ACTIONS.SET_USER_WALLET,
+                payload: walletData
+            })
+
+            dispatch({ type: BILLING_ACTIONS.FETCH_SUCCESS })
+            return walletData
+        } catch (error) {
+            dispatch({
+                type: BILLING_ACTIONS.FETCH_ERROR,
+                payload: 'Failed to fetch wallet data'
+            })
+            console.error('Error fetching wallet data', error)
+            return null
+        }
+    }, [dispatch])
+
+    // Fetch wallet data when the username changes
+    useEffect(() => {
+        if (userName && isAuthenticated) {
+            // Only fetch if we don't have wallet data for this username
+            if (!userWallets[userName]) {
+                fetchUserWallet(userName)
+            }
+        }
+    }, [userName, fetchUserWallet, isAuthenticated, userWallets])
 
     // Format transaction type string for display
     const formatTransactionType = useCallback((type: string) => {
@@ -27,12 +75,14 @@ export const useUserBilling = () => {
 
     // Fetch transaction history
     const fetchTransactions = useCallback(async () => {
-        if (!dispatch) return
+        if (!dispatch || !userName) return
 
         try {
             dispatch({ type: BILLING_ACTIONS.START_FETCH })
 
-            const response = await BillingService.billingGetAllUserTransactions()
+            const response = await BillingService.billingGetAllUserTransactions({
+                path: { username: userName }
+            })
 
             dispatch({
                 type: BILLING_ACTIONS.SET_USER_TRANSACTIONS,
@@ -47,27 +97,24 @@ export const useUserBilling = () => {
             })
             alert('Error fetching transactions')
         }
-    }, [dispatch])
+    }, [dispatch, userName])
 
     // Basic top up wallet function (used internally)
     const topUpWallet = useCallback(async (amount: number) => {
-        if (!dispatch) return
+        if (!dispatch || !userName) return
 
         try {
             dispatch({ type: BILLING_ACTIONS.START_FETCH })
 
             const topUpData: UserTopUpRequest = { amount }
             const response = await BillingService.billingTopUp({
-                body: topUpData
+                body: topUpData,
+                path: { username: userName }
             })
 
             // Refresh wallet data after successful top-up
             if (response.data) {
-                const walletResponse = await BillingService.billingGetUserWallet()
-                dispatch({
-                    type: BILLING_ACTIONS.SET_USER_WALLET,
-                    payload: walletResponse.data ?? null
-                })
+                await fetchUserWallet(userName)
 
                 // Also refresh transactions to show the new top-up
                 await fetchTransactions()
@@ -83,7 +130,7 @@ export const useUserBilling = () => {
             alert('Error topping up wallet')
             throw err
         }
-    }, [dispatch, fetchTransactions])
+    }, [dispatch, fetchTransactions, userName, fetchUserWallet])
 
     // Handler for component top up with success messaging
     const handleTopUp = useCallback(async (amount: number | string) => {
@@ -105,12 +152,14 @@ export const useUserBilling = () => {
 
     // Fetch billing overview data
     const fetchBillingOverview = useCallback(async () => {
-        if (!dispatch) return
+        if (!dispatch || !userName) return
 
         try {
             dispatch({ type: BILLING_ACTIONS.START_FETCH })
 
-            const response = await BillingService.billingGetBillingOverview()
+            const response = await BillingService.billingGetBillingOverview({
+                path: { username: userName }
+            })
 
             dispatch({
                 type: BILLING_ACTIONS.SET_USER_BILLING_OVERVIEW,
@@ -126,7 +175,7 @@ export const useUserBilling = () => {
             alert('Error fetching billing overview')
             throw err
         }
-    }, [dispatch])
+    }, [dispatch, userName])
 
     // Utility for navigating to TopUp tab
     const navigateToTopUp = useCallback(() => {
@@ -155,6 +204,7 @@ export const useUserBilling = () => {
         topUpWallet,
         handleTopUp,
         fetchBillingOverview,
+        fetchUserWallet,
 
         // Utility functions
         formatTransactionType,

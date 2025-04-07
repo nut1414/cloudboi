@@ -43,20 +43,6 @@ class InstanceOperation(BaseOperation):
             result = (await db.execute(stmt)).scalar_one_or_none()
             return self.to_pydantic(UserInstanceModel, result)
     
-    async def get_instance_by_id(self, instance_id: uuid.UUID) -> UserInstanceFromDB:
-        """Get an instance by ID with related data, without user restrictions."""
-        async with self.session() as db:
-            stmt = (
-                select(UserInstance)
-                .options(
-                    selectinload(UserInstance.instance_plan),
-                    selectinload(UserInstance.os_type)
-                )
-                .where(UserInstance.instance_id == instance_id)
-            )
-            result = (await db.execute(stmt)).scalar_one_or_none()
-            return self.to_pydantic(UserInstanceFromDB, result)
-    
     async def upsert_user_instance(self, user_instance: UserInstanceModel) -> UserInstanceModel:
         async with self.session() as db:
             if user_instance.instance_id is None:
@@ -121,8 +107,8 @@ class InstanceOperation(BaseOperation):
         instance_ids: Optional[List[uuid.UUID]] = None,
         instance_names: Optional[List[str]] = None
     ) -> List[UserInstanceFromDB]:
-        if username is None and user_id is None:
-            raise ValueError("Either username or user_id must be provided.")
+        if username is None and user_id is None and instance_ids is None and instance_names is None:
+            raise ValueError("At least one of username, user_id, instance_ids, or instance_names must be provided.")
         async with self.session() as db:
             stmt = (
                 select(UserInstance)

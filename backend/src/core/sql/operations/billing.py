@@ -20,7 +20,7 @@ from ...models.billing import AllTimePayment, UpcomingPayment, UserBillingOvervi
 class BillingOperation(BaseOperation):
     async def get_user_billing_overview(
         self,
-        user_id: uuid.UUID,
+        username: str,
     ) -> UserBillingOverview:
         """
         Get the billing overview for a specific user.
@@ -32,6 +32,13 @@ class BillingOperation(BaseOperation):
         Returns a UserBillingOverview model.
         """
         async with self.session() as db:
+            # Get user_id from username
+            user_stmt = select(User.user_id).where(User.username == username)
+            user_id = (await db.execute(user_stmt)).scalar_one_or_none()
+            
+            if not user_id:
+                return None
+            
             # Create upcoming payment information
             upcoming_payment = await self._get_upcoming_payment_info(db, user_id)
             

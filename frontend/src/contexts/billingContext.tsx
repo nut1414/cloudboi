@@ -1,17 +1,15 @@
 // src/contexts/billingContext.tsx
-import { ReactNode, useEffect } from "react"
+import { ReactNode } from "react"
 import {
-    BillingService,
     UserWalletResponse,
     UserTransactionResponse,
     UserBillingOverviewResponse,
 } from "../client"
 import { createContextProvider, BaseContextState, ReducerAction } from './baseContext'
-import { useUser } from './userContext'
 
 // Define the specific state for billing context
 interface BillingContextState extends BaseContextState {
-    userWallet: UserWalletResponse | null
+    userWallets: Record<string, UserWalletResponse | null>
     userTransactions: UserTransactionResponse[] | null
     userBillingOverview: UserBillingOverviewResponse | null
     isLoading: boolean
@@ -40,7 +38,10 @@ const billingReducer = (
         case BILLING_ACTIONS.SET_USER_WALLET:
             return {
                 ...state,
-                userWallet: action.payload,
+                userWallets: {
+                    ...state.userWallets,
+                    [action.payload?.username || '']: action.payload,
+                },
             }
         case BILLING_ACTIONS.SET_USER_TRANSACTIONS:
             return {
@@ -87,10 +88,10 @@ const billingReducer = (
 
 // Initial state
 const initialState: BillingContextState = {
-    userWallet: null,
+    userWallets: {},
     userTransactions: null,
     userBillingOverview: null,
-    isLoading: false, // Changed from true to false as we'll only start loading when authenticated
+    isLoading: false,
     error: null,
 }
 
@@ -102,50 +103,7 @@ const { Provider, useContextHook } = createContextProvider<BillingContextState>(
 )
 
 export const BillingProvider = ({ children }: { children: ReactNode }) => {
-    return (
-        <Provider>
-            <BillingInitializer>{children}</BillingInitializer>
-        </Provider>
-    )
-}
-
-// Separate component to handle wallet data initialization
-const BillingInitializer = ({ children }: { children: ReactNode }) => {
-    const billingContext = useContextHook()
-    const { dispatch } = billingContext
-    const { isAuthenticated, isLoading: isUserLoading } = useUser()
-
-    useEffect(() => {
-        // Only fetch wallet data when user is authenticated and not in loading state
-        if (!dispatch || !isAuthenticated || isUserLoading) return
-
-        const fetchWalletData = async () => {
-            try {
-                dispatch({ type: BILLING_ACTIONS.START_FETCH })
-
-                // Fetch wallet data
-                const walletResponse = await BillingService.billingGetUserWallet()
-
-                // Update state with fetched data
-                dispatch({
-                    type: BILLING_ACTIONS.SET_USER_WALLET,
-                    payload: walletResponse.data ?? null
-                })
-
-                dispatch({ type: BILLING_ACTIONS.FETCH_SUCCESS })
-            } catch (error) {
-                dispatch({
-                    type: BILLING_ACTIONS.FETCH_ERROR,
-                    payload: 'Failed to fetch wallet data'
-                })
-                alert('Error fetching wallet data')
-            }
-        }
-
-        fetchWalletData()
-    }, [dispatch, isAuthenticated, isUserLoading])
-
-    return <>{children}</>
+    return <Provider>{children}</Provider>
 }
 
 export const useBilling = useContextHook

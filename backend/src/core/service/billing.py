@@ -1,13 +1,11 @@
-
 from typing import List
 from fastapi import HTTPException
 
 from ..sql.operations.transaction import TransactionOperation
 from ..sql.operations.billing import BillingOperation
 from .subscription import SubscriptionService
-from ..utils.dependencies import user_session_ctx
 from ..utils.datetime import DateTimeUtils
-from ..utils.permission import require_roles
+from ..utils.permission import require_roles, require_account_ownership
 from ..models.billing import UserBillingOverviewResponse, UserTopUpRequest, UserTopUpResponse
 from ..models.transaction import UserTransactionResponse, Transaction
 from ..models.user import UserWalletResponse
@@ -26,22 +24,24 @@ class BillingService:
         self.subscription_service = subscription_service
 
     @require_roles([UserRole.ADMIN, UserRole.USER])
-    async def get_user_billing_overview(self) -> UserBillingOverviewResponse:
-        result = await self.billing_opr.get_user_billing_overview(user_id=user_session_ctx.get().user_id)
+    @require_account_ownership()
+    async def get_user_billing_overview(self, username: str) -> UserBillingOverviewResponse:
+        result = await self.billing_opr.get_user_billing_overview(username=username)
         if not result:
             raise HTTPException(
                 status_code=500,
                 detail="Failed to retrieve billing overview",
             )
         return UserBillingOverviewResponse(
-            username=user_session_ctx.get().username,
+            username=username,
             upcoming_payment=result.upcoming_payment,
             all_time_payment=result.all_time_payment,
         )
     
     @require_roles([UserRole.ADMIN, UserRole.USER])
-    async def get_all_user_transactions(self) -> List[UserTransactionResponse]:
-        result = await self.transaction_opr.get_all_user_transactions(username=user_session_ctx.get().username)
+    @require_account_ownership()
+    async def get_all_user_transactions(self, username: str) -> List[UserTransactionResponse]:
+        result = await self.transaction_opr.get_all_user_transactions(username=username)
         return [UserTransactionResponse(
             transaction_id=transaction.transaction_id,
             transaction_type=transaction.transaction_type,
@@ -52,10 +52,13 @@ class BillingService:
         ) for transaction in result]
     
     @require_roles([UserRole.ADMIN, UserRole.USER])
-    async def top_up(self, top_up_request: UserTopUpRequest) -> UserTopUpResponse:
+    @require_account_ownership()
+    async def top_up(self, username: str, top_up_request: UserTopUpRequest) -> UserTopUpResponse:
+        user_id = (await self.subscription_service.user_opr.get_user_by_username(username)).user_id
+
         transaction = self.subscription_service._create_topup_transaction(
-            user_id=user_session_ctx.get().user_id,
-            username=user_session_ctx.get().username,
+            user_id=user_id,
+            username=username,
             amount=top_up_request.amount,
         )
 
@@ -77,15 +80,16 @@ class BillingService:
         )
     
     @require_roles([UserRole.ADMIN, UserRole.USER])
-    async def get_user_wallet(self) -> UserWalletResponse:
-        result = await self.subscription_service.get_user_wallet(user_id=user_session_ctx.get().user_id)
+    @require_account_ownership()
+    async def get_user_wallet(self, username: str) -> UserWalletResponse:
+        result = await self.subscription_service.get_user_wallet(username=username)
         if not result:
             raise HTTPException(
                 status_code=500,
                 detail="Failed to retrieve wallet",
             )
         return UserWalletResponse(
-            username=user_session_ctx.get().username,
+            username=username,
             balance=result.balance,
             last_updated_at=DateTimeUtils.to_bkk_string(result.last_updated_at),
         )

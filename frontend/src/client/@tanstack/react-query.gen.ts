@@ -3,7 +3,7 @@
 import type { Options } from '@hey-api/client-axios';
 import { queryOptions, type UseMutationOptions } from '@tanstack/react-query';
 import { client, AdminService, BillingService, ClusterService, InstanceService, RootService, UserService } from '../services.gen';
-import type { BillingTopUpData, BillingTopUpError, BillingTopUpResponse, ClusterCreateJoinTokenData, ClusterCreateJoinTokenError, ClusterCreateJoinTokenResponse, ClusterAddMemberData, ClusterAddMemberError, ClusterAddMemberResponse, InstanceGetInstanceData, InstanceCreateInstanceData, InstanceCreateInstanceError, InstanceCreateInstanceResponse, InstanceStartInstanceData, InstanceStartInstanceError, InstanceStartInstanceResponse, InstanceStopInstanceData, InstanceStopInstanceError, InstanceStopInstanceResponse, InstanceDeleteInstanceData, InstanceDeleteInstanceError, InstanceDeleteInstanceResponse, InstanceRestartInstanceData, InstanceRestartInstanceError, InstanceRestartInstanceResponse, UserCreateUserData, UserCreateUserError, UserCreateUserResponse, UserLoginUserData, UserLoginUserError, UserLoginUserResponse, UserLogoutUserError, UserLogoutUserResponse } from '../types.gen';
+import type { BillingGetBillingOverviewData, BillingGetAllUserTransactionsData, BillingTopUpData, BillingTopUpError, BillingTopUpResponse, BillingGetUserWalletData, ClusterCreateJoinTokenData, ClusterCreateJoinTokenError, ClusterCreateJoinTokenResponse, ClusterAddMemberData, ClusterAddMemberError, ClusterAddMemberResponse, InstanceListInstancesData, InstanceGetInstanceData, InstanceCreateInstanceData, InstanceCreateInstanceError, InstanceCreateInstanceResponse, InstanceStartInstanceData, InstanceStartInstanceError, InstanceStartInstanceResponse, InstanceStopInstanceData, InstanceStopInstanceError, InstanceStopInstanceResponse, InstanceDeleteInstanceData, InstanceDeleteInstanceError, InstanceDeleteInstanceResponse, InstanceRestartInstanceData, InstanceRestartInstanceError, InstanceRestartInstanceResponse, UserCreateUserData, UserCreateUserError, UserCreateUserResponse, UserLoginUserData, UserLoginUserError, UserLoginUserResponse, UserLogoutUserError, UserLogoutUserResponse } from '../types.gen';
 import type { AxiosError } from 'axios';
 
 type QueryKey<TOptions extends Options> = [
@@ -52,11 +52,11 @@ export const adminGetAllUsersOptions = (options?: Options) => {
     });
 };
 
-export const billingGetBillingOverviewQueryKey = (options?: Options) => [
+export const billingGetBillingOverviewQueryKey = (options: Options<BillingGetBillingOverviewData>) => [
     createQueryKey('billingGetBillingOverview', options)
 ];
 
-export const billingGetBillingOverviewOptions = (options?: Options) => {
+export const billingGetBillingOverviewOptions = (options: Options<BillingGetBillingOverviewData>) => {
     return queryOptions({
         queryFn: async ({ queryKey, signal }) => {
             const { data } = await BillingService.billingGetBillingOverview({
@@ -71,11 +71,11 @@ export const billingGetBillingOverviewOptions = (options?: Options) => {
     });
 };
 
-export const billingGetAllUserTransactionsQueryKey = (options?: Options) => [
+export const billingGetAllUserTransactionsQueryKey = (options: Options<BillingGetAllUserTransactionsData>) => [
     createQueryKey('billingGetAllUserTransactions', options)
 ];
 
-export const billingGetAllUserTransactionsOptions = (options?: Options) => {
+export const billingGetAllUserTransactionsOptions = (options: Options<BillingGetAllUserTransactionsData>) => {
     return queryOptions({
         queryFn: async ({ queryKey, signal }) => {
             const { data } = await BillingService.billingGetAllUserTransactions({
@@ -123,11 +123,11 @@ export const billingTopUpMutation = (options?: Partial<Options<BillingTopUpData>
     return mutationOptions;
 };
 
-export const billingGetUserWalletQueryKey = (options?: Options) => [
+export const billingGetUserWalletQueryKey = (options: Options<BillingGetUserWalletData>) => [
     createQueryKey('billingGetUserWallet', options)
 ];
 
-export const billingGetUserWalletOptions = (options?: Options) => {
+export const billingGetUserWalletOptions = (options: Options<BillingGetUserWalletData>) => {
     return queryOptions({
         queryFn: async ({ queryKey, signal }) => {
             const { data } = await BillingService.billingGetUserWallet({
@@ -227,11 +227,11 @@ export const instanceInstanceDetailsOptions = (options?: Options) => {
     });
 };
 
-export const instanceListInstancesQueryKey = (options?: Options) => [
+export const instanceListInstancesQueryKey = (options: Options<InstanceListInstancesData>) => [
     createQueryKey('instanceListInstances', options)
 ];
 
-export const instanceListInstancesOptions = (options?: Options) => {
+export const instanceListInstancesOptions = (options: Options<InstanceListInstancesData>) => {
     return queryOptions({
         queryFn: async ({ queryKey, signal }) => {
             const { data } = await InstanceService.instanceListInstances({

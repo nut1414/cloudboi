@@ -186,25 +186,46 @@ export type AdminGetAllUsersResponse = (AdminUsersResponse);
 
 export type AdminGetAllUsersError = unknown;
 
+export type BillingGetBillingOverviewData = {
+    path: {
+        username: string;
+    };
+};
+
 export type BillingGetBillingOverviewResponse = (UserBillingOverviewResponse);
 
-export type BillingGetBillingOverviewError = unknown;
+export type BillingGetBillingOverviewError = (HTTPValidationError);
+
+export type BillingGetAllUserTransactionsData = {
+    path: {
+        username: string;
+    };
+};
 
 export type BillingGetAllUserTransactionsResponse = (Array<UserTransactionResponse>);
 
-export type BillingGetAllUserTransactionsError = unknown;
+export type BillingGetAllUserTransactionsError = (HTTPValidationError);
 
 export type BillingTopUpData = {
     body: UserTopUpRequest;
+    path: {
+        username: string;
+    };
 };
 
 export type BillingTopUpResponse = (UserTopUpResponse);
 
 export type BillingTopUpError = (HTTPValidationError);
 
+export type BillingGetUserWalletData = {
+    path: {
+        username: string;
+    };
+};
+
 export type BillingGetUserWalletResponse = (UserWalletResponse);
 
-export type BillingGetUserWalletError = unknown;
+export type BillingGetUserWalletError = (HTTPValidationError);
 
 export type ClusterCreateJoinTokenData = {
     body: CreateJoinTokenRequest;
@@ -226,9 +247,15 @@ export type InstanceInstanceDetailsResponse = (InstanceDetails);
 
 export type InstanceInstanceDetailsError = unknown;
 
+export type InstanceListInstancesData = {
+    path: {
+        username: string;
+    };
+};
+
 export type InstanceListInstancesResponse = (Array<UserInstanceResponse>);
 
-export type InstanceListInstancesError = unknown;
+export type InstanceListInstancesError = (HTTPValidationError);
 
 export type InstanceGetInstanceData = {
     path: {

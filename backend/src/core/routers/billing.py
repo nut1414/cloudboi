@@ -20,46 +20,50 @@ router = APIRouter(
 )
 
 @router.get(
-    "/overview",
+    "/overview/{username}",
     response_model=UserBillingOverviewResponse,
     dependencies=[Depends(get_current_user)]
 )
 @inject
 async def get_billing_overview(
+    username: str,
     billing_service: BillingService = Depends(Provide[AppContainer.billing_service])
 ):
-    return await billing_service.get_user_billing_overview()
+    return await billing_service.get_user_billing_overview(username=username)
 
 @router.get(
-    "/transactions",
+    "/transactions/{username}",
     response_model=List[UserTransactionResponse],
     dependencies=[Depends(get_current_user)]
 )
 @inject
 async def get_all_user_transactions(
+    username: str,
     billing_service: BillingService = Depends(Provide[AppContainer.billing_service])
 ):
-    return await billing_service.get_all_user_transactions()
+    return await billing_service.get_all_user_transactions(username=username)
 
 @router.post(
-    "/topup",
+    "/topup/{username}",
     response_model=UserTopUpResponse,
     dependencies=[Depends(get_current_user)],
 )
 @inject
 async def top_up(
+    username: str,
     top_up_request: UserTopUpRequest,
     billing_service: BillingService = Depends(Provide[AppContainer.billing_service])
 ):
-    return await billing_service.top_up(top_up_request)
+    return await billing_service.top_up(username=username, top_up_request=top_up_request)
 
 @router.get(
-    "/wallet",
+    "/wallet/{username}",
     response_model=UserWalletResponse,
     dependencies=[Depends(get_current_user)],
 )
 @inject
 async def get_user_wallet(
+    username: str,
     billing_service: BillingService = Depends(Provide[AppContainer.billing_service])
 ):
-    return await billing_service.get_user_wallet()
+    return await billing_service.get_user_wallet(username=username)
