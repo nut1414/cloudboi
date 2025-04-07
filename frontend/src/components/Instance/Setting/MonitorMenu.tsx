@@ -1,6 +1,7 @@
 import React from "react"
 import { ChartBarIcon, CpuChipIcon, InboxStackIcon, ArrowPathIcon } from "@heroicons/react/24/outline"
 import Section from "../../../components/Common/Section"
+import Button from "../../../components/Common/Button/Button"
 import { useInstanceSetting } from "../../../hooks/Instance/useInstanceSetting"
 import { formatBytes } from "../../../utils/instanceState"
 
@@ -18,13 +19,13 @@ const MonitorMenu: React.FC = () => {
             icon={<ChartBarIcon className="w-5 h-5" />}
             description="Monitor current instance resource usage."
             rightContent={
-                <button
+                <Button
                     onClick={handleRefresh}
-                    className="p-2 hover:bg-blue-800/20 rounded-lg transition-colors duration-200 group"
-                    title="Refresh metrics"
-                >
-                    <ArrowPathIcon className="w-5 h-5 text-gray-400 group-hover:text-purple-400" />
-                </button>
+                    label=""
+                    icon={<ArrowPathIcon className="w-5 h-5 text-gray-400 hover:text-purple-400" />}
+                    variant="outline"
+                    className="pr-0 pl-2 flex items-center justify-center min-w-[36px] min-h-[36px]"
+                />
             }
         >
             <div className="grid grid-cols-2 gap-4">
