@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import TypeVar, Generic, Any, Optional
 
 from fastapi import WebSocket
+from ...models.instance import BaseInstanceState
 
 InstanceType = TypeVar('InstanceType')
 
@@ -73,4 +74,13 @@ class BaseInstanceClient(ABC, Generic[InstanceType]):
         **kwargs: Any
     ) -> Any:
         """Start a WebSocket session"""
+        pass
+
+    @abstractmethod
+    def get_instance_state(
+        self, 
+        instance_identifier: Any, 
+        **kwargs: Any
+    ) -> BaseInstanceState:
+        """Get the full state of an instance such as network, memory, disk and CPU usage information."""
         pass

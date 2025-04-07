@@ -7,7 +7,16 @@ from ..utils.datetime import DateTimeUtils
 from .subscription import SubscriptionService
 from .clients.base_instance_client import BaseInstanceClient
 from .validators.instance_validator import InstanceValidator
-from ..models.instance import InstanceCreateRequest, InstanceCreateResponse, InstanceDetails, UserInstanceFromDB, UserInstanceResponse, InstanceControlResponse
+from ..models.instance import (
+    InstanceCreateRequest,
+    InstanceCreateResponse,
+    InstanceDetails,
+    UserInstanceFromDB,
+    UserInstanceResponse,
+    InstanceControlResponse,
+    BaseInstanceState,
+    LxdInstanceState
+)
 from ..sql.operations import InstanceOperation
 from ..utils.dependencies import user_session_ctx
 from .helpers.instance_helper import InstanceHelper
@@ -203,3 +212,27 @@ class InstanceService:
             raise HTTPException(status_code=400, detail="Instance is not running")
         
         await self.lxd_client.websocket_session(instance_name, client_ws)
+
+    @require_roles([UserRole.ADMIN, UserRole.USER])
+    @require_instance_ownership()
+    async def get_instance_state(
+        self,
+        instance_name: Optional[str] = None
+    ) -> BaseInstanceState:
+        instance = InstanceHelper.to_instance_upsert_model(
+            await self.get_instance(instance_name=instance_name)
+        )
+        
+        if not instance:
+            raise HTTPException(status_code=404, detail="Instance not found")
+        if instance.status != "Running":
+            raise HTTPException(status_code=400, detail="Instance is not running")
+        
+        # Get instance state from LXD
+        try:
+            return await self.lxd_client.get_instance_state(instance_name)
+        except Exception as e:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Failed to get instance state: {str(e)}"
+            )

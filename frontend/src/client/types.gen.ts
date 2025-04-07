@@ -26,12 +26,32 @@ export type AllTimePayment = {
     last_payment_date: string;
 };
 
+export type BaseInstanceState = {
+    network?: ({
+    [key: string]: NetworkInterface;
+} | null);
+    disk: {
+        [key: string]: DiskUsage;
+    };
+    memory: MemoryUsage;
+    cpu: CPUUsage;
+};
+
+export type CPUUsage = {
+    usage: number;
+    cores: number;
+};
+
 export type CreateJoinTokenRequest = {
     server_name: string;
 };
 
 export type CreateJoinTokenResponse = {
     join_token: string;
+};
+
+export type DiskUsage = {
+    usage: number;
 };
 
 export type HTTPValidationError = {
@@ -69,6 +89,35 @@ export type InstancePlan = {
     ram_amount: number;
     storage_amount: number;
     cost_hour: number;
+};
+
+export type MemoryUsage = {
+    usage: number;
+    total: number;
+};
+
+export type NetworkAddress = {
+    family: string;
+    address: string;
+    netmask: string;
+    scope: string;
+};
+
+export type NetworkCounters = {
+    bytes_received: number;
+    bytes_sent: number;
+    packets_received: number;
+    packets_sent: number;
+};
+
+export type NetworkInterface = {
+    addresses: Array<NetworkAddress>;
+    counters: NetworkCounters;
+    hwaddr: string;
+    host_name: string;
+    mtu: number;
+    state: string;
+    type: string;
 };
 
 export type OsType = {
@@ -314,6 +363,16 @@ export type InstanceRestartInstanceData = {
 export type InstanceRestartInstanceResponse = (InstanceControlResponse);
 
 export type InstanceRestartInstanceError = (HTTPValidationError);
+
+export type InstanceGetInstanceStateData = {
+    path: {
+        instance_name: string;
+    };
+};
+
+export type InstanceGetInstanceStateResponse = (BaseInstanceState);
+
+export type InstanceGetInstanceStateError = (HTTPValidationError);
 
 export type RootRootResponse = (unknown);
 

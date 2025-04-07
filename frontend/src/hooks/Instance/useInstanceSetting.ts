@@ -1,15 +1,22 @@
 // useInstanceSetting.ts
 import { useInstance, INSTANCE_ACTIONS } from "../../contexts/instanceContext"
 import { InstanceService } from "../../client"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { InstanceStatus } from "../../constant/InstanceConstant"
 import { useInstanceList } from "./useInstanceList"
+import { formatDateTime, formatUptime } from "../../utils/dateTime"
+import { parseInstanceState } from "../../utils/instanceState"
+
+// 30 seconds
+const STATUS_POLLING_INTERVAL = 30000
 
 export const useInstanceSetting = () => {
     const {
         userInstances,
         selectedInstance,
+        instanceState,
+        statePollingInterval,
         isLoading,
         error,
         dispatch
@@ -51,6 +58,22 @@ export const useInstanceSetting = () => {
         }
     }, [selectedInstance, userInstances, dispatch])
 
+    const getInstanceStateAndUpdate = useCallback(async () => {
+        if (!instanceName) return
+        try {
+            const response = await InstanceService.instanceGetInstanceState({
+                path: { instance_name: instanceName }
+            })
+            dispatch?.({
+                type: INSTANCE_ACTIONS.SET_INSTANCE_STATE,
+                payload: response.data
+            })
+        } catch (err) {
+            console.error("Failed to fetch instance state:", err)
+        }
+    }, [instanceName, dispatch])
+
+    
     useEffect(() => {
         if (!selectedInstance) {
             getInstanceAndUpdate()
@@ -58,12 +81,13 @@ export const useInstanceSetting = () => {
     }, [selectedInstance, getInstanceAndUpdate])
 
     const isInstanceRunning = useMemo(() => {
-        return selectedInstance && selectedInstance.instance_status === InstanceStatus.RUNNING
+        return selectedInstance?.instance_status === InstanceStatus.RUNNING
     }, [selectedInstance])
+
     const isInstanceStopped = useMemo(() => {
-        return selectedInstance && selectedInstance.instance_status === InstanceStatus.STOPPED
+        return selectedInstance?.instance_status === InstanceStatus.STOPPED
     }, [selectedInstance])
-            
+
     // Start instance
     const startInstance = useCallback(async () => {
         if (!selectedInstance) return
@@ -146,59 +170,60 @@ export const useInstanceSetting = () => {
     }, [selectedInstance, dispatch, getInstanceAndUpdate, navigate])
 
     // Format instance uptime with user's timezone
-    const formatUptime = useCallback((lastUpdatedAt: Date) => {
-        if (!lastUpdatedAt) return "N/A"
-
-        // Check if instance is not running
-        if (selectedInstance && selectedInstance.instance_status !== InstanceStatus.RUNNING) {
-            return "0d 0h 0m"
-        }
-
-        // Convert UTC date to user's local timezone
-        const lastUpdatedLocal = new Date(lastUpdatedAt)
-        const now = new Date()
-        const uptime = now.getTime() - lastUpdatedLocal.getTime()
-
-        const days = Math.floor(uptime / (1000 * 60 * 60 * 24))
-        const hours = Math.floor((uptime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-        const minutes = Math.floor((uptime % (1000 * 60 * 60)) / (1000 * 60))
-
-        return `${days}d ${hours}h ${minutes}m`
-    }, [])
+    const getFormattedUptime = useCallback((lastUpdatedAt: Date) => {
+        if (!selectedInstance) return "N/A";
+        return formatUptime(lastUpdatedAt, selectedInstance.instance_status === InstanceStatus.RUNNING);
+    }, [selectedInstance]);
 
     // Format any date to user's local timezone
-    const formatDateTime = useCallback((utcDate: Date | string) => {
-        if (!utcDate) return "N/A"
-        
-        const date = new Date(utcDate)
-        
-        // Format options for displaying date in user's locale and timezone
-        const options: Intl.DateTimeFormatOptions = {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-            timeZoneName: 'short'
+    const getFormattedDateTime = useCallback((utcDate: Date | string) => {
+        return formatDateTime(utcDate);
+    }, []);
+  
+    // Start polling when instance is running
+    useEffect(() => {
+        // Start new polling interval
+        if (!statePollingInterval) {
+            getInstanceStateAndUpdate() // Initial fetch
+            const interval = window.setInterval(getInstanceStateAndUpdate, STATUS_POLLING_INTERVAL)
+            dispatch?.({
+                type: INSTANCE_ACTIONS.SET_STATE_POLLING_INTERVAL,
+                payload: interval
+            })
         }
-        
-        return date.toLocaleString(undefined, options)
+
+        // Cleanup function
+        return () => {
+            if (statePollingInterval) {
+                clearInterval(statePollingInterval)
+                dispatch?.({
+                    type: INSTANCE_ACTIONS.SET_STATE_POLLING_INTERVAL,
+                    payload: null
+                })
+            }
+        }
     }, [])
+
+  
+    const parsedInstanceState = useMemo(() => {
+        if (!instanceState) return null
+        return parseInstanceState(instanceState)
+    }, [instanceState])
 
     return {
         instance: selectedInstance,
+        instanceState: parsedInstanceState,
         isLoading,
         isInstanceRunning,
         isInstanceStopped,
         error,
         getInstanceAndUpdate,
+        getInstanceStateAndUpdate,
         startInstance,
         stopInstance,
         restartInstance,
         deleteInstance,
-        formatUptime,
-        formatDateTime
+        getFormattedUptime,
+        getFormattedDateTime,
     }
 }

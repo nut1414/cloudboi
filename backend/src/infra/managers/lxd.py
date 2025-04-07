@@ -6,6 +6,7 @@ from ...core.commons.exception import create_exception_class
 from ..config import LXDConfig
 from ...core.utils.decorator import create_decorator
 from ...core.utils.logging import logger
+from ...core.models.instance import LxdInstanceState
 
 LXDManagerException = create_exception_class("LXDManager")
 
@@ -73,7 +74,7 @@ class LXDManager:
             raise LXDManagerException(f"Failed to get containers: {str(e)}")
     
     @_ensure_connected()
-    def get_container_by_name(self, name: str):
+    def get_container_by_name(self, name: str) -> models.Instance:
         try:
             container = self.client.instances.get(name)
             if not container:
@@ -224,6 +225,16 @@ class LXDManager:
             
         except (exceptions.LXDAPIException, RuntimeError) as e:
             raise LXDManagerException(f"Failed to set root password: {str(e)}")
+        
+    @_ensure_connected()
+    def get_container_state(self, instance: models.Instance) -> LxdInstanceState:
+        try:
+            # .state() will call the API to get the state of the container  
+            return LxdInstanceState.model_validate(instance.state())
+        except exceptions.LXDAPIException as e:
+            raise LXDManagerException(f"Failed to get container state for '{instance}': {str(e)}")
+        except Exception as e: # Catch potential Pydantic validation errors
+             raise LXDManagerException(f"Failed to parse container state for '{instance}': {str(e)}")
         
     @_ensure_connected()
     def get_all_cluster_members(self) -> List[models.ClusterMember]:
