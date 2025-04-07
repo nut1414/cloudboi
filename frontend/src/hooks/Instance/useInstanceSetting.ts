@@ -171,14 +171,14 @@ export const useInstanceSetting = () => {
 
     // Format instance uptime with user's timezone
     const getFormattedUptime = useCallback((lastUpdatedAt: Date) => {
-        if (!selectedInstance) return "N/A";
-        return formatUptime(lastUpdatedAt, selectedInstance.instance_status === InstanceStatus.RUNNING);
-    }, [selectedInstance]);
+        if (!selectedInstance) return "N/A"
+        return formatUptime(lastUpdatedAt, selectedInstance.instance_status === InstanceStatus.RUNNING)
+    }, [selectedInstance])
 
     // Format any date to user's local timezone
     const getFormattedDateTime = useCallback((utcDate: Date | string) => {
-        return formatDateTime(utcDate);
-    }, []);
+        return formatDateTime(utcDate)
+    }, [])
   
     // Start polling when instance is running
     useEffect(() => {

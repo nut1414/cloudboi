@@ -18,9 +18,13 @@ export const useInstanceList = () => {
 
     // Fetch instances data
     const fetchInstances = useCallback(async () => {
+        if (!userName) return
+        
         try {
             dispatch?.({ type: INSTANCE_ACTIONS.START_FETCH })
-            const response = await InstanceService.instanceListInstances()
+            const response = await InstanceService.instanceListInstances({
+                path: { username: userName }
+            })
             dispatch?.({ type: INSTANCE_ACTIONS.FETCH_SUCCESS })
             dispatch?.({ type: INSTANCE_ACTIONS.SET_USER_INSTANCES, payload: response.data })
         } catch (err) {
@@ -30,7 +34,7 @@ export const useInstanceList = () => {
             })
             alert("Error fetching instances")
         }
-    }, [dispatch])
+    }, [dispatch, userName])
 
     // Initial data load
     useEffect(() => {
@@ -74,28 +78,58 @@ export const useInstanceList = () => {
     }, [navigate, dispatch, userName])
 
     // Handle instance actions (like start, stop, restart, delete)
-    const handleInstanceAction = useCallback((action: string, instance: UserInstanceResponse) => {
-        switch (action) {
-            case "start":
-                // Start instance logic here
-                console.log("Starting instance:", instance.instance_id)
-                break
-            case "stop":
-                // Stop instance logic here
-                console.log("Stopping instance:", instance.instance_id)
-                break
-            case "restart":
-                // Restart instance logic here
-                console.log("Restarting instance:", instance.instance_id)
-                break
-            case "delete":
-                // Delete instance logic here
-                console.log("Deleting instance:", instance.instance_id)
-                break
-            default:
-                console.log(`Performing action ${action} on instance:`, instance.instance_id)
+    const handleInstanceAction = useCallback(async (action: string, instance: UserInstanceResponse) => {
+        if (!instance) return
+        
+        try {
+            dispatch?.({ type: INSTANCE_ACTIONS.START_FETCH })
+            
+            switch (action) {
+                case "start":
+                    await InstanceService.instanceStartInstance({
+                        path: { instance_name: instance.instance_name }
+                    })
+                    alert(`Instance ${instance.instance_name} started successfully`)
+                    break
+                case "stop":
+                    await InstanceService.instanceStopInstance({
+                        path: { instance_name: instance.instance_name }
+                    })
+                    alert(`Instance ${instance.instance_name} stopped successfully`)
+                    break
+                case "restart":
+                    await InstanceService.instanceRestartInstance({
+                        path: { instance_name: instance.instance_name }
+                    })
+                    alert(`Instance ${instance.instance_name} restarted successfully`)
+                    break
+                case "delete":
+                    if (window.confirm(`Are you sure you want to delete instance ${instance.instance_name}?`)) {
+                        await InstanceService.instanceDeleteInstance({
+                            path: { instance_name: instance.instance_name }
+                        })
+                        alert(`Instance ${instance.instance_name} deleted successfully`)
+                    } else {
+                        dispatch?.({ type: INSTANCE_ACTIONS.FETCH_SUCCESS })
+                        return
+                    }
+                    break
+                default:
+                    dispatch?.({ type: INSTANCE_ACTIONS.FETCH_SUCCESS })
+                    return
+            }
+            
+            // Refresh the instances list after action completes
+            fetchInstances()
+            
+        } catch (err) {
+            dispatch?.({
+                type: INSTANCE_ACTIONS.FETCH_ERROR,
+                payload: `Failed to ${action} instance: ${instance.instance_name}`
+            })
+            alert(`Failed to ${action} instance: ${instance.instance_name}`)
         }
-    }, [])
+    }, [dispatch, fetchInstances])
 
     // Force refresh instances
     const refreshInstances = useCallback(() => {

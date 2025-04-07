@@ -37,14 +37,14 @@ export const useInstanceCreate = () => {
         },
         // Add validation rules
         resolver: (values) => {
-            const errors: Record<string, any> = {};
+            const errors: Record<string, any> = {}
             
             // Validate OS type
             if (!values.os_type) {
                 errors.os_type = {
                     type: "required",
                     message: "Please select an operating system"
-                };
+                }
             }
             
             // Validate instance plan
@@ -52,7 +52,7 @@ export const useInstanceCreate = () => {
                 errors.instance_plan = {
                     type: "required",
                     message: "Please select an instance plan"
-                };
+                }
             }
             
             // Validate root password
@@ -60,7 +60,7 @@ export const useInstanceCreate = () => {
                 errors.root_password = {
                     type: "required",
                     message: "Password is required"
-                };
+                }
             } else {
                 const passwordTests = [
                     { test: values.root_password.length >= 8, message: "Password must be at least 8 characters" },
@@ -68,14 +68,14 @@ export const useInstanceCreate = () => {
                     { test: /[a-z]/.test(values.root_password), message: "Password must contain a lowercase letter" },
                     { test: /[0-9]/.test(values.root_password), message: "Password must contain a number" },
                     { test: /[!@#$%^&*()_+\-=\[\]{}':"\\|,.<>\/?]/.test(values.root_password), message: "Password must contain a special character" }
-                ];
+                ]
                 
-                const failedTest = passwordTests.find(test => !test.test);
+                const failedTest = passwordTests.find(test => !test.test)
                 if (failedTest) {
                     errors.root_password = {
                         type: "pattern",
                         message: failedTest.message
-                    };
+                    }
                 }
             }
             
@@ -84,20 +84,20 @@ export const useInstanceCreate = () => {
                 errors.instance_name = {
                     type: "required",
                     message: "Hostname is required"
-                };
+                }
             } else if (!/^[a-z0-9-]+$/.test(values.instance_name)) {
                 errors.instance_name = {
                     type: "pattern",
                     message: "Hostname can only contain lowercase letters, numbers, and hyphens"
-                };
+                }
             }
             
             return {
                 values,
                 errors
-            };
+            }
         }
-    });
+    })
 
 
     // Get form values
@@ -189,40 +189,40 @@ export const useInstanceCreate = () => {
 
     // Create instance
     const createInstance = useCallback(async () => {
-        let result = { success: false, data: null as any, error: null };
+        let result = { success: false, data: null as any, error: null }
         
         await formSubmit(async (data) => {
-            setIsSubmitting(true);
-            dispatch?.({ type: INSTANCE_ACTIONS.SET_ERROR, payload: null });
+            setIsSubmitting(true)
+            dispatch?.({ type: INSTANCE_ACTIONS.SET_ERROR, payload: null })
 
             try {
                 const response = await InstanceService.instanceCreateInstance({
                     body: data
-                });
+                })
 
-                refreshInstances();
+                refreshInstances()
                 result = {
                     success: true,
                     data: response.data,
                     error: null
-                };
+                }
             } catch (err: any) {
                 const errorMessage = err.response?.data?.detail?.[0]?.msg ||
-                    "Failed to create instance. Please try again.";
+                    "Failed to create instance. Please try again."
 
-                dispatch?.({ type: INSTANCE_ACTIONS.SET_ERROR, payload: errorMessage });
+                dispatch?.({ type: INSTANCE_ACTIONS.SET_ERROR, payload: errorMessage })
                 result = {
                     success: false,
                     data: null,
                     error: errorMessage
-                };
+                }
             } finally {
-                setIsSubmitting(false);
+                setIsSubmitting(false)
             }
-        })();
+        })()
         
-        return result;
-    }, [formSubmit, dispatch, refreshInstances]);
+        return result
+    }, [formSubmit, dispatch, refreshInstances])
 
 
     return {

@@ -11,6 +11,7 @@ import {
   ServerIcon // For Storage
 } from "@heroicons/react/24/outline"
 import Section from "../../Common/Section"
+import { CURRENCY } from "../../../constant/CurrencyConstant"
 
 interface ChooseSubscriptionPlanSectionProps {
     instancePackages: InstancePlan[]
@@ -71,7 +72,7 @@ const ChooseSubscriptionPlanSection: React.FC<ChooseSubscriptionPlanSectionProps
                         </div>
                         <div className="flex items-center gap-2">
                             <BanknotesIcon className="w-5 h-5 text-purple-400" />
-                            <p>${selectedInstanceType.cost_hour.toFixed(4)}/hour</p>
+                            <p>{CURRENCY.FORMAT_HOURLY(selectedInstanceType.cost_hour)}/hour</p>
                         </div>
                     </div>
                 </div>

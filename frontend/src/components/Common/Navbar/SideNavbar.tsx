@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { useLocation, Link, useParams, useNavigate } from "react-router-dom"
+import { useLocation, Link, useNavigate } from "react-router-dom"
 import { useAuth } from "../../../hooks/User/useAuth"
 import { ArrowLeftStartOnRectangleIcon, Bars3BottomLeftIcon, Cog6ToothIcon, CreditCardIcon, UserGroupIcon } from "@heroicons/react/24/outline"
 import { CloudIcon } from "@heroicons/react/24/solid"
@@ -9,13 +9,14 @@ import { DropdownItemProps } from "../Button/DropdownButton"
 import { useUser } from "../../../contexts/userContext"
 import { NavLogo } from "./NavLogo"
 import { NavUser } from "./NavUser"
+import { CURRENCY } from "../../../constant/CurrencyConstant"
 
 // Define proper types
-interface NavItemProps {
+export interface NavItemProps {
   path: string
   label: string
-  userName: string | undefined
-  isHovering: boolean
+  username?: string
+  isHovering?: boolean
   icon?: React.ReactNode
 }
 
@@ -26,19 +27,22 @@ interface SideNavbarProps {
   logoIcon?: React.ReactNode
   onLogout?: () => void
   userRole?: string
+  username?: string
+  showCreditSection?: boolean
 }
 
 // NavItem component with better relative styling
 const NavItem: React.FC<NavItemProps> = ({
   path,
   label,
-  userName,
+  username,
   isHovering,
   icon
 }) => {
   const { pathname } = useLocation()
   const currentPath = pathname.split("/").pop() || ""
   const isActive = currentPath === path
+  const isAdminPath = pathname.startsWith('/admin')
 
   return (
     <li className={`
@@ -47,7 +51,7 @@ const NavItem: React.FC<NavItemProps> = ({
       ${isHovering ? "hover:bg-blue-800" : ""}
     `}>
       <Link
-        to={`/user/${userName}/${path}`}
+        to={isAdminPath ? `/admin/${path}` : `/user/${username}/${path}`}
         className={`
           flex items-center py-3 px-5 text-lg font-medium
           transition-all duration-200 w-full
@@ -64,7 +68,7 @@ const NavItem: React.FC<NavItemProps> = ({
 // Restyled Credit card component to match the theme in TopUpMenu
 const CreditCard: React.FC<{ balance?: number; currency?: string; isLoading?: boolean }> = ({
   balance,
-  currency = "CBC",
+  currency = CURRENCY.SYMBOL,
   isLoading = false
 }) => (
   <div className="mx-4 my-4">
@@ -91,18 +95,19 @@ const CreditCard: React.FC<{ balance?: number; currency?: string; isLoading?: bo
 
 const SideNavbar: React.FC<SideNavbarProps> = ({
   navItems: customNavItems,
-  creditCurrency = "CBC",
+  creditCurrency = CURRENCY.SYMBOL,
   logoText = "CloudBoi",
   logoIcon = <CloudIcon className="bg-purple-500 w-8 h-8 rounded-md flex items-center justify-center" />,
+  username,
+  showCreditSection = true,
 }) => {
-  const { userName } = useParams<{ userName: string }>()
   const { user } = useUser()
   const { userWallet, isLoading } = useUserBilling()
   const { logout } = useAuth()
   const [isHovering, setIsHovering] = useState<boolean>(false)
 
   // Default navigation items - can be overridden via props
-  const defaultNavItems = [
+  const defaultNavItems: NavItemProps[] = [
     { path: "instance", label: "Manage", icon: <Bars3BottomLeftIcon className="h-5 w-5" /> },
     { path: "billing", label: "Billing", icon: <CreditCardIcon className="h-5 w-5" /> },
     { path: "support", label: "Support", icon: <UserGroupIcon className="h-5 w-5" /> },
@@ -116,11 +121,11 @@ const SideNavbar: React.FC<SideNavbarProps> = ({
   const userMenuItems: DropdownItemProps[] = [
     {
       content: "View Profile",
-      href: `/user/${userName}/profile`
+      href: `/user/${username}/profile`
     },
     {
       content: "Preferences",
-      href: `/user/${userName}/preferences`
+      href: `/user/${username}/preferences`
     },
     { divider: true },
     {
@@ -154,11 +159,13 @@ const SideNavbar: React.FC<SideNavbarProps> = ({
       </div>
 
       {/* Credit Card - Updated to use actual user wallet data */}
-      <CreditCard
-        balance={userWallet?.balance}
-        currency={creditCurrency}
-        isLoading={isLoading}
-      />
+      {showCreditSection && (
+        <CreditCard
+          balance={userWallet?.balance}
+          currency={creditCurrency}
+          isLoading={isLoading}
+        />
+      )}
 
       {/* Navigation Items */}
       <div className="mt-6 mb-3 px-5 text-gray-400 text-sm uppercase tracking-wider font-medium">
@@ -175,7 +182,7 @@ const SideNavbar: React.FC<SideNavbarProps> = ({
             key={item.path}
             path={item.path}
             label={item.label}
-            userName={userName}
+            username={username}
             isHovering={isHovering}
             icon={item.icon}
           />
@@ -185,7 +192,7 @@ const SideNavbar: React.FC<SideNavbarProps> = ({
       {/* User Profile Section with UserMenu component */}
       <div className="mt-auto border-t border-blue-800/30 p-4">
         <NavUser
-          username={userName}
+          username={user?.username || undefined}
           userRole={user?.role || undefined}
           logout={logout}
           variant="none"

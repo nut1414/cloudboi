@@ -5,7 +5,7 @@ import { useUser, USER_ACTIONS } from '../../contexts/userContext'
 import { useNavigate } from 'react-router-dom'
 
 export const useAuth = () => {
-  const { dispatch, error: contextError } = useUser()
+  const { user, dispatch, error: contextError } = useUser()
   const navigate = useNavigate()
   
   // Shared state
@@ -70,6 +70,7 @@ export const useAuth = () => {
       const response = await UserService.userGetUserSession()
       if (response.data) {
         dispatch?.({ type: USER_ACTIONS.SET_USER, payload: response.data })
+        return response.data // Return the user data
       } else {
         throw new Error('No user data returned after login')
       }
@@ -87,6 +88,7 @@ export const useAuth = () => {
       await UserService.userLogoutUser()
       
       dispatch?.({ type: USER_ACTIONS.LOGOUT })
+      navigate('/login', { replace: true })
     } catch (error: any) {
       const errorMessage = error.response?.data?.detail || 'Logout failed'
       dispatch?.({ type: USER_ACTIONS.SET_ERROR, payload: errorMessage })
@@ -100,9 +102,9 @@ export const useAuth = () => {
     setIsSubmitting(true)
     
     try {
-      await loginUser(data.username, data.password)
-      // Redirect to dashboard after successful login
-      navigate(`/user/${data.username}/instance`, { replace: true })
+      const userData = await loginUser(data.username, data.password)
+      // Use the returned userData directly to determine redirect path
+      navigate(userData.role === "admin" ? `/admin/system` : `/user/${data.username}/instance`, { replace: true })
     } catch (err: any) {
       // Error is already set in the context by the login function
     } finally {

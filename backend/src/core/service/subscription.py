@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 import uuid
 
 from ..sql.operations import TransactionOperation, SubscriptionOperation, UserOperation
@@ -9,6 +9,8 @@ from ..models.user import UserWallet
 from ..utils.datetime import DateTimeUtils
 from ..constants.subscription_const import PAYMENT_INTERVAL, EXPIRE_INTERVAL
 from ..constants.transaction_const import TransactionType, TransactionStatus
+from ..utils.permission import require_roles
+from ..constants.user_const import UserRole
 
 
 class SubscriptionService:
@@ -72,6 +74,7 @@ class SubscriptionService:
 
         await self.transaction_opr.upsert_transaction(transaction_new)
     
+    @require_roles([UserRole.ADMIN, UserRole.WORKER])
     async def get_overdue_subscriptions(self) -> List[Transaction]:
         """Get all subscriptions that are past their payment date but not yet expired."""
         datetime_now = DateTimeUtils.now_dt()
@@ -82,6 +85,7 @@ class SubscriptionService:
             transaction_statuses=[TransactionStatus.SCHEDULED, TransactionStatus.OVERDUE]
         )
     
+    @require_roles([UserRole.ADMIN, UserRole.WORKER])
     async def get_expired_subscriptions(self) -> List[Transaction]:
         """Get all subscriptions that have passed their expiration date."""
         datetime_now = DateTimeUtils.now_dt()
@@ -92,13 +96,17 @@ class SubscriptionService:
             transaction_statuses=[TransactionStatus.OVERDUE]
         )
     
-    async def get_user_wallet(self, user_id: uuid.UUID) -> UserWallet:
-        """Get the user's wallet information."""
-        user_wallet = await self.user_opr.get_user_wallet(user_id=user_id)
+    @require_roles([UserRole.ADMIN, UserRole.USER, UserRole.WORKER])
+    async def get_user_wallet(self, user_id: Optional[uuid.UUID] = None, username: Optional[str] = None) -> UserWallet:
+        if user_id is None and username is None:
+            raise ValueError("Either user_id or username must be provided.")
+            
+        user_wallet = await self.user_opr.get_user_wallet(user_id=user_id, username=username)
         if not user_wallet:
             raise ValueError("User wallet not found.")
         return user_wallet
     
+    @require_roles([UserRole.ADMIN, UserRole.USER, UserRole.WORKER])
     async def process_transaction(self, transaction: Transaction) -> Transaction:
         """Process a transaction based on its type and the user's wallet balance."""
         await self.get_user_wallet(user_id=transaction.user_id)
@@ -120,6 +128,7 @@ class SubscriptionService:
             
         return updated_transaction
     
+    @require_roles([UserRole.ADMIN, UserRole.WORKER])
     async def apply_penalty(self, transaction: Transaction) -> None:
         """Apply penalty for expired subscriptions by removing the instance and subscription."""
         from .instance import InstanceService
@@ -135,6 +144,7 @@ class SubscriptionService:
         # Delete user instance and subscription
         await instance_service.delete_instance(instance_id=subscription.instance_id)
     
+    @require_roles([UserRole.ADMIN, UserRole.WORKER])
     async def process_overdue_subscriptions(self, overdue_subscriptions: List[Transaction]) -> None:
         """Attempt to process all overdue subscription payments."""
         for transaction in overdue_subscriptions:
@@ -143,6 +153,7 @@ class SubscriptionService:
             except Exception as e:
                 raise ValueError(f"Failed to process transaction({transaction.transaction_id}): {str(e)}")
         
+    @require_roles([UserRole.ADMIN, UserRole.WORKER])
     async def process_expired_subscriptions(self, expired_subscriptions: List[Transaction]) -> None:
         """Mark expired subscriptions and apply penalties."""
         for transaction in expired_subscriptions:

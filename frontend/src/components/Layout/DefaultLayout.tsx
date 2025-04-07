@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react"
-import { Outlet } from "react-router-dom"
+import { Outlet, useParams } from "react-router-dom"
 import SideNavbar from "../Common/Navbar/SideNavbar"
 
 interface DefaultLayoutProps {
@@ -9,9 +9,11 @@ interface DefaultLayoutProps {
 const DefaultLayout: React.FC<DefaultLayoutProps> = ({
   children,
 }) => {
+  const { userName } = useParams<{ userName: string }>()
+
   return (
     <div className="flex w-screen h-screen">
-      <SideNavbar />
+      <SideNavbar username={userName} />
       <main className="flex-grow overflow-auto transition-all duration-300">
         {children || <Outlet />}
       </main>

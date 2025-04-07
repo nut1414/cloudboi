@@ -20,6 +20,8 @@ from ..models.instance import (
 from ..sql.operations import InstanceOperation
 from ..utils.dependencies import user_session_ctx
 from .helpers.instance_helper import InstanceHelper
+from ..utils.permission import require_roles, require_instance_ownership, require_account_ownership
+from ..constants.user_const import UserRole
 
 
 class InstanceService:
@@ -33,6 +35,7 @@ class InstanceService:
         self.instance_opr = instance_opr
         self.lxd_client = lxd_client
     
+    @require_roles([UserRole.ADMIN, UserRole.USER])
     async def get_all_instance_details(self) -> InstanceDetails:
         async with asyncio.TaskGroup() as tg:
             instance_plans_task = tg.create_task(
@@ -47,10 +50,13 @@ class InstanceService:
             os_image=os_types_task.result()
         )
     
-    async def get_all_user_instances(self) -> List[UserInstanceResponse]:
-        result_db = await self.instance_opr.get_user_instances(username=user_session_ctx.get().username)
+    @require_roles([UserRole.ADMIN, UserRole.USER])
+    @require_account_ownership()
+    async def get_all_user_instances(self, username: str) -> List[UserInstanceResponse]:
+        result_db = await self.instance_opr.get_user_instances(username=username)
         return [InstanceHelper.to_instance_response_model(instance) for instance in result_db]
     
+    @require_roles([UserRole.ADMIN, UserRole.USER])
     async def create_instance(self, instance_create: InstanceCreateRequest) -> InstanceCreateResponse:
         # Validate instance_create
         async with asyncio.TaskGroup() as tg:
@@ -97,6 +103,8 @@ class InstanceService:
             created_at=created_instance.created_at
         )
     
+    @require_roles([UserRole.ADMIN, UserRole.USER])
+    @require_instance_ownership()
     async def get_instance(
         self,
         instance_id: Optional[uuid.UUID] = None,
@@ -105,23 +113,17 @@ class InstanceService:
         if not instance_id and not instance_name:
             raise ValueError("Instance ID or name is required")
         
-        if instance_id:
-            instances = await self.instance_opr.get_user_instances(
-                username=user_session_ctx.get().username,
-                instance_ids=[instance_id]
-            )
-        else:
-            instances = await self.instance_opr.get_user_instances(
-                username=user_session_ctx.get().username,
-                instance_names=[instance_name]
-            )
-        if not instances or len(instances) == 0:
-            raise ValueError("Instance not found")
-        instance = instances[0]
+        if not instance_id:
+            instance_id = (await self.instance_opr.get_instance_by_name(instance_name)).instance_id
         
-        return instance
+        instances = await self.instance_opr.get_user_instances(instance_ids=[instance_id])
+        if not instances:
+            raise HTTPException(status_code=404, detail="Instance not found")
+        return instances[0]
         
     
+    @require_roles([UserRole.ADMIN, UserRole.USER])
+    @require_instance_ownership()
     async def start_instance(
         self,
         instance_id: Optional[uuid.UUID] = None,
@@ -145,6 +147,8 @@ class InstanceService:
             is_success=True
         )
     
+    @require_roles([UserRole.ADMIN, UserRole.USER])
+    @require_instance_ownership()
     async def stop_instance(
         self,
         instance_id: Optional[uuid.UUID] = None,
@@ -168,6 +172,8 @@ class InstanceService:
             is_success=True
         )
     
+    @require_roles([UserRole.ADMIN, UserRole.USER, UserRole.WORKER])
+    @require_instance_ownership()
     async def delete_instance(
         self,
         instance_id: Optional[uuid.UUID] = None,
@@ -196,20 +202,19 @@ class InstanceService:
             is_success=True
         )
     
+    @require_roles([UserRole.ADMIN, UserRole.USER])
+    @require_instance_ownership()
     async def websocket_session(self, instance_name: str, client_ws: WebSocket):
-        # Validate if user has access to instance
-        instance = await self.instance_opr.get_user_instance(
-            username=user_session_ctx.get().username,
-            instance_name=instance_name
-        )
+        # Only check if instance is running
+        instance = await self.instance_opr.get_instance_by_name(instance_name)
 
-        if not instance:
-            raise HTTPException(status_code=404, detail="Instance not found")
         if instance.status != "Running":
             raise HTTPException(status_code=400, detail="Instance is not running")
         
         await self.lxd_client.websocket_session(instance_name, client_ws)
 
+    @require_roles([UserRole.ADMIN, UserRole.USER])
+    @require_instance_ownership()
     async def get_instance_state(
         self,
         instance_name: Optional[str] = None

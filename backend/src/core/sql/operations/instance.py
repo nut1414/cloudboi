@@ -107,8 +107,8 @@ class InstanceOperation(BaseOperation):
         instance_ids: Optional[List[uuid.UUID]] = None,
         instance_names: Optional[List[str]] = None
     ) -> List[UserInstanceFromDB]:
-        if username is None and user_id is None:
-            raise ValueError("Either username or user_id must be provided.")
+        if username is None and user_id is None and instance_ids is None and instance_names is None:
+            raise ValueError("At least one of username, user_id, instance_ids, or instance_names must be provided.")
         async with self.session() as db:
             stmt = (
                 select(UserInstance)
