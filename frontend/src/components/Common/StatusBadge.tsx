@@ -137,7 +137,7 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({
         textOnly: 'text-gray-500',
         tableBg: 'bg-gray-500/20',
         tableText: 'text-gray-300',
-    };
+    }
 
     // Size variations for default variant
     const sizeClasses = {
@@ -157,21 +157,21 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({
     }
 
     // Determine styling based on variant
-    let badgeClass;
-    let textColor;
+    let badgeClass
+    let textColor
 
     if (variant === 'table-status') {
-        badgeClass = tableClass;
-        textColor = styles.tableText;
-        showBackground = true; // Always show background for table-status
+        badgeClass = tableClass
+        textColor = styles.tableText
+        showBackground = true // Always show background for table-status
     } else {
-        badgeClass = showBackground ? sizeClasses[size] : '';
-        textColor = showBackground ? styles.text : styles.textOnly;
+        badgeClass = showBackground ? sizeClasses[size] : ''
+        textColor = showBackground ? styles.text : styles.textOnly
     }
 
     const bgColor = variant === 'table-status' 
         ? styles.tableBg 
-        : (showBackground ? styles.bg : '');
+        : (showBackground ? styles.bg : '')
 
     return (
         <span

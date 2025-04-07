@@ -44,7 +44,7 @@ export const Button: React.FC<ButtonProps> = ({
   }
 
   // Base button styles that apply to all variants except table-action and text-link
-  let buttonStyles = "";
+  let buttonStyles = ""
   
   if (variant === 'table-action') {
     buttonStyles = `
@@ -53,7 +53,7 @@ export const Button: React.FC<ButtonProps> = ({
       flex items-center gap-2
       ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
       ${className}
-    `;
+    `
   } else if (variant === 'text-link') {
     buttonStyles = `
       ${variantStyles[variant]} 
@@ -61,7 +61,7 @@ export const Button: React.FC<ButtonProps> = ({
       flex items-center gap-2
       ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
       ${className}
-    `;
+    `
   } else {
     buttonStyles = `
       ${variantStyles[variant]} 
@@ -72,7 +72,7 @@ export const Button: React.FC<ButtonProps> = ({
       ${hasBorder ? 'border-blue-700 border-2' : ''}
       ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
       ${className}
-    `;
+    `
   }
 
   // The actual button element

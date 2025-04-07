@@ -10,11 +10,11 @@ import { InstanceStatus } from '../../constant/InstanceConstant'
  * Uses AdminContext to store and manage user data
  */
 export const useUserManage = () => {
-  const { 
-    users, 
-    isLoading, 
-    error, 
-    dispatch 
+  const {
+    users,
+    isLoading,
+    error,
+    dispatch
   } = useAdmin()
   const navigate = useNavigate()
   const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({})
@@ -31,21 +31,21 @@ export const useUserManage = () => {
 
     try {
       dispatch({ type: ADMIN_ACTIONS.START_FETCH })
-      
+
       const response = await AdminService.adminGetAllUsers()
       const data = response.data
-      
+
       if (!data) {
         throw new Error("No data received")
       }
-      
-      dispatch({ 
-        type: ADMIN_ACTIONS.FETCH_SUCCESS, 
-        payload: data.users 
+
+      dispatch({
+        type: ADMIN_ACTIONS.FETCH_SUCCESS,
+        payload: data.users
       })
     } catch (err) {
       console.error("Failed to fetch users:", err)
-      dispatch({ 
+      dispatch({
         type: ADMIN_ACTIONS.FETCH_ERROR,
         payload: "Failed to load user data. Please try again later."
       })
@@ -60,11 +60,12 @@ export const useUserManage = () => {
   // Filter users based on search query
   const filteredUsers = useMemo(() => {
     if (!searchQuery) return Array.isArray(users) ? users : []
-    
-    return (Array.isArray(users) ? users : []).filter((user: AdminUser) => 
-      user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.role.role_name.toLowerCase().includes(searchQuery.toLowerCase())
+
+    const query = searchQuery.toLowerCase()
+    return (Array.isArray(users) ? users : []).filter((user: AdminUser) =>
+      user.username.toLowerCase().includes(query) ||
+      user.email.toLowerCase().includes(query) ||
+      user.role.role_name.toLowerCase().includes(query)
     )
   }, [users, searchQuery])
 
@@ -104,13 +105,13 @@ export const useUserManage = () => {
   const getSortedInstances = useCallback((instances: UserInstanceFromDB[]) => {
     // Group instances by status
     const instancesByStatus = instances.reduce((acc, instance) => {
-      const status = instance.status.toLowerCase();
+      const status = instance.status.toLowerCase()
       if (!acc[status]) {
-        acc[status] = [];
+        acc[status] = []
       }
-      acc[status].push(instance);
-      return acc;
-    }, {} as Record<string, UserInstanceFromDB[]>);
+      acc[status].push(instance)
+      return acc
+    }, {} as Record<string, UserInstanceFromDB[]>)
 
     // Define status order with values from InstanceStatus constant
     const statusOrder = [
@@ -118,34 +119,42 @@ export const useUserManage = () => {
       InstanceStatus.FROZEN.toLowerCase(),
       InstanceStatus.STOPPED.toLowerCase(),
       InstanceStatus.ERROR.toLowerCase()
-    ];
-    
+    ]
+
     // Sort instances by status
     return Object.entries(instancesByStatus)
       .sort(([statusA], [statusB]) => {
-        const indexA = statusOrder.indexOf(statusA) !== -1 ? statusOrder.indexOf(statusA) : 999;
-        const indexB = statusOrder.indexOf(statusB) !== -1 ? statusOrder.indexOf(statusB) : 999;
-        return indexA - indexB;
+        const indexA = statusOrder.indexOf(statusA) !== -1 ? statusOrder.indexOf(statusA) : 999
+        const indexB = statusOrder.indexOf(statusB) !== -1 ? statusOrder.indexOf(statusB) : 999
+        return indexA - indexB
       })
-      .flatMap(([_, instances]) => instances);
+      .flatMap(([_, instances]) => instances)
   }, [])
 
-  // Count instances by status
+  // Count instances by status - memoized for performance
   const getInstanceStatusCounts = useCallback((instances: UserInstanceFromDB[]) => {
-    return {
-      running: instances.filter(i => 
-        i.status.toLowerCase() === InstanceStatus.RUNNING.toLowerCase()
-      ).length,
-      stopped: instances.filter(i => 
-        i.status.toLowerCase() === InstanceStatus.STOPPED.toLowerCase()
-      ).length,
-      frozen: instances.filter(i => 
-        i.status.toLowerCase() === InstanceStatus.FROZEN.toLowerCase()
-      ).length,
-      error: instances.filter(i => 
-        i.status.toLowerCase() === InstanceStatus.ERROR.toLowerCase()
-      ).length
+    // Use a single pass through the array instead of multiple filter operations
+    const counts = {
+      running: 0,
+      stopped: 0,
+      frozen: 0,
+      error: 0
     }
+
+    const runningStatus = InstanceStatus.RUNNING.toLowerCase()
+    const stoppedStatus = InstanceStatus.STOPPED.toLowerCase()
+    const frozenStatus = InstanceStatus.FROZEN.toLowerCase()
+    const errorStatus = InstanceStatus.ERROR.toLowerCase()
+
+    for (let i = 0; i < instances.length; i++) {
+      const status = instances[i].status.toLowerCase()
+      if (status === runningStatus) counts.running++
+      else if (status === stoppedStatus) counts.stopped++
+      else if (status === frozenStatus) counts.frozen++
+      else if (status === errorStatus) counts.error++
+    }
+
+    return counts
   }, [])
 
   return {
