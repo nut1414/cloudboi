@@ -99,7 +99,7 @@ const InstancesContent = React.memo(({
                 detailItems={[
                   {
                     label: "Plan",
-                    value: `${instance.instance_plan.instance_package_name} (${instance.instance_plan.vcpu_amount} vCPU, ${instance.instance_plan.ram_amount} RAM)`
+                    value: `${instance.instance_plan.instance_package_name} (${instance.instance_plan.vcpu_amount} vCPU, ${instance.instance_plan.ram_amount} GB RAM)`
                   },
                   {
                     label: "OS",
