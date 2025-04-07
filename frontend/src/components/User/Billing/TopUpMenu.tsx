@@ -5,6 +5,7 @@ import Section from "../../Common/Section"
 import InputField from "../../Common/InputField"
 import OptionButton from "../../Common/Button/OptionButton" // Import the new component
 import { useUserBilling } from "../../../hooks/User/useUserBilling"
+import { CURRENCY } from "../../../constant/CurrencyConstant"
 
 const TopUpMenu: React.FC = () => {
   const [creditValue, setCreditValue] = useState<number | "">("")
@@ -42,7 +43,7 @@ const TopUpMenu: React.FC = () => {
           <div>
             <p className="text-gray-400 text-sm">Current Balance</p>
             <p className="text-2xl font-bold text-white mt-1">
-              {userWallet ? `${userWallet.balance} CBC` : "Loading..."}
+              {userWallet ? `${userWallet.balance} ${CURRENCY.SYMBOL}` : "Loading..."}
             </p>
           </div>
           <CreditCardIcon className="w-8 h-8 text-purple-500" />
@@ -57,7 +58,7 @@ const TopUpMenu: React.FC = () => {
                 value={creditValue.toString()}
                 onChange={handleInputChange}
                 placeholder="Enter custom amount"
-                endIcon={<span className="text-gray-400">CBC</span>}
+                endIcon={<span className="text-gray-400">{CURRENCY.SYMBOL}</span>}
                 sanitizeValue={sanitizeNumericInput}
               />
             </div>
@@ -84,7 +85,7 @@ const TopUpMenu: React.FC = () => {
               <OptionButton
                 key={amount}
                 label={amount}
-                unit="CBC"
+                unit={CURRENCY.SYMBOL}
                 variant="prominent"
                 isSelected={creditValue === amount}
                 onClick={() => setCreditValue(amount)}
@@ -97,15 +98,15 @@ const TopUpMenu: React.FC = () => {
         <div className="bg-[#23375F]/70 rounded-lg border border-blue-800/30 p-4">
           <div className="flex justify-between items-center text-gray-300 mb-2">
             <p>Selected Amount</p>
-            <p>{creditValue ? `${Number(creditValue).toLocaleString()} CBC` : '-'}</p>
+            <p>{creditValue ? `${Number(creditValue).toLocaleString()} ${CURRENCY.SYMBOL}` : '-'}</p>
           </div>
           <div className="flex justify-between items-center text-gray-300 mb-4">
             <p>Processing Fee</p>
-            <p>{creditValue ? '0 CBC' : '-'}</p>
+            <p>{creditValue ? `0 ${CURRENCY.SYMBOL}` : '-'}</p>
           </div>
           <div className="flex justify-between items-center pt-3 border-t border-blue-800/30">
             <p className="font-medium text-white">Total</p>
-            <p className="font-bold text-white">{creditValue ? `${Number(creditValue).toLocaleString()} CBC` : '-'}</p>
+            <p className="font-bold text-white">{creditValue ? `${Number(creditValue).toLocaleString()} ${CURRENCY.SYMBOL}` : '-'}</p>
           </div>
         </div>
 

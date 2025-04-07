@@ -9,6 +9,7 @@ import { DropdownItemProps } from "../Button/DropdownButton"
 import { useUser } from "../../../contexts/userContext"
 import { NavLogo } from "./NavLogo"
 import { NavUser } from "./NavUser"
+import { CURRENCY } from "../../../constant/CurrencyConstant"
 
 // Define proper types
 export interface NavItemProps {
@@ -67,7 +68,7 @@ const NavItem: React.FC<NavItemProps> = ({
 // Restyled Credit card component to match the theme in TopUpMenu
 const CreditCard: React.FC<{ balance?: number; currency?: string; isLoading?: boolean }> = ({
   balance,
-  currency = "CBC",
+  currency = CURRENCY.SYMBOL,
   isLoading = false
 }) => (
   <div className="mx-4 my-4">
@@ -94,7 +95,7 @@ const CreditCard: React.FC<{ balance?: number; currency?: string; isLoading?: bo
 
 const SideNavbar: React.FC<SideNavbarProps> = ({
   navItems: customNavItems,
-  creditCurrency = "CBC",
+  creditCurrency = CURRENCY.SYMBOL,
   logoText = "CloudBoi",
   logoIcon = <CloudIcon className="bg-purple-500 w-8 h-8 rounded-md flex items-center justify-center" />,
   username,

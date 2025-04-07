@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect } from "react"
 import { TransactionType } from "../../constant/TransactionConstant"
 import { useParams } from "react-router-dom"
 import { useUser } from "../../contexts/userContext"
+import { CURRENCY } from '../../constant/CurrencyConstant'
 
 export const useUserBilling = () => {
     const {
@@ -142,7 +143,7 @@ export const useUserBilling = () => {
         try {
             const numericAmount = Number(amount)
             await topUpWallet(numericAmount)
-            alert(`Successfully added ${numericAmount} CBC to your wallet`)
+            alert(`Successfully added ${numericAmount} ${CURRENCY.SYMBOL} to your wallet`)
             return true
         } catch (err) {
             alert("Failed to add credit. Please try again.")

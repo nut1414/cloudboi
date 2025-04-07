@@ -1,6 +1,7 @@
 // components/Common/TransactionAmount.tsx
 import React from "react"
 import { TransactionType } from "../../constant/TransactionConstant"
+import { CURRENCY } from "../../constant/CurrencyConstant"
 
 interface TransactionAmountProps {
     amount: number | string
@@ -12,7 +13,7 @@ interface TransactionAmountProps {
 const TransactionAmount: React.FC<TransactionAmountProps> = ({
     amount,
     transactionType,
-    currency = "CBC",
+    currency = CURRENCY.SYMBOL,
     className = "",
 }) => {
     const isPositive = transactionType === TransactionType.TOP_UP

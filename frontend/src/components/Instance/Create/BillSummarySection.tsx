@@ -13,6 +13,7 @@ import {
   InboxStackIcon
 } from "@heroicons/react/24/outline"
 import Section from "../../Common/Section"
+import { CURRENCY } from "../../../constant/CurrencyConstant"
 
 interface BillSummarySectionProps {
     selectedPackage: InstancePlan | undefined
@@ -27,8 +28,8 @@ const BillSummarySection: React.FC<BillSummarySectionProps> = React.memo(({
 }) => {
     // Calculate monthly cost with useMemo to avoid recalculating on every render
     const { monthlyPrice, hourlyPrice } = useMemo(() => {
-        const hourly = selectedPackage?.cost_hour.toFixed(6) || '0.000000'
-        const monthly = selectedPackage ? (selectedPackage.cost_hour * 730).toFixed(2) : '0.00'
+        const hourly = selectedPackage ? CURRENCY.FORMAT_HOURLY(selectedPackage.cost_hour) : '0.0000 ' + CURRENCY.SYMBOL
+        const monthly = selectedPackage ? CURRENCY.FORMAT(selectedPackage.cost_hour * 730) : '0 ' + CURRENCY.SYMBOL
         
         return { monthlyPrice: monthly, hourlyPrice: hourly }
     }, [selectedPackage])
@@ -48,10 +49,10 @@ const BillSummarySection: React.FC<BillSummarySectionProps> = React.memo(({
                     <div className="mb-4">
                         <p className="text-3xl font-bold text-white flex items-center gap-2">
                             <CurrencyDollarIcon className="h-6 w-6 text-purple-400" />
-                            {monthlyPrice} <span className="text-sm font-normal text-gray-300">CBC/month</span>
+                            {monthlyPrice} <span className="text-sm font-normal text-gray-300">/month</span>
                         </p>
                         <p className="text-sm text-gray-400 ml-7 mt-1">
-                            {hourlyPrice} CBC/hour
+                            {hourlyPrice}/hour
                         </p>
                     </div>
                     

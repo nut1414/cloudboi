@@ -10,6 +10,7 @@ import StatusBadge from "../../components/Common/StatusBadge"
 import Button from "../../components/Common/Button/Button"
 import { useUserManage } from "../../hooks/Admin/useUserManage"
 import ItemCard from "../../components/Common/ItemCard"
+import { CURRENCY } from "../../constant/CurrencyConstant"
 
 // SearchBar component reusing our InputField - styled like InstanceListPage
 interface SearchBarProps {
@@ -111,7 +112,7 @@ const InstancesContent = React.memo(({
                   },
                   {
                     label: "Cost",
-                    value: `$${instance.instance_plan.cost_hour}/hour`
+                    value: `${CURRENCY.FORMAT_HOURLY(instance.instance_plan.cost_hour)}/hour`
                   },
                   { label: "Node", value: instance.lxd_node_name },
                   {
