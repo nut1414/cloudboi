@@ -1,8 +1,9 @@
-import React, { useMemo } from "react"
+import React from "react"
 import AccessMenu from "./AccessMenu"
 import PowersMenu from "./PowerMenu"
 import NetworkingMenu from "./NetworkingMenu"
 import DestroyMenu from "./DestroyMenu"
+import MonitorMenu from "./MonitorMenu"
 import TabContentContainer from "../../Common/Tab/TabContentContainer"
 
 interface InstanceSettingContentProps {
@@ -10,22 +11,25 @@ interface InstanceSettingContentProps {
 }
 
 const InstanceSettingContent: React.FC<InstanceSettingContentProps> = ({ active }) => {
-  const activeMenu = useMemo(() => {
-    switch (active) {
-      case "AccessMenu":
-        return <AccessMenu />
-      case "PowersMenu":
-        return <PowersMenu />
-      case "NetworkingMenu":
-        return <NetworkingMenu />
-      case "DestroyMenu":
-        return <DestroyMenu />
-      default:
-        return <AccessMenu />
-    }
-  }, [active])
-
-  return <TabContentContainer>{activeMenu}</TabContentContainer>
+  return (
+    <TabContentContainer>
+      <div className={active === "AccessMenu" ? "block" : "hidden"}>
+        <AccessMenu />
+      </div>
+      <div className={active === "PowersMenu" ? "block" : "hidden"}>
+        <PowersMenu />
+      </div>
+      <div className={active === "NetworkingMenu" ? "block" : "hidden"}>
+        <NetworkingMenu />
+      </div>
+      <div className={active === "MonitorMenu" ? "block" : "hidden"}>
+        <MonitorMenu />
+      </div>
+      <div className={active === "DestroyMenu" ? "block" : "hidden"}>
+        <DestroyMenu />
+      </div>
+    </TabContentContainer>
+  )
 }
 
 export default InstanceSettingContent

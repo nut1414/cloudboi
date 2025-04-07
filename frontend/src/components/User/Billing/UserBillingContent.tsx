@@ -1,4 +1,4 @@
-import React, { useMemo } from "react"
+import React from "react"
 import OverviewMenu from "./OverviewMenu"
 import HistoryMenu from "./HistoryMenu"
 import TopUpMenu from "./TopUpMenu"
@@ -9,19 +9,19 @@ interface UserBillingContentProps {
 }
 
 const UserBillingContent: React.FC<UserBillingContentProps> = ({ active }) => {
-  const activeMenu = useMemo(() => {
-    switch (active) {
-      case "HistoryMenu":
-        return <HistoryMenu />
-      case "TopUpMenu":
-        return <TopUpMenu />
-      case "OverviewMenu":
-      default:
-        return <OverviewMenu />
-    }
-  }, [active])
-
-  return <TabContentContainer>{activeMenu}</TabContentContainer>
+  return (
+    <TabContentContainer>
+      <div className={active === "OverviewMenu" ? "block" : "hidden"}>
+        <OverviewMenu />
+      </div>
+      <div className={active === "HistoryMenu" ? "block" : "hidden"}>
+        <HistoryMenu />
+      </div>
+      <div className={active === "TopUpMenu" ? "block" : "hidden"}>
+        <TopUpMenu />
+      </div>
+    </TabContentContainer>
+  )
 }
 
 export default UserBillingContent

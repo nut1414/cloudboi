@@ -1,7 +1,65 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Dict
 import uuid
 from .base_model import BaseModel
+
+class CPUUsageTime(BaseModel):
+    usage: int # in nanoseconds
+
+class DiskUsage(BaseModel):
+    usage: int # in bytes
+
+class MemoryUsageRaw(BaseModel):
+    usage: int # in bytes
+    usage_peak: int # in bytes
+    swap_usage: int # in bytes
+    swap_usage_peak: int # in bytes
+    
+
+class MemoryUsage(BaseModel):
+    usage: int # in bytes
+    total: int # in bytes
+
+class CPUUsage(BaseModel):
+    usage: float # in percentage
+    cores: int
+class NetworkAddress(BaseModel):
+    family: str
+    address: str
+    netmask: str
+    scope: str
+
+class NetworkCounters(BaseModel):
+    bytes_received: int
+    bytes_sent: int
+    packets_received: int
+    packets_sent: int
+
+class NetworkInterface(BaseModel):
+    addresses: List[NetworkAddress]
+    counters: NetworkCounters
+    hwaddr: str
+    host_name: str
+    mtu: int
+    state: str
+    type: str
+
+class LxdInstanceState(BaseModel):
+    status: str
+    status_code: int
+    disk: Dict[str, DiskUsage]
+    memory: MemoryUsageRaw
+    network: Optional[Dict[str, NetworkInterface]] = None # Network might be null if stopped/not configured
+    pid: int
+    processes: int
+    cpu: CPUUsageTime # in nanoseconds
+
+class BaseInstanceState(BaseModel):
+    network: Optional[Dict[str, NetworkInterface]] = None 
+    disk: Dict[str, DiskUsage]  
+    memory: MemoryUsage
+    cpu: CPUUsage  
+
 
 class UserInstance(BaseModel):
     instance_id: Optional[uuid.UUID] = None

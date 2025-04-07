@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, WebSocket
+from fastapi import APIRouter, Depends, WebSocket
 from dependency_injector.wiring import Provide, inject
 from fastapi.websockets import WebSocketState
 
@@ -8,7 +8,7 @@ from ..service.helpers.instance_helper import InstanceHelper
 from ..utils.logging import logger
 from ..utils.dependencies import get_current_user, get_current_user_ws
 from ..service.instance import InstanceService
-from ..models.instance import InstanceDetails, InstanceCreateRequest, InstanceCreateResponse, UserInstanceResponse, InstanceControlResponse
+from ..models.instance import BaseInstanceState, InstanceDetails, InstanceCreateRequest, InstanceCreateResponse, UserInstanceResponse, InstanceControlResponse
 from ..container import AppContainer
 
 
@@ -129,3 +129,15 @@ async def websocket_instance(
         logger.error(f"Failed to create websocket session: {str(e)}")
         if websocket.client_state != WebSocketState.DISCONNECTED:
             await websocket.close(code=1011, reason=str(e))
+
+@router.get(
+    "/{instance_name}/state",
+    response_model=BaseInstanceState,
+    dependencies=[Depends(get_current_user)]
+)
+@inject
+async def get_instance_state(
+    instance_name: str,
+    instance_service: InstanceService = Depends(Provide[AppContainer.instance_service])
+):
+    return await instance_service.get_instance_state(instance_name=instance_name)
