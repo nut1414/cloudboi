@@ -8,6 +8,57 @@ export type AddMemberResponse = {
     success: boolean;
 };
 
+export type AdminInstancePlanCreateRequest = {
+    instance_plan_id?: (number | null);
+    instance_package_name: string;
+    vcpu_amount: number;
+    ram_amount: number;
+    storage_amount: number;
+    cost_hour: number;
+};
+
+export type AdminInstancePlanCreateResponse = {
+    instance_plan_id: number;
+    instance_package_name: string;
+    vcpu_amount: number;
+    ram_amount: number;
+    storage_amount: number;
+    cost_hour: number;
+};
+
+export type AdminInstancePlanDeleteRequest = {
+    instance_plan_id: number;
+    instance_package_name: string;
+    vcpu_amount: number;
+    ram_amount: number;
+    storage_amount: number;
+    cost_hour: number;
+};
+
+export type AdminInstancePlanDeleteResponse = {
+    instance_plan_id: number;
+    instance_package_name: string;
+    is_success: boolean;
+};
+
+export type AdminInstancePlanUpdateRequest = {
+    instance_plan_id: number;
+    instance_package_name: string;
+    vcpu_amount: number;
+    ram_amount: number;
+    storage_amount: number;
+    cost_hour: number;
+};
+
+export type AdminInstancePlanUpdateResponse = {
+    instance_plan_id: number;
+    instance_package_name: string;
+    vcpu_amount: number;
+    ram_amount: number;
+    storage_amount: number;
+    cost_hour: number;
+};
+
 export type AdminUser = {
     user_id: string;
     username: string;
@@ -236,6 +287,30 @@ export type ValidationError = {
 export type AdminGetAllUsersResponse = (AdminUsersResponse);
 
 export type AdminGetAllUsersError = unknown;
+
+export type AdminCreateInstancePlanData = {
+    body: AdminInstancePlanCreateRequest;
+};
+
+export type AdminCreateInstancePlanResponse = (AdminInstancePlanCreateResponse);
+
+export type AdminCreateInstancePlanError = (HTTPValidationError);
+
+export type AdminUpdateInstancePlanData = {
+    body: AdminInstancePlanUpdateRequest;
+};
+
+export type AdminUpdateInstancePlanResponse = (AdminInstancePlanUpdateResponse);
+
+export type AdminUpdateInstancePlanError = (HTTPValidationError);
+
+export type AdminDeleteInstancePlanData = {
+    body: AdminInstancePlanDeleteRequest;
+};
+
+export type AdminDeleteInstancePlanResponse = (AdminInstancePlanDeleteResponse);
+
+export type AdminDeleteInstancePlanError = (HTTPValidationError);
 
 export type BillingGetBillingOverviewData = {
     path: {

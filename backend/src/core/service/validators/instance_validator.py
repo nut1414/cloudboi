@@ -1,4 +1,5 @@
 from ...models.instance import InstanceCreateRequest, InstancePlan, OsType
+from ...models.admin import AdminInstancePlanDeleteRequest
 from .base_validator import BaseValidator, ValidationRule, validate_model_match
 
 
@@ -34,3 +35,8 @@ class InstanceValidator:
         validate_model_match(instance_create.os_type, os_type_db)
         validate_model_match(instance_create.instance_plan, instance_plan_db)
         InstanceValidator.validate_password(instance_create.root_password)
+    
+    @staticmethod
+    def validate_instance_plan_delete_request(instance_plan_delete: AdminInstancePlanDeleteRequest, instance_plan_db: InstancePlan) -> None:
+        """Validate the instance plan deletion request."""
+        validate_model_match(instance_plan_delete, instance_plan_db)

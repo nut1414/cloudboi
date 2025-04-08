@@ -69,7 +69,8 @@ class AppContainer(containers.DeclarativeContainer):
     )
     admin_service = providers.Factory(
         AdminService,
-        admin_opr=admin_opr
+        admin_opr=admin_opr,
+        instance_opr=instance_opr
     )
 
     # Workers
