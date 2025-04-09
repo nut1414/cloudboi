@@ -109,13 +109,22 @@ export const useInstancePlanManage = () => {
             setIsSubmitting(true)
             setActionError(null)
             
-            await AdminService.adminCreateInstancePlan({
+            const result = await AdminService.adminCreateInstancePlan({
                 body: data
             })
             
             // Refresh instance details after creating
-            await fetchInstanceDetails()
-            setActionSuccess(`Plan "${data.instance_package_name}" created successfully`)
+            setActionSuccess(`Plan "${result?.data?.instance_package_name}" created successfully`)
+            dispatch?.({
+                type: INSTANCE_ACTIONS.SET_INSTANCE_DETAILS,
+                payload: {
+                    ...instanceDetails,
+                    instance_package: [
+                        ...(instanceDetails?.instance_package || []),
+                        result?.data
+                    ]
+                }
+            })
             
             // Close modal after a short delay
             setTimeout(() => {
@@ -139,7 +148,7 @@ export const useInstancePlanManage = () => {
                 throw new Error('Instance plan ID is required')
             }
             
-            await AdminService.adminUpdateInstancePlan({
+            const result = await AdminService.adminUpdateInstancePlan({
                 body: {
                     ...data,
                     instance_plan_id: data.instance_plan_id
@@ -147,8 +156,14 @@ export const useInstancePlanManage = () => {
             })
             
             // Refresh instance details after updating
-            await fetchInstanceDetails()
-            setActionSuccess(`Plan "${data.instance_package_name}" updated successfully`)
+            setActionSuccess(`Plan "${result?.data?.instance_package_name}" updated successfully`)
+            dispatch?.({
+                type: INSTANCE_ACTIONS.SET_INSTANCE_DETAILS,
+                payload: {
+                    ...instanceDetails,
+                    instance_package: instanceDetails?.instance_package?.map(plan => plan.instance_plan_id === data.instance_plan_id ? result?.data : plan)
+                }
+            })
             
             // Close modal after a short delay
             setTimeout(() => {
@@ -179,7 +194,13 @@ export const useInstancePlanManage = () => {
             })
             
             // Refresh instance details after deleting
-            await fetchInstanceDetails()
+            dispatch?.({
+                type: INSTANCE_ACTIONS.SET_INSTANCE_DETAILS,
+                payload: {
+                    ...instanceDetails,
+                    instance_package: instanceDetails?.instance_package?.filter(plan => plan.instance_plan_id !== selectedPlan.instance_plan_id)
+                }
+            })
             setActionSuccess(`Plan "${selectedPlan?.instance_package_name}" deleted successfully`)
             
             // Close modal after a short delay

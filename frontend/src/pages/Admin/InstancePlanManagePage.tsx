@@ -1,6 +1,5 @@
 import React from "react"
 import PageContainer from "../../components/Layout/PageContainer"
-import { Cog6ToothIcon } from "@heroicons/react/16/solid"
 import Button from "../../components/Common/Button/Button"
 import Table, { TableColumn } from "../../components/Common/Table"
 import { InstancePlan } from "../../client"
@@ -8,7 +7,8 @@ import { useInstancePlanManage, InstancePlanFormData } from "../../hooks/Admin/u
 import Modal from "../../components/Common/Modal/Modal"
 import InputField from "../../components/Common/InputField"
 import { Controller } from "react-hook-form"
-import { TrashIcon, PencilIcon, CheckCircleIcon, ExclamationCircleIcon } from "@heroicons/react/24/outline"
+import { TrashIcon, PencilIcon, CheckCircleIcon, ExclamationCircleIcon, ClipboardDocumentIcon } from "@heroicons/react/24/outline"
+import { CURRENCY } from "../../constant/CurrencyConstant"
 
 const InstancePlanManagePage: React.FC = () => {
     const {
@@ -55,7 +55,7 @@ const InstancePlanManagePage: React.FC = () => {
         {
             key: "cost_hour",
             label: "Price(CBC)",
-            render: (plan) => `${plan.cost_hour.toFixed(3)}/hour`
+            render: (plan) => `${CURRENCY.FORMAT_HOURLY(plan.cost_hour)}`
         },
         {
             key: "actions",
@@ -318,7 +318,7 @@ const InstancePlanManagePage: React.FC = () => {
             <PageContainer
                 title="Instance Plan Manage"
                 subtitle="Manage your instance plans"
-                subtitleIcon={<Cog6ToothIcon className="w-4 h-4" />}
+                subtitleIcon={<ClipboardDocumentIcon className="w-4 h-4" />}
                 rightContent={<Button label="Create Instance Plan" variant="purple" onClick={openCreateModal} />}
             >
                 <Table

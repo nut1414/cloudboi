@@ -22,6 +22,7 @@ const Modal: React.FC<ModalProps> = ({
   closeOnClickOutside = true
 }) => {
   const modalRef = useRef<HTMLDivElement>(null)
+  const initialFocusRef = useRef<HTMLButtonElement>(null)
 
   // Size classes mapping
   const sizeClasses = {
@@ -30,6 +31,14 @@ const Modal: React.FC<ModalProps> = ({
     lg: 'max-w-2xl',
     xl: 'max-w-4xl'
   }
+
+  // Focus management
+  useEffect(() => {
+    if (isOpen && initialFocusRef.current) {
+      // Focus the close button when modal opens
+      initialFocusRef.current.focus()
+    }
+  }, [isOpen])
 
   // Handle click outside
   useEffect(() => {
@@ -63,15 +72,27 @@ const Modal: React.FC<ModalProps> = ({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm transition-opacity duration-200">
+    <div 
+      className={`fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm bg-black/70
+        opacity-0 ${isOpen ? 'opacity-100' : ''}
+        transition-opacity duration-200 ease-in-out`}
+      onClick={closeOnClickOutside ? onClose : undefined}
+      aria-modal="true"
+      role="dialog"
+      tabIndex={-1}
+    >
       <div 
-        className={`bg-[#192A51] rounded-xl shadow-lg border border-blue-900/30 w-full ${sizeClasses[size]} transform transition-transform duration-300 ease-out`}
+        className={`bg-[#192A51] rounded-xl shadow-lg border border-blue-900/30 w-full ${sizeClasses[size]}
+          translate-y-8 scale-95 opacity-0 ${isOpen ? 'translate-y-0 scale-100 opacity-100' : ''}
+          transform transition-all duration-200 ease-out`}
         ref={modalRef}
+        onClick={(e) => e.stopPropagation()} // Prevent clicks inside modal from closing it
       >
         {/* Modal Header */}
         <div className="flex justify-between items-center p-5 border-b border-blue-800/30">
           <h3 className="text-xl font-semibold text-white">{title}</h3>
           <button
+            ref={initialFocusRef}
             onClick={onClose}
             className="text-gray-400 hover:text-white transition-colors"
             aria-label="Close"
