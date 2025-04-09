@@ -28,6 +28,17 @@ export type AdminBillingStatsResponse = {
     stats: Array<AdminBillingStatsByType>;
 };
 
+export type AdminTransactionResponse = {
+    transaction_id: string;
+    username: string;
+    instance_name?: (string | null);
+    transaction_type: TransactionType;
+    transaction_status: TransactionStatus;
+    amount: number;
+    created_at: Date;
+    last_updated_at: Date;
+};
+
 export type AdminUser = {
     user_id: string;
     username: string;
@@ -144,17 +155,6 @@ export type OsType = {
     os_type_id: number;
     os_image_name: string;
     os_image_version: string;
-};
-
-export type Transaction = {
-    transaction_id?: (string | null);
-    user_id: string;
-    reference_id: string;
-    transaction_type: TransactionType;
-    transaction_status: TransactionStatus;
-    amount: number;
-    created_at?: (Date | null);
-    last_updated_at: Date;
 };
 
 export type TransactionStatus = 'PENDING' | 'FAILED' | 'SUCCESS' | 'SCHEDULED' | 'PAID' | 'OVERDUE' | 'EXPIRED';
@@ -276,7 +276,7 @@ export type AdminGetBillingStatsResponse = (AdminBillingStatsResponse);
 
 export type AdminGetBillingStatsError = (HTTPValidationError);
 
-export type AdminGetAllTransactionsResponse = (Array<Transaction>);
+export type AdminGetAllTransactionsResponse = (Array<AdminTransactionResponse>);
 
 export type AdminGetAllTransactionsError = unknown;
 
@@ -483,9 +483,12 @@ export const AdminGetAllUsersResponseTransformer: AdminGetAllUsersResponseTransf
 
 export type AdminGetAllTransactionsResponseTransformer = (data: any) => Promise<AdminGetAllTransactionsResponse>;
 
-export type TransactionModelResponseTransformer = (data: any) => Transaction;
+export type AdminTransactionResponseModelResponseTransformer = (data: any) => AdminTransactionResponse;
 
-export const TransactionModelResponseTransformer: TransactionModelResponseTransformer = data => {
+export const AdminTransactionResponseModelResponseTransformer: AdminTransactionResponseModelResponseTransformer = data => {
+    if (data?.created_at) {
+        data.created_at = new Date(data.created_at);
+    }
     if (data?.last_updated_at) {
         data.last_updated_at = new Date(data.last_updated_at);
     }
@@ -494,7 +497,7 @@ export const TransactionModelResponseTransformer: TransactionModelResponseTransf
 
 export const AdminGetAllTransactionsResponseTransformer: AdminGetAllTransactionsResponseTransformer = async (data) => {
     if (Array.isArray(data)) {
-        data.forEach(TransactionModelResponseTransformer);
+        data.forEach(AdminTransactionResponseModelResponseTransformer);
     }
     return data;
 };

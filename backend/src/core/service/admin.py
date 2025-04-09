@@ -1,8 +1,7 @@
 from typing import List
 
 from ..sql.operations import AdminOperation, BillingOperation, TransactionOperation
-from ..models.admin import AdminUser, AdminUsersResponse, AdminBillingStatsRequest, AdminBillingStatsResponse
-from ..models.transaction import Transaction
+from ..models.admin import AdminUser, AdminUsersResponse, AdminBillingStatsRequest, AdminBillingStatsResponse, AdminTransactionResponse
 from ..utils.permission import require_roles
 from ..constants.user_const import UserRole
 from ..utils.datetime import DateTimeUtils
@@ -66,6 +65,25 @@ class AdminService:
         return AdminBillingStatsResponse(stats=stats)
     
     @require_roles([UserRole.ADMIN])
-    async def get_all_transactions(self) -> List[Transaction]:
-        transactions = await self.transaction_opr.get_all_transactions()
-        return transactions
+    async def get_all_transactions(self) -> List[AdminTransactionResponse]:
+        transactions_with_details = await self.transaction_opr.get_all_transactions_with_details()
+        
+        response = []
+        for transaction, user, instance in transactions_with_details:
+            # Get instance name if instance exists
+            instance_name = None
+            if instance:
+                instance_name = instance.hostname
+                
+            response.append(AdminTransactionResponse(
+                transaction_id=transaction.transaction_id,
+                username=user.username,
+                instance_name=instance_name,
+                transaction_type=transaction.transaction_type,
+                transaction_status=transaction.transaction_status,
+                amount=transaction.amount,
+                created_at=transaction.created_at,
+                last_updated_at=transaction.last_updated_at
+            ))
+        
+        return response

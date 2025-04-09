@@ -36,3 +36,13 @@ class AdminBillingStatsRequest(BaseModel):
 
 class AdminBillingStatsResponse(BaseModel):
     stats: List[AdminBillingStatsByType]
+
+class AdminTransactionResponse(BaseModel):
+    transaction_id: uuid.UUID
+    username: str
+    instance_name: Optional[str] = None
+    transaction_type: TransactionType
+    transaction_status: TransactionStatus
+    amount: float
+    created_at: datetime
+    last_updated_at: datetime

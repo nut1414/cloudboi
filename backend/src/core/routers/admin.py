@@ -5,8 +5,7 @@ from datetime import datetime
 
 from ..container import AppContainer
 from ..utils.dependencies import get_admin_user
-from ..models.admin import AdminUsersResponse, AdminBillingStatsRequest, AdminBillingStatsResponse
-from ..models.transaction import Transaction
+from ..models.admin import AdminUsersResponse, AdminBillingStatsRequest, AdminBillingStatsResponse, AdminTransactionResponse
 from ..service.admin import AdminService
 
 router = APIRouter(
@@ -38,7 +37,7 @@ async def get_billing_stats(
 
 @router.get(
     "/transactions",
-    response_model=List[Transaction]
+    response_model=List[AdminTransactionResponse]
 )
 @inject
 async def get_all_transactions(
