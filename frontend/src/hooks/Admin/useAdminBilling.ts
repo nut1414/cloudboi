@@ -2,8 +2,8 @@ import { useBilling } from "../../contexts/billingContext"
 import { useEffect, useState, useCallback } from "react"
 import { AdminService } from "../../client/services.gen"
 import { BILLING_ACTIONS } from "../../contexts/billingContext"
-import { AdminBillingStatsRequest, Transaction } from "../../client/types.gen"
-import { CURRENCY } from "../../constant/CurrencyConstant"
+import { AdminBillingStatsRequest } from "../../client"
+import { useNavigate } from "react-router-dom"
 
 export const useAdminBilling = () => {
     const {
@@ -21,14 +21,16 @@ export const useAdminBilling = () => {
         endDate: Date | null
     }>({ startDate: null, endDate: null })
     
+    const navigate = useNavigate()
+    
     // Flag to control when to fetch data
     const [shouldFetch, setShouldFetch] = useState(true)
     
     // Filtered transactions based on search query
     const filteredTransactions = allTransactions 
         ? allTransactions.filter(transaction => 
-            transaction.user_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            transaction.reference_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            transaction.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            transaction.instance_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
             transaction.transaction_type.toLowerCase().includes(searchQuery.toLowerCase()) ||
             transaction.transaction_status.toLowerCase().includes(searchQuery.toLowerCase())
         )
@@ -59,7 +61,7 @@ export const useAdminBilling = () => {
         
         try {
             // Default to all-time stats
-            const requestBody: any = {
+            const requestBody: AdminBillingStatsRequest = {
                 is_alltime: isAllTime
             }
             
@@ -84,19 +86,21 @@ export const useAdminBilling = () => {
                     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
                 }
                 
-                requestBody.start_date = formatDate(startDateTime)
-                requestBody.end_date = formatDate(endDateTime)
+                requestBody.start_date = formatDate(startDateTime) as unknown as Date
+                requestBody.end_date = formatDate(endDateTime) as unknown as Date
                 requestBody.is_alltime = false
             } else if (!isAllTime && (!dateRange.startDate || !dateRange.endDate)) {
                 // If custom range is selected but dates are incomplete, default to all-time
                 requestBody.is_alltime = true
             }
             
+            console.log(requestBody)
             // Make the API call
             const response = await AdminService.adminGetBillingStats({
                 body: requestBody
             })
-            
+
+            console.log(response.data)
             return response.data
         } catch (err) {
             throw err
@@ -164,30 +168,9 @@ export const useAdminBilling = () => {
             setShouldFetch(true)
         }
     }
-    
-    // Calculate total revenue statistics without converting to thousands
-    const calculateRevenueStats = () => {
-        if (!allTransactions) return { paid: 0, pending: 0, canceled: 0 }
-        
-        let paid = 0
-        let pending = 0
-        let canceled = 0
-        
-        allTransactions.forEach(transaction => {
-            if (transaction.transaction_status === 'SUCCESS' || 
-                transaction.transaction_status === 'PAID') {
-                paid += transaction.amount
-            } else if (transaction.transaction_status === 'PENDING' || 
-                       transaction.transaction_status === 'SCHEDULED') {
-                pending += transaction.amount
-            } else if (transaction.transaction_status === 'FAILED' ||
-                      transaction.transaction_status === 'EXPIRED' ||
-                      transaction.transaction_status === 'OVERDUE') {
-                canceled += transaction.amount
-            }
-        })
-        
-        return { paid, pending, canceled }
+
+    const handleViewInstance = (username: string, instance_name: string) => {
+        navigate(`/user/${username}/instance/${instance_name}`)
     }
     
     // Simplified single useEffect for data fetching
@@ -198,11 +181,6 @@ export const useAdminBilling = () => {
         }
     }, [shouldFetch, fetchBillingStats, isLoading])
     
-    // Manual refresh function for user-triggered refreshes
-    const refreshData = () => {
-        setShouldFetch(true)
-    }
-    
     return {
         adminBillingStats,
         allTransactions: filteredTransactions,
@@ -211,10 +189,10 @@ export const useAdminBilling = () => {
         searchQuery,
         isAllTime,
         dateRange,
-        revenueStats: calculateRevenueStats(),
         handleSearch,
         toggleTimeRange,
         updateDateRange,
-        fetchBillingStats: refreshData
+        fetchBillingStats,
+        handleViewInstance
     }
 }

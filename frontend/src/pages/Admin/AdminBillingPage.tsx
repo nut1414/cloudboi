@@ -8,10 +8,11 @@ import InputField from "../../components/Common/InputField"
 import Button from "../../components/Common/Button/Button"
 import { useAdminBilling } from "../../hooks/Admin/useAdminBilling"
 import StatusBadge from "../../components/Common/StatusBadge"
-import { Transaction } from "../../client/types.gen"
+import { AdminTransactionResponse } from "../../client/types.gen"
 import { formatDateTime } from "../../utils/dateTime"
 import Section from "../../components/Common/Section"
 import TransactionAmount from "../../components/Common/TransactionAmount"
+import { TransactionType } from "../../constant/TransactionConstant"
 
 // SearchBar component
 interface SearchBarProps {
@@ -50,36 +51,33 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
 const AdminBillingPage: React.FC = () => {
     const {
-        adminBillingStats,
         allTransactions,
         isLoading,
-        error,
         handleSearch,
-        isAllTime,
-        dateRange,
-        toggleTimeRange,
-        updateDateRange,
-        fetchBillingStats
+        handleViewInstance
     } = useAdminBilling()
 
     // Define columns for the transactions table
-    const columns: TableColumn<Transaction>[] = [
+    const columns: TableColumn<AdminTransactionResponse>[] = [
         {
             key: 'date',
             label: 'Date',
             render: (transaction) => formatDateTime(transaction.last_updated_at)
         },
         {
-            key: 'user_id',
-            label: 'Username'
+            key: 'username',
+            label: 'Username',
+            render: (transaction) => transaction.username
+        },
+        {
+            key: 'instance_name',
+            label: 'Instance Name',
+            render: (transaction) => transaction.instance_name ?? '-'
         },
         {
             key: 'transaction_type',
             label: 'Type',
-            render: (transaction) => {
-                const type = transaction.transaction_type
-                return type === 'TOP_UP' ? 'Top-up' : 'Subscription'
-            }
+            render: (transaction) => transaction.transaction_type === 'TOP_UP' ? 'Top-up' : 'Subscription'
         },
         {
             key: 'transaction_status',
@@ -98,16 +96,15 @@ const AdminBillingPage: React.FC = () => {
         },
         {
             key: 'actions',
-            label: 'Actions',
+            label: '',
             render: (transaction) => (
-                <div className="flex space-x-2">
+                transaction.transaction_type === TransactionType.SUBSCRIPTION_PAYMENT ?
                     <Button
-                        label="View"
+                        label="View Instance"
                         variant="secondary"
-                        onClick={() => console.log('View transaction', transaction.transaction_id)}
+                        onClick={() => handleViewInstance(transaction.username, transaction.instance_name || '')}
                         size="small"
-                    />
-                </div>
+                    /> : <></>
             )
         }
     ]
@@ -123,12 +120,6 @@ const AdminBillingPage: React.FC = () => {
 
     const rightSection = (
         <div className="flex items-center gap-3">
-            <Button
-                label="Refresh Data"
-                variant="outline"
-                onClick={() => fetchBillingStats()}
-                className="mr-2"
-            />
             <Button
                 label="Export Data"
                 variant="secondary"
@@ -157,13 +148,15 @@ const AdminBillingPage: React.FC = () => {
                 <Section 
                     title="All Transactions" 
                     icon={<BanknotesIcon className="w-5 h-5" />}
+                    description="View all transactions and billing history"
+                    className="bg-[#12203c] border-blue-900/20"
                 >
                     <Table
                         columns={columns}
                         data={allTransactions || []}
                         isLoading={isLoading && !allTransactions?.length}
                         emptyStateMessage="No transactions found"
-                        keyExtractor={(transaction) => transaction.transaction_id || transaction.reference_id}
+                        keyExtractor={(transaction) => transaction.transaction_id}
                         unit="transaction"
                     />
                 </Section>

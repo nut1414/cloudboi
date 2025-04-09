@@ -5,7 +5,7 @@ import {
     UserTransactionResponse,
     UserBillingOverviewResponse,
     AdminBillingStatsResponse,
-    Transaction,
+    AdminTransactionResponse,
 } from "../client"
 import { createContextProvider, BaseContextState, ReducerAction } from './baseContext'
 
@@ -15,7 +15,7 @@ interface BillingContextState extends BaseContextState {
     userTransactions: UserTransactionResponse[] | null
     userBillingOverview: UserBillingOverviewResponse | null
     adminBillingStats: AdminBillingStatsResponse | null
-    allTransactions: Transaction[] | null
+    allTransactions: AdminTransactionResponse[] | null
     isLoading: boolean
     error: string | null
     dispatch?: React.Dispatch<ReducerAction<BillingContextState>>
