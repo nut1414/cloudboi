@@ -24,6 +24,7 @@ const Support = lazy(() => import("./pages/User/support"))
 
 // Admin pages
 const UserManagePage = lazy(() => import("./pages/Admin/UserManagePage"))
+const AdminBillingPage = lazy(() => import("./pages/Admin/AdminBillingPage"))
 
 /**
  * Route configuration with authentication guards
@@ -113,7 +114,7 @@ const routes: RouteObject[] = [
       },
       {
         path: "billing",
-        element: <div>Billing Page</div>,
+        element: <AdminBillingPage />,
       },
       {
         path: "credits",
