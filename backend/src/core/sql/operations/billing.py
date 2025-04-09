@@ -6,7 +6,7 @@ from sqlalchemy.dialects.postgresql import insert as pg_insert
 import uuid
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ...constants.transaction_const import TransactionStatus, TransactionType
+from ...constants.transaction_const import TransactionStatus, TransactionType, TRANSACTION_TYPE_TO_STATUS
 from ...utils.datetime import DateTimeUtils
 from .base import BaseOperation
 from ..tables.user_instance import UserInstance
@@ -15,6 +15,8 @@ from ..tables.user_wallet import UserWallet
 from ..tables.user_subscription import UserSubscription
 from ..tables.transaction import Transaction
 from ...models.billing import AllTimePayment, UpcomingPayment, UserBillingOverview
+from ...models.admin import AdminBillingStatsByStatus, AdminBillingStatsByType
+from ...utils.logging import logger
 
 
 class BillingOperation(BaseOperation):
@@ -127,3 +129,86 @@ class BillingOperation(BaseOperation):
             total_cycle=total_cycle,
             last_payment_date=last_payment_date_str
         )
+    
+    async def get_billing_stats_by_date_range(
+        self,
+        start_date: datetime = None,
+        end_date: datetime = None,
+        is_alltime: bool = False
+    ) -> List[AdminBillingStatsByType]:
+        """
+        Get billing statistics aggregated by transaction type and status within a date range.
+        
+        Args:
+            start_date: Start date for filtering transactions
+            end_date: End date for filtering transactions
+            is_alltime: If True, ignore date range and get all-time statistics
+            
+        Returns:
+            List of AdminBillingStatsByType containing statistics for each transaction type
+        """
+        async with self.session() as db:
+            # Get all transaction types to ensure we return all types even if no transactions exist
+            all_types = list(TransactionType)
+            
+            # Build the base query
+            stats_stmt = select(
+                Transaction.transaction_type,
+                Transaction.transaction_status,
+                func.sum(Transaction.amount).label("total_amount")
+            )
+            
+            # Apply date filtering only if is_alltime is False
+            if not is_alltime and start_date and end_date:
+                stats_stmt = stats_stmt.where(
+                    Transaction.created_at >= start_date,
+                    Transaction.created_at <= end_date
+                )
+            
+            # Group by type and status
+            stats_stmt = stats_stmt.group_by(
+                Transaction.transaction_type,
+                Transaction.transaction_status
+            )
+            
+            result = await db.execute(stats_stmt)
+            stats_data = result.all()
+
+            
+            # Organize results by transaction type
+            stats_by_type = {}
+            for transaction_type in all_types:
+                stats_by_type[transaction_type] = []
+                
+                # Get appropriate statuses for this transaction type
+                applicable_statuses = TRANSACTION_TYPE_TO_STATUS.get(transaction_type, [])
+                
+                # Process each status that applies to this type
+                for status in applicable_statuses:
+                    # Find matching record in query results
+                    matching = next(
+                        (item for item in stats_data if item[0] == transaction_type and item[1] == status),
+                        None
+                    )
+                    
+                    # Use found amount or default to 0
+                    amount = matching[2] if matching else 0.0
+                    
+                    # Add status stats to this type
+                    stats_by_type[transaction_type].append(
+                        AdminBillingStatsByStatus(
+                            status=status,
+                            amount=amount
+                        )
+                    )
+            
+            # Convert dictionary to list of AdminBillingStatsByType
+            result = [
+                AdminBillingStatsByType(
+                    type=transaction_type,
+                    stats=stats_by_type[transaction_type]
+                )
+                for transaction_type in all_types
+            ]
+            
+            return result

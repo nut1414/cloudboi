@@ -88,6 +88,12 @@ class TransactionOperation(BaseOperation):
             result = (await db.execute(stmt)).scalars().all()
             return self.to_pydantic(TransactionModel, result)
     
+    async def get_all_transactions(self) -> List[TransactionModel]:
+        async with self.session() as db:
+            stmt = select(Transaction)
+            result = (await db.execute(stmt)).scalars().all()
+            return self.to_pydantic(TransactionModel, result)
+    
     async def get_transactions_by_reference_ids(
         self,
         reference_ids: List[str],

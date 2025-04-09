@@ -3,7 +3,7 @@
 import type { Options } from '@hey-api/client-axios';
 import { queryOptions, type UseMutationOptions } from '@tanstack/react-query';
 import { client, AdminService, BillingService, ClusterService, InstanceService, RootService, UserService } from '../services.gen';
-import type { BillingGetBillingOverviewData, BillingGetAllUserTransactionsData, BillingTopUpData, BillingTopUpError, BillingTopUpResponse, BillingGetUserWalletData, ClusterCreateJoinTokenData, ClusterCreateJoinTokenError, ClusterCreateJoinTokenResponse, ClusterAddMemberData, ClusterAddMemberError, ClusterAddMemberResponse, InstanceListInstancesData, InstanceGetInstanceData, InstanceCreateInstanceData, InstanceCreateInstanceError, InstanceCreateInstanceResponse, InstanceStartInstanceData, InstanceStartInstanceError, InstanceStartInstanceResponse, InstanceStopInstanceData, InstanceStopInstanceError, InstanceStopInstanceResponse, InstanceDeleteInstanceData, InstanceDeleteInstanceError, InstanceDeleteInstanceResponse, InstanceRestartInstanceData, InstanceRestartInstanceError, InstanceRestartInstanceResponse, InstanceGetInstanceStateData, UserCreateUserData, UserCreateUserError, UserCreateUserResponse, UserLoginUserData, UserLoginUserError, UserLoginUserResponse, UserLogoutUserError, UserLogoutUserResponse } from '../types.gen';
+import type { AdminGetBillingStatsData, BillingGetBillingOverviewData, BillingGetAllUserTransactionsData, BillingTopUpData, BillingTopUpError, BillingTopUpResponse, BillingGetUserWalletData, ClusterCreateJoinTokenData, ClusterCreateJoinTokenError, ClusterCreateJoinTokenResponse, ClusterAddMemberData, ClusterAddMemberError, ClusterAddMemberResponse, InstanceListInstancesData, InstanceGetInstanceData, InstanceCreateInstanceData, InstanceCreateInstanceError, InstanceCreateInstanceResponse, InstanceStartInstanceData, InstanceStartInstanceError, InstanceStartInstanceResponse, InstanceStopInstanceData, InstanceStopInstanceError, InstanceStopInstanceResponse, InstanceDeleteInstanceData, InstanceDeleteInstanceError, InstanceDeleteInstanceResponse, InstanceRestartInstanceData, InstanceRestartInstanceError, InstanceRestartInstanceResponse, InstanceGetInstanceStateData, UserCreateUserData, UserCreateUserError, UserCreateUserResponse, UserLoginUserData, UserLoginUserError, UserLoginUserResponse, UserLogoutUserError, UserLogoutUserResponse } from '../types.gen';
 import type { AxiosError } from 'axios';
 
 type QueryKey<TOptions extends Options> = [
@@ -49,6 +49,44 @@ export const adminGetAllUsersOptions = (options?: Options) => {
             return data;
         },
         queryKey: adminGetAllUsersQueryKey(options)
+    });
+};
+
+export const adminGetBillingStatsQueryKey = (options: Options<AdminGetBillingStatsData>) => [
+    createQueryKey('adminGetBillingStats', options)
+];
+
+export const adminGetBillingStatsOptions = (options: Options<AdminGetBillingStatsData>) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await AdminService.adminGetBillingStats({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: adminGetBillingStatsQueryKey(options)
+    });
+};
+
+export const adminGetAllTransactionsQueryKey = (options?: Options) => [
+    createQueryKey('adminGetAllTransactions', options)
+];
+
+export const adminGetAllTransactionsOptions = (options?: Options) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await AdminService.adminGetAllTransactions({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: adminGetAllTransactionsQueryKey(options)
     });
 };
 
