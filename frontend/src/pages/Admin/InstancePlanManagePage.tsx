@@ -1,13 +1,13 @@
-import React from "react"
+import React, { useMemo, useCallback } from "react"
 import PageContainer from "../../components/Layout/PageContainer"
 import Button from "../../components/Common/Button/Button"
 import Table, { TableColumn } from "../../components/Common/Table"
-import { InstancePlan } from "../../client"
+import { AdminInstancePlan } from "../../client"
 import { useInstancePlanManage, InstancePlanFormData } from "../../hooks/Admin/useInstancePlanManage"
 import Modal from "../../components/Common/Modal/Modal"
 import InputField from "../../components/Common/InputField"
 import { Controller } from "react-hook-form"
-import { TrashIcon, PencilIcon, CheckCircleIcon, ExclamationCircleIcon, ClipboardDocumentIcon } from "@heroicons/react/24/outline"
+import { TrashIcon, PencilIcon, CheckCircleIcon, ExclamationCircleIcon, ClipboardDocumentIcon, EyeIcon } from "@heroicons/react/24/outline"
 import { CURRENCY } from "../../constant/CurrencyConstant"
 
 const InstancePlanManagePage: React.FC = () => {
@@ -25,6 +25,7 @@ const InstancePlanManagePage: React.FC = () => {
         openCreateModal,
         openUpdateModal,
         openDeleteModal,
+        openViewModal,
         closeModal,
         handleCreatePlan,
         handleUpdatePlan,
@@ -32,7 +33,7 @@ const InstancePlanManagePage: React.FC = () => {
     } = useInstancePlanManage()
 
     // Table columns definition
-    const columns: TableColumn<InstancePlan>[] = [
+    const columns: TableColumn<AdminInstancePlan>[] = useMemo(() => [
         {
             key: "instance_package_name",
             label: "Package Name"
@@ -62,27 +63,39 @@ const InstancePlanManagePage: React.FC = () => {
             label: "Actions",
             render: (plan) => (
                 <div className="flex space-x-2">
-                    <Button
-                        icon={<PencilIcon className="w-4 h-4" />}
-                        variant="secondary"
-                        label="Edit"
-                        onClick={() => openUpdateModal(plan)}
-                    />
-                    <Button
-                        icon={<TrashIcon className="w-4 h-4" />}
-                        variant="danger"
-                        label="Delete"
-                        onClick={() => openDeleteModal(plan)}
-                    />
+                    {plan.is_editable ? (
+                        <>
+                            <Button
+                                icon={<PencilIcon className="w-4 h-4" />}
+                                variant="secondary"
+                                label="Edit"
+                                onClick={() => openUpdateModal(plan)}
+                            />
+                            <Button
+                                icon={<TrashIcon className="w-4 h-4" />}
+                                variant="danger"
+                                label="Delete"
+                                onClick={() => openDeleteModal(plan)}
+                            />
+                        </>
+                    ) : (
+                        <Button
+                            icon={<EyeIcon className="w-4 h-4" />}
+                            variant="info"
+                            label="View"
+                            onClick={() => openViewModal(plan)}
+                        />
+                    )}
                 </div>
             )
         }
-    ]
+    ], [openUpdateModal, openDeleteModal, openViewModal])
 
     // Form field components for Create/Update modals
-    const renderFormFields = (formType: 'create' | 'update') => {
+    const renderFormFields = useCallback((formType: 'create' | 'update' | 'view') => {
         const form = formType === 'create' ? createForm : updateForm
         const { control, formState: { errors } } = form
+        const isViewOnly = formType === 'view'
 
         return (
             <div className="space-y-4">
@@ -97,11 +110,12 @@ const InstancePlanManagePage: React.FC = () => {
                             onChange={field.onChange}
                             placeholder="Enter package name"
                             error={errors.instance_package_name?.message}
+                            disabled={isViewOnly}
                         />
                     )}
                 />
 
-                {formType === 'update' && (
+                {(formType === 'update' || formType === 'view') && (
                     <Controller
                         name="instance_plan_id"
                         control={control}
@@ -133,6 +147,7 @@ const InstancePlanManagePage: React.FC = () => {
                                 onChange={(value) => field.onChange(parseInt(value) || 1)}
                                 placeholder="Enter vCPU amount"
                                 error={errors.vcpu_amount?.message}
+                                disabled={isViewOnly}
                             />
                         )}
                     />
@@ -152,6 +167,7 @@ const InstancePlanManagePage: React.FC = () => {
                                 onChange={(value) => field.onChange(parseInt(value) || 1)}
                                 placeholder="Enter RAM amount"
                                 error={errors.ram_amount?.message}
+                                disabled={isViewOnly}
                             />
                         )}
                     />
@@ -173,6 +189,7 @@ const InstancePlanManagePage: React.FC = () => {
                                 onChange={(value) => field.onChange(parseInt(value) || 10)}
                                 placeholder="Enter storage amount"
                                 error={errors.storage_amount?.message}
+                                disabled={isViewOnly}
                             />
                         )}
                     />
@@ -193,16 +210,17 @@ const InstancePlanManagePage: React.FC = () => {
                                 onChange={(value) => field.onChange(parseFloat(value) || 0.01)}
                                 placeholder="Enter hourly cost"
                                 error={errors.cost_hour?.message}
+                                disabled={isViewOnly}
                             />
                         )}
                     />
                 </div>
             </div>
         )
-    }
+    }, [createForm, updateForm])
 
     // Render error or success message
-    const renderStatusMessage = () => {
+    const renderStatusMessage = useMemo(() => {
         if (actionSuccess) {
             return (
                 <div className="mb-4 p-3 bg-green-900/30 border-l-4 border-green-500 text-green-300 rounded flex items-center">
@@ -222,10 +240,10 @@ const InstancePlanManagePage: React.FC = () => {
         }
 
         return null
-    }
+    }, [actionSuccess, actionError])
 
     // Create Plan Modal
-    const renderCreateModal = () => (
+    const renderCreateModal = useMemo(() => (
         <Modal
             isOpen={modalType === 'create'}
             onClose={closeModal}
@@ -246,13 +264,13 @@ const InstancePlanManagePage: React.FC = () => {
                 </>
             }
         >
-            {renderStatusMessage()}
+            {renderStatusMessage}
             {renderFormFields('create')}
         </Modal>
-    )
+    ), [modalType, closeModal, isSubmitting, createForm, handleCreatePlan, renderStatusMessage, renderFormFields])
 
     // Update Plan Modal
-    const renderUpdateModal = () => (
+    const renderUpdateModal = useMemo(() => (
         <Modal
             isOpen={modalType === 'update'}
             onClose={closeModal}
@@ -273,13 +291,31 @@ const InstancePlanManagePage: React.FC = () => {
                 </>
             }
         >
-            {renderStatusMessage()}
+            {renderStatusMessage}
             {renderFormFields('update')}
         </Modal>
-    )
+    ), [modalType, closeModal, selectedPlan, isSubmitting, updateForm, handleUpdatePlan, renderStatusMessage, renderFormFields])
+
+    // View Plan Modal (Read-only)
+    const renderViewModal = useMemo(() => (
+        <Modal
+            isOpen={modalType === 'view'}
+            onClose={closeModal}
+            title={`View Plan: ${selectedPlan?.instance_package_name}`}
+            footer={
+                <Button
+                    label="Close"
+                    variant="outline"
+                    onClick={closeModal}
+                />
+            }
+        >
+            {renderFormFields('view')}
+        </Modal>
+    ), [modalType, closeModal, selectedPlan, renderFormFields])
 
     // Delete Plan Modal
-    const renderDeleteModal = () => (
+    const renderDeleteModal = useMemo(() => (
         <Modal
             isOpen={modalType === 'delete'}
             onClose={closeModal}
@@ -301,7 +337,7 @@ const InstancePlanManagePage: React.FC = () => {
                 </>
             }
         >
-            {renderStatusMessage()}
+            {renderStatusMessage}
             <div className="text-center">
                 <p className="text-gray-300 mb-4">
                     Are you sure you want to delete plan "{selectedPlan?.instance_package_name}"?
@@ -311,7 +347,11 @@ const InstancePlanManagePage: React.FC = () => {
                 </p>
             </div>
         </Modal>
-    )
+    ), [modalType, closeModal, isSubmitting, deleteForm, handleDeletePlan, selectedPlan, renderStatusMessage])
+
+    const headerContent = useMemo(() => (
+        <Button label="Create Instance Plan" variant="purple" onClick={openCreateModal} />
+    ), [openCreateModal])
 
     return (
         <>
@@ -319,7 +359,7 @@ const InstancePlanManagePage: React.FC = () => {
                 title="Instance Plan Manage"
                 subtitle="Manage your instance plans"
                 subtitleIcon={<ClipboardDocumentIcon className="w-4 h-4" />}
-                rightContent={<Button label="Create Instance Plan" variant="purple" onClick={openCreateModal} />}
+                rightContent={headerContent}
             >
                 <Table
                     columns={columns}
@@ -333,9 +373,10 @@ const InstancePlanManagePage: React.FC = () => {
             </PageContainer>
 
             {/* Render Modals */}
-            {renderCreateModal()}
-            {renderUpdateModal()}
-            {renderDeleteModal()}
+            {renderCreateModal}
+            {renderUpdateModal}
+            {renderViewModal}
+            {renderDeleteModal}
         </>
     )
 }

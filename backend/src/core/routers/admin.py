@@ -4,7 +4,16 @@ from typing import List
 
 from ..container import AppContainer
 from ..utils.dependencies import get_admin_user
-from ..models.admin import AdminUsersResponse, AdminInstancePlanCreateRequest, AdminInstancePlanCreateResponse, AdminInstancePlanUpdateRequest, AdminInstancePlanUpdateResponse, AdminInstancePlanDeleteRequest, AdminInstancePlanDeleteResponse
+from ..models.admin import (
+    AdminUsersResponse,
+    AdminInstancePlan,
+    AdminInstancePlanCreateRequest,
+    AdminInstancePlanCreateResponse,
+    AdminInstancePlanUpdateRequest,
+    AdminInstancePlanUpdateResponse,
+    AdminInstancePlanDeleteRequest,
+    AdminInstancePlanDeleteResponse
+)
 from ..models.instance import InstancePlan
 from ..service.admin import AdminService
 
@@ -23,6 +32,16 @@ async def get_all_users(
     admin_service: AdminService = Depends(Provide[AppContainer.admin_service])
 ):
     return await admin_service.get_all_users_with_details()
+
+@router.get(
+    "/instance-plans",
+    response_model=List[AdminInstancePlan]
+)
+@inject
+async def get_instance_plans(
+    admin_service: AdminService = Depends(Provide[AppContainer.admin_service])
+):
+    return await admin_service.get_instance_plans()
 
 @router.post(
     "/instance-plan/create",

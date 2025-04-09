@@ -8,6 +8,16 @@ export type AddMemberResponse = {
     success: boolean;
 };
 
+export type AdminInstancePlan = {
+    instance_plan_id: number;
+    instance_package_name: string;
+    vcpu_amount: number;
+    ram_amount: number;
+    storage_amount: number;
+    cost_hour: number;
+    is_editable: boolean;
+};
+
 export type AdminInstancePlanCreateRequest = {
     instance_plan_id?: (number | null);
     instance_package_name: string;
@@ -287,6 +297,10 @@ export type ValidationError = {
 export type AdminGetAllUsersResponse = (AdminUsersResponse);
 
 export type AdminGetAllUsersError = unknown;
+
+export type AdminGetInstancePlansResponse = (Array<AdminInstancePlan>);
+
+export type AdminGetInstancePlansError = unknown;
 
 export type AdminCreateInstancePlanData = {
     body: AdminInstancePlanCreateRequest;

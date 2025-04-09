@@ -80,6 +80,9 @@ class InstancePlan(BaseModel):
     storage_amount: int
     cost_hour: float
 
+class InstancePlanWithUserInstance(InstancePlan):
+    user_instances: List[UserInstance]
+
 class OsType(BaseModel):
     os_type_id: int
     os_image_name: str

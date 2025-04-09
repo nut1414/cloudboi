@@ -1,6 +1,6 @@
 import { useInstanceCreate } from "../Instance/useInstanceCreate"
 import { useInstance } from "../../contexts/instanceContext"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback, useMemo } from "react"
 import { useForm } from "react-hook-form"
 import { InstancePlan, AdminService } from "../../client"
 import { INSTANCE_ACTIONS } from "../../contexts/instanceContext"
@@ -14,14 +14,14 @@ export type InstancePlanFormData = {
     cost_hour: number
 }
 
-export type ModalType = 'create' | 'update' | 'delete' | null
+export type ModalType = 'create' | 'update' | 'delete' | 'view' | null
 
 export const useInstancePlanManage = () => {
     const {
         fetchInstanceDetails
     } = useInstanceCreate()
     const {
-        instanceDetails,
+        allInstancePlans,
         isLoading,
         error,
         dispatch
@@ -54,14 +54,26 @@ export const useInstancePlanManage = () => {
     })
 
     const deleteForm = useForm<InstancePlanFormData>()
+
+    const fetchAllInstancePlans = useCallback(async () => {
+        try {
+            dispatch?.({ type: INSTANCE_ACTIONS.START_FETCH })
+            const result = await AdminService.adminGetInstancePlans()
+            dispatch?.({ type: INSTANCE_ACTIONS.SET_ALL_INSTANCE_PLANS, payload: result?.data })
+            dispatch?.({ type: INSTANCE_ACTIONS.FETCH_SUCCESS })
+        } catch (error) {
+            dispatch?.({ type: INSTANCE_ACTIONS.SET_ERROR, payload: error })
+            console.error(error)
+        }
+    }, [dispatch])
     
     useEffect(() => {
-        if (!instanceDetails) {
-            fetchInstanceDetails()
+        if (!allInstancePlans) {
+            fetchAllInstancePlans()
         }
-    }, [instanceDetails, fetchInstanceDetails])
+    }, [allInstancePlans, fetchAllInstancePlans])
     
-    const openCreateModal = () => {
+    const openCreateModal = useCallback(() => {
         createForm.reset({
             instance_package_name: '',
             vcpu_amount: 1,
@@ -72,9 +84,9 @@ export const useInstancePlanManage = () => {
         setActionError(null)
         setActionSuccess(null)
         setModalType('create')
-    }
+    }, [createForm])
     
-    const openUpdateModal = (plan: InstancePlan) => {
+    const openUpdateModal = useCallback((plan: InstancePlan) => {
         updateForm.reset({
             instance_plan_id: plan.instance_plan_id,
             instance_package_name: plan.instance_package_name,
@@ -87,24 +99,39 @@ export const useInstancePlanManage = () => {
         setActionError(null)
         setActionSuccess(null)
         setModalType('update')
-    }
+    }, [updateForm])
     
-    const openDeleteModal = (plan: InstancePlan) => {
+    const openViewModal = useCallback((plan: InstancePlan) => {
+        updateForm.reset({
+            instance_plan_id: plan.instance_plan_id,
+            instance_package_name: plan.instance_package_name,
+            vcpu_amount: plan.vcpu_amount,
+            ram_amount: plan.ram_amount,
+            storage_amount: plan.storage_amount,
+            cost_hour: plan.cost_hour
+        })
+        setSelectedPlan(plan)
+        setActionError(null)
+        setActionSuccess(null)
+        setModalType('view')
+    }, [updateForm])
+    
+    const openDeleteModal = useCallback((plan: InstancePlan) => {
         deleteForm.reset(plan)
         setSelectedPlan(plan)
         setActionError(null)
         setActionSuccess(null)
         setModalType('delete')
-    }
+    }, [deleteForm])
     
-    const closeModal = () => {
+    const closeModal = useCallback(() => {
         setModalType(null)
         setSelectedPlan(null)
         setActionError(null)
         setActionSuccess(null)
-    }
+    }, [])
     
-    const handleCreatePlan = async (data: InstancePlanFormData) => {
+    const handleCreatePlan = useCallback(async (data: InstancePlanFormData) => {
         try {
             setIsSubmitting(true)
             setActionError(null)
@@ -113,18 +140,9 @@ export const useInstancePlanManage = () => {
                 body: data
             })
             
-            // Refresh instance details after creating
+            // Refresh instance plans after creating
+            await fetchAllInstancePlans()
             setActionSuccess(`Plan "${result?.data?.instance_package_name}" created successfully`)
-            dispatch?.({
-                type: INSTANCE_ACTIONS.SET_INSTANCE_DETAILS,
-                payload: {
-                    ...instanceDetails,
-                    instance_package: [
-                        ...(instanceDetails?.instance_package || []),
-                        result?.data
-                    ]
-                }
-            })
             
             // Close modal after a short delay
             setTimeout(() => {
@@ -136,9 +154,9 @@ export const useInstancePlanManage = () => {
         } finally {
             setIsSubmitting(false)
         }
-    }
+    }, [closeModal, fetchAllInstancePlans])
     
-    const handleUpdatePlan = async (data: InstancePlanFormData) => {
+    const handleUpdatePlan = useCallback(async (data: InstancePlanFormData) => {
         try {
             setIsSubmitting(true)
             setActionError(null)
@@ -155,15 +173,9 @@ export const useInstancePlanManage = () => {
                 }
             })
             
-            // Refresh instance details after updating
+            // Refresh instance plans after updating
+            await fetchAllInstancePlans()
             setActionSuccess(`Plan "${result?.data?.instance_package_name}" updated successfully`)
-            dispatch?.({
-                type: INSTANCE_ACTIONS.SET_INSTANCE_DETAILS,
-                payload: {
-                    ...instanceDetails,
-                    instance_package: instanceDetails?.instance_package?.map(plan => plan.instance_plan_id === data.instance_plan_id ? result?.data : plan)
-                }
-            })
             
             // Close modal after a short delay
             setTimeout(() => {
@@ -175,9 +187,9 @@ export const useInstancePlanManage = () => {
         } finally {
             setIsSubmitting(false)
         }
-    }
+    }, [closeModal, fetchAllInstancePlans])
     
-    const handleDeletePlan = async (data: InstancePlanFormData) => {
+    const handleDeletePlan = useCallback(async (data: InstancePlanFormData) => {
         try {
             setIsSubmitting(true)
             setActionError(null)
@@ -193,14 +205,8 @@ export const useInstancePlanManage = () => {
                 }
             })
             
-            // Refresh instance details after deleting
-            dispatch?.({
-                type: INSTANCE_ACTIONS.SET_INSTANCE_DETAILS,
-                payload: {
-                    ...instanceDetails,
-                    instance_package: instanceDetails?.instance_package?.filter(plan => plan.instance_plan_id !== selectedPlan.instance_plan_id)
-                }
-            })
+            // Refresh instance plans after deleting
+            await fetchAllInstancePlans()
             setActionSuccess(`Plan "${selectedPlan?.instance_package_name}" deleted successfully`)
             
             // Close modal after a short delay
@@ -213,10 +219,10 @@ export const useInstancePlanManage = () => {
         } finally {
             setIsSubmitting(false)
         }
-    }
+    }, [closeModal, fetchAllInstancePlans, selectedPlan])
     
     return {
-        instancePlans: instanceDetails?.instance_package || [],
+        instancePlans: allInstancePlans || [],
         isLoading,
         error,
         actionError,
@@ -230,6 +236,7 @@ export const useInstancePlanManage = () => {
         openCreateModal,
         openUpdateModal,
         openDeleteModal,
+        openViewModal,
         closeModal,
         handleCreatePlan,
         handleUpdatePlan,

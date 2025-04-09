@@ -52,6 +52,25 @@ export const adminGetAllUsersOptions = (options?: Options) => {
     });
 };
 
+export const adminGetInstancePlansQueryKey = (options?: Options) => [
+    createQueryKey('adminGetInstancePlans', options)
+];
+
+export const adminGetInstancePlansOptions = (options?: Options) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await AdminService.adminGetInstancePlans({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: adminGetInstancePlansQueryKey(options)
+    });
+};
+
 export const adminCreateInstancePlanQueryKey = (options: Options<AdminCreateInstancePlanData>) => [
     createQueryKey('adminCreateInstancePlan', options)
 ];

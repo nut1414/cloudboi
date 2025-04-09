@@ -7,7 +7,13 @@ from sqlalchemy.dialects.postgresql import insert as pg_insert
 from .base import BaseOperation
 from ..tables.instance_plan import InstancePlan
 from ..tables.os_type import OsType
-from ...models.instance import InstancePlan as InstancePlanModel, OsType as OsTypeModel, UserInstance as UserInstanceModel, UserInstanceFromDB
+from ...models.instance import (
+    InstancePlan as InstancePlanModel,
+    OsType as OsTypeModel,
+    UserInstance as UserInstanceModel,
+    UserInstanceFromDB,
+    InstancePlanWithUserInstance
+)
 from ..tables.user_instance import UserInstance
 from ..tables.user import User
 
@@ -18,6 +24,18 @@ class InstanceOperation(BaseOperation):
             stmt = select(InstancePlan)
             result = (await db.execute(stmt)).scalars().all()
             return self.to_pydantic(InstancePlanModel, result)
+    
+    async def get_instance_plans_with_user_instances(self) -> List[InstancePlanWithUserInstance]:
+        async with self.session() as db:
+            stmt = select(InstancePlan).options(selectinload(InstancePlan.user_instances))
+            result = (await db.execute(stmt)).scalars().all()
+            return self.to_pydantic(InstancePlanWithUserInstance, result)
+    
+    async def get_user_instances_by_instance_plan_id(self, instance_plan_id: int) -> List[UserInstanceModel]:
+        async with self.session() as db:
+            stmt = select(UserInstance).where(UserInstance.instance_plan_id == instance_plan_id)
+            result = (await db.execute(stmt)).scalars().all()
+            return self.to_pydantic(UserInstanceModel, result)
     
     async def get_instance_plan(
         self,

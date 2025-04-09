@@ -20,6 +20,9 @@ class AdminUser(BaseModel):
 class AdminUsersResponse(BaseModel):
     users: List[AdminUser]
 
+class AdminInstancePlan(InstancePlan):
+    is_editable: bool
+
 class AdminInstancePlanCreateRequest(InstancePlan):
     instance_plan_id: Optional[int] = None
 
