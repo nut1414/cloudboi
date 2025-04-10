@@ -4,7 +4,6 @@ import PageContainer from "../../components/Layout/PageContainer"
 import { BanknotesIcon, MagnifyingGlassIcon, ChartBarIcon } from "@heroicons/react/24/outline"
 import Table from "../../components/Common/Table"
 import { TableColumn } from "../../components/Common/Table"
-import InputField from "../../components/Common/InputField"
 import Button from "../../components/Common/Button/Button"
 import { useAdminBilling } from "../../hooks/Admin/useAdminBilling"
 import StatusBadge from "../../components/Common/StatusBadge"
@@ -15,41 +14,7 @@ import TransactionAmount from "../../components/Common/TransactionAmount"
 import { TransactionType } from "../../constant/TransactionConstant"
 import BillingStatsVisualizer from "../../components/Admin/BillingStatsVisualizer"
 import DateRangePicker from "../../components/Common/DateRangePicker"
-
-// SearchBar component
-interface SearchBarProps {
-    placeholder?: string
-    onSearch?: (query: string) => void
-    className?: string
-    initialValue?: string
-    width?: string
-}
-
-const SearchBar: React.FC<SearchBarProps> = React.memo(({
-    placeholder = "Search transactions...",
-    onSearch = () => { },
-    className = "",
-    initialValue = "",
-    width = "w-64",
-}) => {
-    const [query, setQuery] = useState(initialValue)
-
-    const handleInputChange = useCallback((newQuery: string) => {
-        setQuery(newQuery)
-        onSearch(newQuery)
-    }, [onSearch])
-
-    return (
-        <div className={`${className} ${width}`}>
-            <InputField
-                value={query}
-                onChange={handleInputChange}
-                placeholder={placeholder}
-                endIcon={<MagnifyingGlassIcon className="w-5 h-5" />}
-            />
-        </div>
-    )
-})
+import SearchBar from "../../components/Common/SearchBar"
 
 const AdminBillingPage: React.FC = () => {
     const {
@@ -126,22 +91,10 @@ const AdminBillingPage: React.FC = () => {
         />
     )
 
-    const rightSection = (
-        <div className="flex items-center gap-3">
-            <Button
-                label="Export Data"
-                variant="secondary"
-                onClick={() => console.log('Export data')}
-            />
-        </div>
-    )
-
-
     return (
         <>
             <TopNavbar
                 leftSection={leftSection}
-                rightSection={rightSection}
                 variant="default"
                 stickyTop={true}
             />
@@ -149,14 +102,13 @@ const AdminBillingPage: React.FC = () => {
                 title="Billing"
                 subtitle="Manage billing and transactions"
                 subtitleIcon={<BanknotesIcon className="w-4 h-4" />}
-                maxWidth="max-w-[1400px]"
             >
                 
                 {/* Billing Stats Visualization */}
                 <Section 
                     title="Billing Statistics" 
                     icon={<ChartBarIcon className="w-5 h-5" />}
-                    description="Overview of transaction values by type and status"
+                    description="Filter and view transaction values by time period, type, and status"
                     className="bg-[#12203c] border-blue-900/20 mb-6"
                 >
                     <DateRangePicker 
@@ -166,7 +118,6 @@ const AdminBillingPage: React.FC = () => {
                         onToggleTimeRange={toggleTimeRange}
                         onDateRangeChange={updateDateRange}
                         onApplyFilter={fetchBillingStats}
-                        className="mb-6"
                     />
                     <BillingStatsVisualizer 
                         billingStats={adminBillingStats}

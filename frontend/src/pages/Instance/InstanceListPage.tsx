@@ -9,7 +9,7 @@ import { useInstanceList } from "../../hooks/Instance/useInstanceList"
 import { EllipsisVerticalIcon, ServerIcon, PlusIcon, MagnifyingGlassIcon, BellIcon } from "@heroicons/react/24/outline"
 import PageContainer from "../../components/Layout/PageContainer"
 import { useParams, useNavigate } from "react-router-dom"
-import InputField from "../../components/Common/InputField"
+import SearchBar from "../../components/Common/SearchBar"
 
 // Notification Badge component
 interface NotificationBadgeProps {
@@ -31,41 +31,6 @@ const NotificationBadge: React.FC<NotificationBadgeProps> = ({ count, onClick })
         )}
     </button>
 )
-
-// SearchBar component refactored to use InputField
-interface SearchBarProps {
-    placeholder?: string
-    onSearch?: (query: string) => void
-    className?: string
-    initialValue?: string
-    width?: string
-}
-
-const SearchBar: React.FC<SearchBarProps> = ({
-    placeholder = "Search by instance name...",
-    onSearch = () => { },
-    className = "",
-    initialValue = "",
-    width = "w-64",
-}) => {
-    const [query, setQuery] = useState(initialValue)
-
-    const handleInputChange = (newQuery: string) => {
-        setQuery(newQuery)
-        onSearch(newQuery)
-    }
-
-    return (
-        <div className={`${className} ${width}`}>
-            <InputField
-                value={query}
-                onChange={handleInputChange}
-                placeholder={placeholder}
-                endIcon={<MagnifyingGlassIcon className="w-5 h-5" />}
-            />
-        </div>
-    )
-}
 
 const InstanceListPage: React.FC = () => {
     const {
@@ -166,7 +131,6 @@ const InstanceListPage: React.FC = () => {
                 title="Instance Management"
                 subtitle="Manage your cloud instances"
                 subtitleIcon={<ServerIcon className="w-4 h-4" />}
-                maxWidth="max-w-[1200px]"
             >
                 <Table
                     columns={columns}

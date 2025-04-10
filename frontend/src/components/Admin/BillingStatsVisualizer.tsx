@@ -15,11 +15,6 @@ const BillingStatsVisualizer: React.FC<BillingStatsVisualizerProps> = React.memo
   billingStats,
   isLoading
 }) => {
-  // Format currency amount using the CURRENCY constant
-  const formatCurrency = useCallback((amount: number) => {
-    return CURRENCY.FORMAT(amount)
-  }, [])
-
   // Get transaction icons (memoized to avoid recreation)
   const transactionIcons = useMemo(() => ({
     [TransactionType.TOP_UP]: <ArrowUpCircleIcon className="w-5 h-5 text-green-400" />,
@@ -38,10 +33,10 @@ const BillingStatsVisualizer: React.FC<BillingStatsVisualizerProps> = React.memo
     value: (
       <div className="flex items-center justify-between">
         <StatusBadge status={status} />
-        <span className="font-semibold">{formatCurrency(amount)}</span>
+        <span className="font-semibold">{CURRENCY.FORMAT(amount)}</span>
       </div>
     )
-  }), [formatCurrency])
+  }), [])
 
   // Create detail items for each transaction type
   const getDetailItems = useMemo(() => {
@@ -81,12 +76,12 @@ const BillingStatsVisualizer: React.FC<BillingStatsVisualizerProps> = React.memo
         rightHeader: (
           <div className="flex items-center gap-2">
             {transactionIcons[type]}
-            <span className="font-bold text-white">{formatCurrency(0)}</span>
+            <span className="font-bold text-white">{CURRENCY.FORMAT(0)}</span>
           </div>
         )
       }
     })
-  }, [createStatusItem, formatCurrency, transactionIcons, transactionTitles])
+  }, [createStatusItem, transactionIcons, transactionTitles])
 
   // Memoize the empty state component
   const emptyState = useMemo(() => (
@@ -119,14 +114,14 @@ const BillingStatsVisualizer: React.FC<BillingStatsVisualizerProps> = React.memo
         rightHeader={
           <div className="flex items-center gap-2">
             {statItem.icon}
-            <span className="font-bold text-white">{formatCurrency(statItem.totalAmount)}</span>
+            <span className="font-bold text-white">{CURRENCY.FORMAT(statItem.totalAmount)}</span>
           </div>
         }
         detailItems={statItem.detailItems}
         className="h-full"
       />
     ))
-  , [getDetailItems, formatCurrency])
+  , [getDetailItems, CURRENCY.FORMAT])
 
   // Show empty state if no data and not loading
   if (!billingStats?.stats?.length && !isLoading) {

@@ -1,5 +1,5 @@
 import { useBilling } from "../../contexts/billingContext"
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useMemo } from "react"
 import { AdminService } from "../../client/services.gen"
 import { BILLING_ACTIONS } from "../../contexts/billingContext"
 import { useNavigate } from "react-router-dom"
@@ -27,8 +27,7 @@ export const useAdminBilling = () => {
     // Initialize form using react-hook-form
     const { 
         watch, 
-        setValue, 
-        getValues,
+        setValue,
         formState: { errors } 
     } = useForm<DateRangeFormType>({
         defaultValues: {
@@ -48,15 +47,17 @@ export const useAdminBilling = () => {
     
     const navigate = useNavigate()
     
-    // Filtered transactions based on search query
-    const filteredTransactions = allTransactions 
-        ? allTransactions.filter(transaction => 
-            transaction.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            transaction.instance_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            transaction.transaction_type.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            transaction.transaction_status.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-        : []
+    // Memoized filtered transactions based on search query
+    const filteredTransactions = useMemo(() => 
+        allTransactions 
+            ? allTransactions.filter(transaction => 
+                transaction.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                transaction.instance_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                transaction.transaction_type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                transaction.transaction_status.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+            : []
+    , [allTransactions, searchQuery])
     
     // Separate function to fetch transaction data only
     const fetchTransactions = useCallback(async () => {
@@ -83,7 +84,7 @@ export const useAdminBilling = () => {
     
     // Simplified function to fetch billing stats
     const fetchBillingStats = useCallback(async () => {
-        if (!dispatch) return null
+        if (!dispatch) return
         
         try {
             dispatch({ type: BILLING_ACTIONS.START_FETCH })
@@ -160,7 +161,7 @@ export const useAdminBilling = () => {
         if (!adminBillingStats) {
             fetchBillingStats()
         }
-    }, [fetchTransactions, fetchBillingStats])
+    }, [fetchTransactions, fetchBillingStats, allTransactions, adminBillingStats])
     
     return {
         adminBillingStats,
