@@ -98,21 +98,17 @@ export type BaseInstanceState = {
     cpu: CPUUsage;
 };
 
-export type ClusterMemberInfo = {
-    server_name: string;
-    status: string;
-    message: string;
-    url: string;
-    roles: Array<(string)>;
-    groups: Array<(string)>;
-};
-
-export type ClusterMemberState = {
+export type ClusterMember = {
     server_name: string;
     storage_pools: {
         [key: string]: StoragePoolState;
     };
     sysinfo: SysInfo;
+    status: string;
+    message: string;
+    url: string;
+    roles: Array<(string)>;
+    groups: Array<(string)>;
 };
 
 export type CPUUsage = {
@@ -133,8 +129,7 @@ export type DiskUsage = {
 };
 
 export type GetClusterMembersStateInfoResponse = {
-    members_states: Array<ClusterMemberState>;
-    members_infos: Array<ClusterMemberInfo>;
+    members: Array<ClusterMember>;
     members_leader: string;
     members_groups: Array<(string)>;
     members_roles: Array<(string)>;

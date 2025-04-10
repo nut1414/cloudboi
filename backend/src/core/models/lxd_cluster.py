@@ -38,8 +38,7 @@ class ClusterMemberState(BaseModel):
     storage_pools: Dict[str, StoragePoolState]
     sysinfo: SysInfo
 
-class ClusterMemberInfo(BaseModel):
-    server_name: str
+class ClusterMember(ClusterMemberState):
     status: str
     message: str
     url: str
@@ -47,8 +46,7 @@ class ClusterMemberInfo(BaseModel):
     groups: List[str]
 
 class GetClusterMembersStateInfoResponse(BaseModel):
-    members_states: List[ClusterMemberState]
-    members_infos: List[ClusterMemberInfo]
+    members: List[ClusterMember]
     members_leader: str
     members_groups: List[str]
     members_roles: List[str]

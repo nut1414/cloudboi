@@ -1,4 +1,4 @@
-import { BaseInstanceState, NetworkInterface, NetworkAddress, ClusterMemberState, ClusterMemberInfo, ClusterGetMembersStateResponse } from "../client"
+import { BaseInstanceState, NetworkInterface, ClusterGetMembersStateResponse } from "../client"
 
 interface NetworkInfo {
     ipv4: string | null
@@ -106,57 +106,37 @@ export const getFormattedNetworkInfo = (network: NetworkInfo): string => {
 } 
 
 export const groupClusterMemberStateInfo = (response: ClusterGetMembersStateResponse): ClusterMemberStateInfo[] => {
-  return response.members_infos.map((info) => {
-    const state = response.members_states.find((state) => state.server_name === info.server_name)
-    if (!state) return {
-        server_name: info.server_name,
-        status: info.status, 
-        roles: info.roles,
-        groups: info.groups,
-        total_ram: 0,
-        free_ram: 0,
-        percentage_ram: 0,
-        load_one: 0,
-        load_five: 0,
-        load_fifteen: 0,
-        percentage_cpu: 0,
-        logical_cpus: 0,
-        local_space_total: 0,
-        local_space_used: 0,
-        local_space_percentage: 0,
-        is_leader: false
-    }
-
-    const total_ram = state.sysinfo.total_ram;
-    const free_ram = state.sysinfo.free_ram;
-    const used_ram = total_ram - free_ram;
-    const percentage_ram = total_ram > 0 ? (used_ram / total_ram) * 100 : 0;
-    const load_one = state.sysinfo.load_averages?.[0] || 0;
-    const load_five = state.sysinfo.load_averages?.[1] || 0;
-    const load_fifteen = state.sysinfo.load_averages?.[2] || 0;
-    const percentage_cpu = load_one * 100 / state.sysinfo.logical_cpus;
-    const local_space_total = state.storage_pools?.local?.space?.total || 0;
-    const local_space_used = state.storage_pools?.local?.space?.used || 0;
-    const local_space_percentage = local_space_total > 0 ? (local_space_used / local_space_total) * 100 : 0;
-    const is_leader = response.members_leader === info.server_name;
-    
-    return {
-        server_name: info.server_name,
-        status: info.status, 
-        roles: info.roles,
-        groups: info.groups,
-        total_ram: total_ram,
-        free_ram: free_ram,
-        percentage_ram: percentage_ram,
-        load_one: load_one,
-        load_five: load_five,
-        load_fifteen: load_fifteen,
-        percentage_cpu: percentage_cpu,
-        logical_cpus: state.sysinfo.logical_cpus,
-        local_space_total: local_space_total,
-        local_space_used: local_space_used,
-        local_space_percentage: local_space_percentage,
-        is_leader: is_leader
-    }
-  })
+    return response.members.map((member) => {
+        const total_ram = member.sysinfo.total_ram;
+        const free_ram = member.sysinfo.free_ram;
+        const used_ram = total_ram - free_ram;
+        const percentage_ram = total_ram > 0 ? (used_ram / total_ram) * 100 : 0;
+        const load_one = member.sysinfo.load_averages?.[0] || 0;
+        const load_five = member.sysinfo.load_averages?.[1] || 0;
+        const load_fifteen = member.sysinfo.load_averages?.[2] || 0;
+        const percentage_cpu = load_one * 100 / member.sysinfo.logical_cpus;
+        const local_space_total = member.storage_pools?.local?.space?.total || 0;
+        const local_space_used = member.storage_pools?.local?.space?.used || 0;
+        const local_space_percentage = local_space_total > 0 ? (local_space_used / local_space_total) * 100 : 0;
+        const is_leader = response.members_leader === member.server_name;
+        
+        return {
+            server_name: member.server_name,
+            status: member.status,
+            roles: member.roles,
+            groups: member.groups,
+            total_ram: total_ram,
+            free_ram: free_ram,
+            percentage_ram: percentage_ram,
+            load_one: load_one,
+            load_five: load_five,
+            load_fifteen: load_fifteen,
+            percentage_cpu: percentage_cpu,
+            logical_cpus: member.sysinfo.logical_cpus,
+            local_space_total: local_space_total,
+            local_space_used: local_space_used,
+            local_space_percentage: local_space_percentage,
+            is_leader: is_leader
+        }
+    })
 }

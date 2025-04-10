@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends
 from dependency_injector.wiring import Provide, inject
 
 from ..models.lxd_cluster import (

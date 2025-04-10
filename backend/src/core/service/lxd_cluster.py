@@ -1,7 +1,6 @@
 from .clients.lxd import LXDClient
-from fastapi import Depends
 from ..models.lxd_cluster import (
-    ClusterMemberInfo, CreateJoinTokenRequest, CreateJoinTokenResponse, 
+    ClusterMember, CreateJoinTokenRequest, CreateJoinTokenResponse, 
     AddMemberResponse, AddMemberRequest, 
     GetClusterMembersStateInfoResponse
 )
@@ -29,29 +28,29 @@ class LXDClusterService:
     @require_roles([UserRole.ADMIN])
     async def get_lxd_cluster_members_state_info(self) -> GetClusterMembersStateInfoResponse:
         members = self.lxd_client.get_lxd_cluster_members()
-        member_states = []
-        member_infos = []
+        cluster_members = []
         member_groups = set()
         member_roles = set()
         leader = ""
         for member in members:
-            member_states.append(self.lxd_client.get_lxd_cluster_member_state(member.server_name))
-            member_infos.append(ClusterMemberInfo(
-              server_name=member.server_name, 
-              status=member.status, 
-              message=member.message, 
-              url=member.url, 
-              roles=member.roles,
-              groups=member.groups
+            member_state = self.lxd_client.get_lxd_cluster_member_state(member.server_name)
+            cluster_members.append(ClusterMember(
+                server_name=member.server_name, 
+                status=member.status, 
+                message=member.message, 
+                url=member.url, 
+                roles=member.roles,
+                groups=member.groups,
+                storage_pools=member_state.storage_pools,
+                sysinfo=member_state.sysinfo
             ))
             member_groups.update(member.groups)
             member_roles.update(member.roles)
             if "database-leader" in member.roles:
                 leader = member.server_name
         return GetClusterMembersStateInfoResponse(
-          members_states=member_states, 
-          members_infos=member_infos, 
-          members_groups=list(member_groups), 
-          members_roles=list(member_roles),
-          members_leader=leader
+            members=cluster_members,
+            members_groups=list(member_groups), 
+            members_roles=list(member_roles),
+            members_leader=leader
         )
