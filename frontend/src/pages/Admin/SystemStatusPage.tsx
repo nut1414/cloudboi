@@ -56,7 +56,7 @@ const SystemStatusPage: React.FC = () => {
         <h2 className="text-white text-2xl font-semibold mb-4">
           Machine Usage
         </h2>
-        <div className="flex flex-wrap gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {isLoading && clusterMembers.length === 0 && (
             <>
               <SystemMetricsCardSkeleton />
