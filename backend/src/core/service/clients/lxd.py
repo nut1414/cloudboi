@@ -1,4 +1,5 @@
 import asyncio
+from typing import List, Dict
 from fastapi import WebSocket
 from pylxd import models
 
@@ -12,6 +13,7 @@ from ....infra.managers.lxd import LXDManager
 from ...utils.decorator import create_decorator
 from ...utils.datetime import DateTimeUtils
 from ...utils.dependencies import user_session_ctx
+from ...models.lxd_cluster import ClusterMemberState, SysInfo, StoragePoolState, StoragePoolUsage
 
 LXDClientException = create_exception_class("LXDClient")
 
@@ -161,6 +163,12 @@ class LXDClient(BaseInstanceClient[models.Instance]):
       
     def add_member_to_lxd_cluster_group(self, server_name: str) -> bool:
         return self.lxd_manager.add_member_to_cluster_group(server_name)
+      
+    def get_lxd_cluster_member_state(self, server_name: str) -> ClusterMemberState:
+        return self.lxd_manager.get_cluster_member_state(server_name)
+      
+    def get_lxd_cluster_members(self) -> List[models.ClusterMember]:
+        return self.lxd_manager.get_all_cluster_members()
 
     def __to_instance_create_config(self, instance_create: InstanceCreateRequest) -> dict:
         return {

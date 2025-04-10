@@ -1,7 +1,11 @@
 from fastapi import APIRouter, Depends, Request
 from dependency_injector.wiring import Provide, inject
 
-from ..models.lxd_cluster import AddMemberRequest, AddMemberResponse, CreateJoinTokenRequest, CreateJoinTokenResponse
+from ..models.lxd_cluster import (
+    AddMemberRequest, AddMemberResponse, 
+    CreateJoinTokenRequest, CreateJoinTokenResponse,
+    GetClusterMembersStateInfoResponse
+)
 from ..service.lxd_cluster import LXDClusterService
 from ..container import AppContainer
 
@@ -32,5 +36,15 @@ async def add_member(
     lxd_cluster_service: LXDClusterService = Depends(Provide[AppContainer.lxd_cluster_service])
 ):
     return await lxd_cluster_service.add_member_to_lxd_cluster_group(request)
+  
+@router.get(
+    "/members/state_info",
+    response_model=GetClusterMembersStateInfoResponse
+)
+@inject
+async def get_members_state(
+    lxd_cluster_service: LXDClusterService = Depends(Provide[AppContainer.lxd_cluster_service])
+):
+    return await lxd_cluster_service.get_lxd_cluster_members_state_info()
   
 
