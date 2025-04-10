@@ -32,42 +32,37 @@ const Modal: React.FC<ModalProps> = ({
     xl: 'max-w-4xl'
   }
 
-  // Focus management
+  // Handle side effects when modal opens/closes
   useEffect(() => {
-    if (isOpen && initialFocusRef.current) {
-      // Focus the close button when modal opens
-      initialFocusRef.current.focus()
-    }
-  }, [isOpen])
-
-  // Handle click outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (closeOnClickOutside && modalRef.current && !modalRef.current.contains(event.target as Node)) {
-        onClose()
-      }
-    }
-
-    // Handle escape key press
-    const handleEscKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose()
-      }
-    }
-
     if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
-      document.addEventListener('keydown', handleEscKey)
+      // Focus the close button when modal opens
+      if (initialFocusRef.current) {
+        initialFocusRef.current.focus()
+      }
+      
       // Prevent scrolling on body when modal is open
       document.body.style.overflow = 'hidden'
     }
-
+    
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-      document.removeEventListener('keydown', handleEscKey)
+      // Restore scrolling when modal closes
       document.body.style.overflow = 'auto'
     }
-  }, [isOpen, onClose, closeOnClickOutside])
+  }, [isOpen])
+
+  // Handle escape key press
+  const handleEscKey = (event: React.KeyboardEvent) => {
+    if (event.key === 'Escape') {
+      onClose()
+    }
+  }
+
+  // Handle click outside
+  const handleClickOutside = (event: React.MouseEvent) => {
+    if (closeOnClickOutside && modalRef.current && !modalRef.current.contains(event.target as Node)) {
+      onClose()
+    }
+  }
 
   if (!isOpen) return null
 
@@ -76,7 +71,8 @@ const Modal: React.FC<ModalProps> = ({
       className={`fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm bg-black/70
         opacity-0 ${isOpen ? 'opacity-100' : ''}
         transition-opacity duration-200 ease-in-out`}
-      onClick={closeOnClickOutside ? onClose : undefined}
+      onClick={closeOnClickOutside ? handleClickOutside : undefined}
+      onKeyDown={handleEscKey}
       aria-modal="true"
       role="dialog"
       tabIndex={-1}
