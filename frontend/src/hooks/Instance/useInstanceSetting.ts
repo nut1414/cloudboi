@@ -6,7 +6,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import { InstanceStatus } from "../../constant/InstanceConstant"
 import { useInstanceList } from "./useInstanceList"
 import { formatUptime } from "../../utils/dateTime"
-import { parseInstanceState } from "../../utils/instanceState"
+import { parseInstanceState } from "../../utils/systemState"
 
 // 30 seconds
 const STATUS_POLLING_INTERVAL = 30000

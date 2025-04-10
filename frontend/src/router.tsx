@@ -26,7 +26,7 @@ const Support = lazy(() => import("./pages/User/support"))
 const UserManagePage = lazy(() => import("./pages/Admin/UserManagePage"))
 const AdminBillingPage = lazy(() => import("./pages/Admin/AdminBillingPage"))
 const InstancePlanManagePage = lazy(() => import("./pages/Admin/InstancePlanManagePage"))
-
+const SystemStatusPage = lazy(() => import("./pages/Admin/SystemStatusPage"))
 /**
  * Route configuration with authentication guards
  * 
@@ -53,7 +53,7 @@ const routes: RouteObject[] = [
         element: <Register />,
         loader: publicOnlyGuard,
       },
-    ]
+    ],
   },
   {
     path: "/user/:userName",
@@ -103,7 +103,7 @@ const routes: RouteObject[] = [
     children: [
       {
         path: "system",
-        element: <div>System Page</div>,
+        element: <SystemStatusPage />,
       },
       {
         path: "users",

@@ -3,7 +3,7 @@ import { ChartBarIcon, CpuChipIcon, InboxStackIcon, ArrowPathIcon } from "@heroi
 import Section from "../../../components/Common/Section"
 import Button from "../../../components/Common/Button/Button"
 import { useInstanceSetting } from "../../../hooks/Instance/useInstanceSetting"
-import { formatBytes } from "../../../utils/instanceState"
+import { formatBytes } from "../../../utils/systemState"
 
 const MonitorMenu: React.FC = () => {
     const { instanceState, getInstanceStateAndUpdate } = useInstanceSetting()
