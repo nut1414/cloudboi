@@ -7,6 +7,7 @@ from ..config import LXDConfig
 from ...core.utils.decorator import create_decorator
 from ...core.utils.logging import logger
 from ...core.models.instance import LxdInstanceState
+from ...core.models.lxd_cluster import ClusterMemberState, SysInfo, StoragePoolState, StoragePoolUsage
 
 LXDManagerException = create_exception_class("LXDManager")
 
@@ -242,6 +243,55 @@ class LXDManager:
             return self.client.cluster.members.all()
         except exceptions.LXDAPIException as e:
             raise LXDManagerException(f"Failed to get cluster members: {str(e)}")
+    
+    @_ensure_connected()
+    def get_cluster_member_state(self, member_name: str) -> ClusterMemberState:
+        try:
+            # The API for cluster member state is not directly exposed in pylxd models
+            # We need to access it through the raw API
+            response = self.client.api.cluster.members[member_name].state.get()
+            if not response.json():
+                raise LXDManagerException(f"Failed to get state for member '{member_name}'")
+            
+            state_data = response.json()["metadata"]
+            
+            # Create SysInfo model
+            sysinfo = SysInfo(
+                buffered_ram=state_data["sysinfo"]["buffered_ram"],
+                free_ram=state_data["sysinfo"]["free_ram"],
+                free_swap=state_data["sysinfo"]["free_swap"],
+                load_averages=state_data["sysinfo"]["load_averages"],
+                logical_cpus=state_data["sysinfo"]["logical_cpus"],
+                processes=state_data["sysinfo"]["processes"],
+                shared_ram=state_data["sysinfo"]["shared_ram"],
+                total_ram=state_data["sysinfo"]["total_ram"],
+                total_swap=state_data["sysinfo"]["total_swap"],
+                uptime=state_data["sysinfo"]["uptime"]
+            )
+            
+            # Create StoragePoolState models
+            storage_pools: Dict[str, StoragePoolState] = {}
+            for pool_name, pool_data in state_data["storage_pools"].items():
+                storage_pools[pool_name] = StoragePoolState(
+                    inodes=StoragePoolUsage(
+                        total=pool_data["inodes"]["total"],
+                        used=pool_data["inodes"]["used"]
+                    ),
+                    space=StoragePoolUsage(
+                        total=pool_data["space"]["total"],
+                        used=pool_data["space"]["used"]
+                    )
+                )
+            
+            # Return the complete model
+            return ClusterMemberState(
+                server_name=member_name,
+                storage_pools=storage_pools,
+                sysinfo=sysinfo
+            )
+            
+        except exceptions.LXDAPIException as e:
+            raise LXDManagerException(f"Failed to get state for member '{member_name}': {str(e)}")
     
     @_ensure_connected()
     def get_cluster_group_name(self) -> str:

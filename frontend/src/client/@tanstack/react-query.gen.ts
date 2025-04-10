@@ -288,6 +288,25 @@ export const clusterAddMemberMutation = (options?: Partial<Options<ClusterAddMem
     return mutationOptions;
 };
 
+export const clusterGetMembersStateQueryKey = (options?: Options) => [
+    createQueryKey('clusterGetMembersState', options)
+];
+
+export const clusterGetMembersStateOptions = (options?: Options) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await ClusterService.clusterGetMembersState({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: clusterGetMembersStateQueryKey(options)
+    });
+};
+
 export const instanceInstanceDetailsQueryKey = (options?: Options) => [
     createQueryKey('instanceInstanceDetails', options)
 ];
