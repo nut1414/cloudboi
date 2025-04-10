@@ -24,6 +24,7 @@ const Support = lazy(() => import("./pages/User/support"))
 
 // Admin pages
 const UserManagePage = lazy(() => import("./pages/Admin/UserManagePage"))
+const InstancePlanManagePage = lazy(() => import("./pages/Admin/InstancePlanManagePage"))
 
 /**
  * Route configuration with authentication guards
@@ -109,7 +110,7 @@ const routes: RouteObject[] = [
       },
       {
         path: "plans",
-        element: <div>Plans Page</div>,
+        element: <InstancePlanManagePage />,
       },
       {
         path: "billing",

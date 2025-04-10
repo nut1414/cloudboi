@@ -9,7 +9,7 @@ export interface ButtonProps {
   href?: string
   className?: string
   icon?: React.ReactNode
-  variant?: 'primary' | 'secondary' | 'outline' | 'purple' | 'table-action' | 'text-link'
+  variant?: 'primary' | 'secondary' | 'outline' | 'purple' | 'table-action' | 'text-link' | 'danger' | 'info'
   hasBorder?: boolean
   disabled?: boolean
   size?: 'default' | 'small' | 'xs'
@@ -33,7 +33,9 @@ export const Button: React.FC<ButtonProps> = ({
     purple: "bg-purple-600 hover:bg-purple-700 text-white",
     outline: "bg-transparent border-2 border-blue-800/30 text-gray-300 hover:bg-blue-800/20",
     'table-action': "bg-green-500/20 text-green-300 hover:bg-green-500/30 rounded-full whitespace-nowrap text-sm py-1 px-3",
-    'text-link': "bg-transparent text-blue-300 hover:text-blue-100 hover:underline text-sm"
+    'text-link': "bg-transparent text-blue-300 hover:text-blue-100 hover:underline text-sm",
+    'danger': "bg-red-700 hover:bg-red-800 text-white",
+    'info': "bg-teal-700 hover:bg-teal-600 text-white"
   }
 
   // Size styles

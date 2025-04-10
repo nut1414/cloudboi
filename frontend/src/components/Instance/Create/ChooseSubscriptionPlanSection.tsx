@@ -72,7 +72,7 @@ const ChooseSubscriptionPlanSection: React.FC<ChooseSubscriptionPlanSectionProps
                         </div>
                         <div className="flex items-center gap-2">
                             <BanknotesIcon className="w-5 h-5 text-purple-400" />
-                            <p>{CURRENCY.FORMAT_HOURLY(selectedInstanceType.cost_hour)}/hour</p>
+                            <p>{CURRENCY.FORMAT_HOURLY(selectedInstanceType.cost_hour)}</p>
                         </div>
                     </div>
                 </div>

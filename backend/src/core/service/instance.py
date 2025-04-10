@@ -61,7 +61,7 @@ class InstanceService:
         # Validate instance_create
         async with asyncio.TaskGroup() as tg:
             instance_plan_task = tg.create_task(
-                self.instance_opr.get_instance_plan_by_id(instance_create.instance_plan.instance_plan_id)
+                self.instance_opr.get_instance_plan(instance_plan_id=instance_create.instance_plan.instance_plan_id)
             )
             os_type_task = tg.create_task(
                 self.instance_opr.get_os_type_by_id(instance_create.os_type.os_type_id)

@@ -7,7 +7,13 @@ from sqlalchemy.dialects.postgresql import insert as pg_insert
 from .base import BaseOperation
 from ..tables.instance_plan import InstancePlan
 from ..tables.os_type import OsType
-from ...models.instance import InstancePlan as InstancePlanModel, OsType as OsTypeModel, UserInstance as UserInstanceModel, UserInstanceFromDB
+from ...models.instance import (
+    InstancePlan as InstancePlanModel,
+    OsType as OsTypeModel,
+    UserInstance as UserInstanceModel,
+    UserInstanceFromDB,
+    InstancePlanWithUserInstance
+)
 from ..tables.user_instance import UserInstance
 from ..tables.user import User
 
@@ -19,12 +25,61 @@ class InstanceOperation(BaseOperation):
             result = (await db.execute(stmt)).scalars().all()
             return self.to_pydantic(InstancePlanModel, result)
     
-    async def get_instance_plan_by_id(self, instance_plan_id: int) -> InstancePlanModel:
+    async def get_instance_plans_with_user_instances(self) -> List[InstancePlanWithUserInstance]:
         async with self.session() as db:
-            stmt = select(InstancePlan).where(InstancePlan.instance_plan_id == instance_plan_id)
+            stmt = select(InstancePlan).options(selectinload(InstancePlan.user_instances))
+            result = (await db.execute(stmt)).scalars().all()
+            return self.to_pydantic(InstancePlanWithUserInstance, result)
+    
+    async def get_user_instances_by_instance_plan_id(self, instance_plan_id: int) -> List[UserInstanceModel]:
+        async with self.session() as db:
+            stmt = select(UserInstance).where(UserInstance.instance_plan_id == instance_plan_id)
+            result = (await db.execute(stmt)).scalars().all()
+            return self.to_pydantic(UserInstanceModel, result)
+    
+    async def get_instance_plan(
+        self,
+        instance_plan_id: Optional[int] = None,
+        instance_package_name: Optional[str] = None
+    ) -> InstancePlanModel:
+        if instance_plan_id is None and instance_package_name is None:
+            raise ValueError("Either instance_plan_id or instance_package_name must be provided")
+            
+        async with self.session() as db:
+            stmt = select(InstancePlan)
+            if instance_plan_id is not None:
+                stmt = stmt.where(InstancePlan.instance_plan_id == instance_plan_id)
+            elif instance_package_name is not None:
+                stmt = stmt.where(InstancePlan.instance_package_name == instance_package_name)
+                
             result = (await db.execute(stmt)).scalar_one_or_none()
             return self.to_pydantic(InstancePlanModel, result)
     
+    async def upsert_instance_plan(self, instance_plan: InstancePlanModel) -> InstancePlanModel:
+        async with self.session() as db:
+            stmt = pg_insert(InstancePlan).values(
+                instance_package_name=instance_plan.instance_package_name,
+                vcpu_amount=instance_plan.vcpu_amount,
+                ram_amount=instance_plan.ram_amount,
+                storage_amount=instance_plan.storage_amount,
+                cost_hour=instance_plan.cost_hour
+            ).on_conflict_do_update(
+                index_elements=['instance_package_name'],
+                set_={
+                    'vcpu_amount': instance_plan.vcpu_amount,
+                    'ram_amount': instance_plan.ram_amount,
+                    'storage_amount': instance_plan.storage_amount,
+                    'cost_hour': instance_plan.cost_hour
+                }
+            ).returning(InstancePlan)
+            result = (await db.execute(stmt)).scalar()
+            return self.to_pydantic(InstancePlanModel, result)
+    
+    async def delete_instance_plan(self, instance_plan_id: int) -> None:
+        async with self.session() as db:
+            stmt = delete(InstancePlan).where(InstancePlan.instance_plan_id == instance_plan_id)
+            await db.execute(stmt)
+
     async def get_all_os_types(self) -> List[OsTypeModel]:
         async with self.session() as db:
             stmt = select(OsType)
