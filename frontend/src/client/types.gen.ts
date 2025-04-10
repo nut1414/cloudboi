@@ -18,12 +18,6 @@ export type AdminBillingStatsByType = {
     stats: Array<AdminBillingStatsByStatus>;
 };
 
-export type AdminBillingStatsRequest = {
-    start_date?: (Date | null);
-    end_date?: (Date | null);
-    is_alltime?: boolean;
-};
-
 export type AdminBillingStatsResponse = {
     stats: Array<AdminBillingStatsByType>;
 };
@@ -269,7 +263,11 @@ export type AdminGetAllUsersResponse = (AdminUsersResponse);
 export type AdminGetAllUsersError = unknown;
 
 export type AdminGetBillingStatsData = {
-    body: AdminBillingStatsRequest;
+    query: {
+        end_date: string;
+        is_alltime: boolean;
+        start_date: string;
+    };
 };
 
 export type AdminGetBillingStatsResponse = (AdminBillingStatsResponse);

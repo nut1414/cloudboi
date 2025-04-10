@@ -30,9 +30,16 @@ async def get_all_users(
 )
 @inject
 async def get_billing_stats(
-    billing_stats_request: AdminBillingStatsRequest,
+    is_alltime: bool,
+    start_date: str,
+    end_date: str,
     admin_service: AdminService = Depends(Provide[AppContainer.admin_service])
 ):
+    billing_stats_request = AdminBillingStatsRequest(
+        is_alltime=is_alltime,
+        start_date=start_date,
+        end_date=end_date
+    )
     return await admin_service.get_billing_stats(billing_stats_request)
 
 @router.get(
