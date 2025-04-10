@@ -1,16 +1,18 @@
 import { ReactNode, useEffect } from 'react'
-import { AdminGetAllUsersResponse } from '../client'
+import { AdminGetAllUsersResponse, ClusterGetMembersStateResponse } from '../client'
 import { BaseContextState, createContextProvider, ReducerAction } from './baseContext'
 
 interface AdminContextState extends BaseContextState {
     users: AdminGetAllUsersResponse | null
+    clusterStates: ClusterGetMembersStateResponse | null
     isLoading: boolean
     error: string | null
     dispatch?: React.Dispatch<ReducerAction<AdminContextState>>
 }
 
-export const ADMIN_ACTIONS = {
+export const ADMIN_ACTIONS = {  
     SET_USERS: 'SET_USERS',
+    SET_CLUSTER_STATES: 'SET_CLUSTER_STATES',
     SET_LOADING: 'SET_LOADING',
     SET_ERROR: 'SET_ERROR',
     START_FETCH: 'START_FETCH',
@@ -27,6 +29,11 @@ const adminReducer = (
             return {
                 ...state,
                 users: action.payload,
+            }
+        case ADMIN_ACTIONS.SET_CLUSTER_STATES:
+            return {
+                ...state,
+                clusterStates: action.payload,
             }
         case ADMIN_ACTIONS.SET_LOADING:
             return {
@@ -62,6 +69,7 @@ const adminReducer = (
 
 const initialState: AdminContextState = {
     users: null,
+    clusterStates: null,
     isLoading: false,
     error: null,
 }
