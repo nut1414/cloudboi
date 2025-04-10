@@ -3,7 +3,7 @@
 import type { Options } from '@hey-api/client-axios';
 import { queryOptions, type UseMutationOptions } from '@tanstack/react-query';
 import { client, AdminService, BillingService, ClusterService, InstanceService, RootService, UserService } from '../services.gen';
-import type { AdminGetBillingStatsData, BillingGetBillingOverviewData, BillingGetAllUserTransactionsData, BillingTopUpData, BillingTopUpError, BillingTopUpResponse, BillingGetUserWalletData, ClusterCreateJoinTokenData, ClusterCreateJoinTokenError, ClusterCreateJoinTokenResponse, ClusterAddMemberData, ClusterAddMemberError, ClusterAddMemberResponse, InstanceListInstancesData, InstanceGetInstanceData, InstanceCreateInstanceData, InstanceCreateInstanceError, InstanceCreateInstanceResponse, InstanceStartInstanceData, InstanceStartInstanceError, InstanceStartInstanceResponse, InstanceStopInstanceData, InstanceStopInstanceError, InstanceStopInstanceResponse, InstanceDeleteInstanceData, InstanceDeleteInstanceError, InstanceDeleteInstanceResponse, InstanceRestartInstanceData, InstanceRestartInstanceError, InstanceRestartInstanceResponse, InstanceGetInstanceStateData, UserCreateUserData, UserCreateUserError, UserCreateUserResponse, UserLoginUserData, UserLoginUserError, UserLoginUserResponse, UserLogoutUserError, UserLogoutUserResponse } from '../types.gen';
+import type { AdminCreateInstancePlanData, AdminCreateInstancePlanError, AdminCreateInstancePlanResponse, AdminUpdateInstancePlanData, AdminUpdateInstancePlanError, AdminUpdateInstancePlanResponse, AdminDeleteInstancePlanData, AdminDeleteInstancePlanError, AdminDeleteInstancePlanResponse, AdminGetBillingStatsData, BillingGetBillingOverviewData, BillingGetAllUserTransactionsData, BillingTopUpData, BillingTopUpError, BillingTopUpResponse, BillingGetUserWalletData, ClusterCreateJoinTokenData, ClusterCreateJoinTokenError, ClusterCreateJoinTokenResponse, ClusterAddMemberData, ClusterAddMemberError, ClusterAddMemberResponse, InstanceListInstancesData, InstanceGetInstanceData, InstanceCreateInstanceData, InstanceCreateInstanceError, InstanceCreateInstanceResponse, InstanceStartInstanceData, InstanceStartInstanceError, InstanceStartInstanceResponse, InstanceStopInstanceData, InstanceStopInstanceError, InstanceStopInstanceResponse, InstanceDeleteInstanceData, InstanceDeleteInstanceError, InstanceDeleteInstanceResponse, InstanceRestartInstanceData, InstanceRestartInstanceError, InstanceRestartInstanceResponse, InstanceGetInstanceStateData, UserCreateUserData, UserCreateUserError, UserCreateUserResponse, UserLoginUserData, UserLoginUserError, UserLoginUserResponse, UserLogoutUserError, UserLogoutUserResponse } from '../types.gen';
 import type { AxiosError } from 'axios';
 
 type QueryKey<TOptions extends Options> = [
@@ -50,6 +50,86 @@ export const adminGetAllUsersOptions = (options?: Options) => {
         },
         queryKey: adminGetAllUsersQueryKey(options)
     });
+};
+
+export const adminGetInstancePlansQueryKey = (options?: Options) => [
+    createQueryKey('adminGetInstancePlans', options)
+];
+
+export const adminGetInstancePlansOptions = (options?: Options) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await AdminService.adminGetInstancePlans({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: adminGetInstancePlansQueryKey(options)
+    });
+};
+
+export const adminCreateInstancePlanQueryKey = (options: Options<AdminCreateInstancePlanData>) => [
+    createQueryKey('adminCreateInstancePlan', options)
+];
+
+export const adminCreateInstancePlanOptions = (options: Options<AdminCreateInstancePlanData>) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await AdminService.adminCreateInstancePlan({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: adminCreateInstancePlanQueryKey(options)
+    });
+};
+
+export const adminCreateInstancePlanMutation = (options?: Partial<Options<AdminCreateInstancePlanData>>) => {
+    const mutationOptions: UseMutationOptions<AdminCreateInstancePlanResponse, AxiosError<AdminCreateInstancePlanError>, Options<AdminCreateInstancePlanData>> = {
+        mutationFn: async (localOptions) => {
+            const { data } = await AdminService.adminCreateInstancePlan({
+                ...options,
+                ...localOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const adminUpdateInstancePlanMutation = (options?: Partial<Options<AdminUpdateInstancePlanData>>) => {
+    const mutationOptions: UseMutationOptions<AdminUpdateInstancePlanResponse, AxiosError<AdminUpdateInstancePlanError>, Options<AdminUpdateInstancePlanData>> = {
+        mutationFn: async (localOptions) => {
+            const { data } = await AdminService.adminUpdateInstancePlan({
+                ...options,
+                ...localOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const adminDeleteInstancePlanMutation = (options?: Partial<Options<AdminDeleteInstancePlanData>>) => {
+    const mutationOptions: UseMutationOptions<AdminDeleteInstancePlanResponse, AxiosError<AdminDeleteInstancePlanError>, Options<AdminDeleteInstancePlanData>> = {
+        mutationFn: async (localOptions) => {
+            const { data } = await AdminService.adminDeleteInstancePlan({
+                ...options,
+                ...localOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
 };
 
 export const adminGetBillingStatsQueryKey = (options: Options<AdminGetBillingStatsData>) => [

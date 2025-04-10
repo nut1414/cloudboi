@@ -77,7 +77,7 @@ const InstancesContent = React.memo(({
                   },
                   {
                     label: "Cost",
-                    value: `${CURRENCY.FORMAT_HOURLY(instance.instance_plan.cost_hour)}/hour`
+                    value: `${CURRENCY.FORMAT_HOURLY(instance.instance_plan.cost_hour)}`
                   },
                   { label: "Node", value: instance.lxd_node_name },
                   {

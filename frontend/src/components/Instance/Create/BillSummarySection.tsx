@@ -52,7 +52,7 @@ const BillSummarySection: React.FC<BillSummarySectionProps> = React.memo(({
                             {monthlyPrice} <span className="text-sm font-normal text-gray-300">/month</span>
                         </p>
                         <p className="text-sm text-gray-400 ml-7 mt-1">
-                            {hourlyPrice}/hour
+                            {hourlyPrice}
                         </p>
                     </div>
                     

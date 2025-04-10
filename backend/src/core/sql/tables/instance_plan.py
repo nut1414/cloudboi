@@ -10,7 +10,7 @@ class InstancePlan(Base):
     __tablename__ = 'instance_plans'
     
     instance_plan_id: Mapped[int] = mapped_column(primary_key=True)
-    instance_package_name: Mapped[str] = mapped_column(nullable=False)
+    instance_package_name: Mapped[str] = mapped_column(nullable=False, unique=True)
     vcpu_amount: Mapped[int] = mapped_column(nullable=False)
     ram_amount: Mapped[int] = mapped_column(nullable=False)
     storage_amount: Mapped[int] = mapped_column(nullable=False)

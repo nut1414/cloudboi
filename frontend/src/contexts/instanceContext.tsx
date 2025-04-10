@@ -1,6 +1,6 @@
 // src/contexts/instanceContext.tsx
 import { ReactNode } from "react"
-import { UserInstanceResponse, InstanceDetails, BaseInstanceState } from "../client"
+import { UserInstanceResponse, InstanceDetails, BaseInstanceState, AdminInstancePlan } from "../client"
 import { createContextProvider, BaseContextState, ReducerAction } from './baseContext'
 
 // Define the specific state for instance context
@@ -9,6 +9,7 @@ interface InstanceContextState extends BaseContextState {
   selectedInstance: UserInstanceResponse | null
   instanceDetails: InstanceDetails | null
   instanceState: BaseInstanceState | null
+  allInstancePlans: AdminInstancePlan[] | null
   statePollingInterval: number | null
   isLoading: boolean
   error: string | null
@@ -21,6 +22,7 @@ export const INSTANCE_ACTIONS = {
   SET_SELECTED_INSTANCE: 'SET_SELECTED_INSTANCE',
   SET_INSTANCE_DETAILS: 'SET_INSTANCE_DETAILS',
   SET_INSTANCE_STATE: 'SET_INSTANCE_STATE',
+  SET_ALL_INSTANCE_PLANS: 'SET_ALL_INSTANCE_PLANS',
   SET_STATE_POLLING_INTERVAL: 'SET_STATE_POLLING_INTERVAL',
   SET_LOADING: 'SET_LOADING',
   SET_ERROR: 'SET_ERROR',
@@ -54,6 +56,11 @@ const instanceReducer = (
       return {
         ...state,
         instanceState: action.payload,
+      }
+    case INSTANCE_ACTIONS.SET_ALL_INSTANCE_PLANS:
+      return {
+        ...state,
+        allInstancePlans: action.payload,
       }
     case INSTANCE_ACTIONS.SET_STATE_POLLING_INTERVAL:
       return {
@@ -99,6 +106,7 @@ const initialState: InstanceContextState = {
   selectedInstance: null,
   instanceDetails: null,
   instanceState: null,
+  allInstancePlans: null,
   statePollingInterval: null,
   isLoading: true,
   error: null,

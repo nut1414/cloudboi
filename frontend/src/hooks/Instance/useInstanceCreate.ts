@@ -23,7 +23,7 @@ export const useInstanceCreate = () => {
     } = useInstanceList()
 
     // Form setup with react-hook-form
-    const { 
+    const {
         register, 
         handleSubmit: formSubmit, 
         watch, 
@@ -244,6 +244,7 @@ export const useInstanceCreate = () => {
         handleInstanceNameChange,
         createInstance,
         handleImageNameSelect,
-        handleVersionSelect
+        handleVersionSelect,
+        fetchInstanceDetails
     }
 }

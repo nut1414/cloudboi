@@ -4,7 +4,7 @@ import uuid
 
 from .base_model import BaseModel
 from .user import UserRole, UserInDB
-from .instance import UserInstanceFromDB
+from .instance import UserInstanceFromDB, InstancePlan
 from ..constants.transaction_const import TransactionStatus, TransactionType
 
 class AdminUsersWithDetails(UserInDB):
@@ -41,3 +41,26 @@ class AdminTransactionResponse(BaseModel):
     amount: float
     created_at: datetime
     last_updated_at: datetime
+
+class AdminInstancePlan(InstancePlan):
+    is_editable: bool
+
+class AdminInstancePlanCreateRequest(InstancePlan):
+    instance_plan_id: Optional[int] = None
+
+class AdminInstancePlanCreateResponse(InstancePlan):
+    pass
+
+class AdminInstancePlanUpdateRequest(InstancePlan):
+    pass
+
+class AdminInstancePlanUpdateResponse(InstancePlan):
+    pass
+
+class AdminInstancePlanDeleteRequest(InstancePlan):
+    pass
+
+class AdminInstancePlanDeleteResponse(BaseModel):
+    instance_plan_id: int
+    instance_package_name: str
+    is_success: bool

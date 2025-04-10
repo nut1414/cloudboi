@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react"
+import React, { useState, useRef } from "react"
 import { Link } from "react-router-dom"
 import { ChevronDownIcon } from "@heroicons/react/24/outline"
 
@@ -45,18 +45,6 @@ export const DropdownButton: React.FC<DropdownButtonProps> = ({
 }) => {
     const [isOpen, setIsOpen] = useState(false)
     const dropdownRef = useRef<HTMLDivElement>(null)
-
-    // Close dropdown when clicking outside
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (isOpen && dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                setIsOpen(false)
-            }
-        }
-
-        document.addEventListener('mousedown', handleClickOutside)
-        return () => document.removeEventListener('mousedown', handleClickOutside)
-    }, [isOpen])
 
     // Define variant styles
     const variantStyles = {
@@ -110,53 +98,69 @@ export const DropdownButton: React.FC<DropdownButtonProps> = ({
         if (onClick) onClick(e)
     }
 
+    // Handle clicking outside to close the dropdown
+    const handleMouseDown = (e: React.MouseEvent) => {
+        if (isOpen && dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+            setIsOpen(false)
+        }
+    }
+
     return (
-        <div ref={dropdownRef} className={`relative ${fullWidth ? 'w-full' : 'inline-block'}`}>
-            <button
-                type="button"
-                onClick={handleToggleDropdown}
-                disabled={disabled}
-                className={buttonStyles}
-            >
-                <div className="flex-grow flex items-center">
-                    {content}
-                </div>
-                <ChevronDownIcon className={`h-4 w-4 transition-transform flex-shrink-0 ml-2 ${isOpen ? 'rotate-180' : ''}`} />
-            </button>
-
+        <>
+            {/* Invisible overlay to catch clicks outside when dropdown is open */}
             {isOpen && (
-                <div className={`absolute ${positionStyles[position]} ${fullWidth ? 'w-full' : 'min-w-[220px]'} ${dropdownClassName} z-50 bg-[#23375F] rounded-lg shadow-lg border border-blue-800/30 overflow-hidden`}>
-                    {items.map((item, index) => (
-                        <React.Fragment key={index}>
-                            {item.divider && <div className="border-t border-blue-800/30 my-1"></div>}
-
-                            {!item.divider && item.href ? (
-                                <Link
-                                    to={item.href}
-                                    className={`block w-full text-left px-4 py-2 text-gray-300 hover:bg-blue-800 hover:text-white transition-colors ${item.className || ''}`}
-                                    onClick={() => {
-                                        setIsOpen(false)
-                                        if (item.onClick) item.onClick()
-                                    }}
-                                >
-                                    {item.content}
-                                </Link>
-                            ) : !item.divider ? (
-                                <button
-                                    className={`block w-full text-left px-4 py-2 text-gray-300 hover:bg-blue-800 hover:text-white transition-colors ${item.className || ''}`}
-                                    onClick={() => {
-                                        setIsOpen(false)
-                                        if (item.onClick) item.onClick()
-                                    }}
-                                >
-                                    {item.content}
-                                </button>
-                            ) : null}
-                        </React.Fragment>
-                    ))}
-                </div>
+                <div 
+                    className="fixed inset-0 z-40" 
+                    onMouseDown={handleMouseDown}
+                />
             )}
-        </div>
+            <div ref={dropdownRef} className={`relative ${fullWidth ? 'w-full' : 'inline-block'} z-50`}>
+                <button
+                    type="button"
+                    onClick={handleToggleDropdown}
+                    disabled={disabled}
+                    className={buttonStyles}
+                >
+                    <div className="flex-grow flex items-center">
+                        {content}
+                    </div>
+                    <ChevronDownIcon className={`h-4 w-4 transition-transform flex-shrink-0 ml-2 ${isOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {isOpen && (
+                    <div className={`absolute ${positionStyles[position]} ${fullWidth ? 'w-full' : 'min-w-[220px]'} ${dropdownClassName} z-50 bg-[#23375F] rounded-lg shadow-lg border border-blue-800/30 overflow-hidden`}>
+                        {items.map((item, index) => (
+                            <React.Fragment key={index}>
+                                {item.divider && <div className="border-t border-blue-800/30 my-1"></div>}
+
+                                {!item.divider && item.href ? (
+                                    <Link
+                                        to={item.href}
+                                        className={`block w-full text-left px-4 py-2 text-gray-300 hover:bg-blue-800 hover:text-white transition-colors ${item.className || ''}`}
+                                        onClick={() => {
+                                            setIsOpen(false)
+                                            if (item.onClick) item.onClick()
+                                        }}
+                                    >
+                                        {item.content}
+                                    </Link>
+                                ) : !item.divider ? (
+                                    <button
+                                        className={`block w-full text-left px-4 py-2 text-gray-300 hover:bg-blue-800 hover:text-white transition-colors ${item.className || ''}`}
+                                        onClick={() => {
+                                            setIsOpen(false)
+                                            if (item.onClick) item.onClick()
+                                        }}
+                                    >
+                                        {item.content}
+                                    </button>
+                                ) : null}
+                            </React.Fragment>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </>
     )
 }
 
