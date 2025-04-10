@@ -15,7 +15,7 @@ router = APIRouter(
 )
 
 @router.post(
-    "/create_token",
+    "/create-token",
     response_model=CreateJoinTokenResponse
 )
 @inject
@@ -27,7 +27,7 @@ async def create_join_token(
     return token
 
 @router.post(
-    "/add_member",
+    "/add-member",
     response_model=AddMemberResponse
 )
 @inject
@@ -38,7 +38,7 @@ async def add_member(
     return await lxd_cluster_service.add_member_to_lxd_cluster_group(request)
   
 @router.get(
-    "/members/state_info",
+    "/members/state-info",
     response_model=GetClusterMembersStateInfoResponse
 )
 @inject
