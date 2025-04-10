@@ -49,5 +49,6 @@ class ClusterMemberInfo(BaseModel):
 class GetClusterMembersStateInfoResponse(BaseModel):
     members_states: List[ClusterMemberState]
     members_infos: List[ClusterMemberInfo]
+    members_leader: str
     members_groups: List[str]
     members_roles: List[str]

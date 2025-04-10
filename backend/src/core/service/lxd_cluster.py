@@ -30,6 +30,7 @@ class LXDClusterService:
         member_infos = []
         member_groups = set()
         member_roles = set()
+        leader = ""
         for member in members:
             member_states.append(self.lxd_client.get_lxd_cluster_member_state(member.server_name))
             member_infos.append(ClusterMemberInfo(
@@ -42,9 +43,12 @@ class LXDClusterService:
             ))
             member_groups.update(member.groups)
             member_roles.update(member.roles)
+            if "database-leader" in member.roles:
+                leader = member.server_name
         return GetClusterMembersStateInfoResponse(
           members_states=member_states, 
           members_infos=member_infos, 
           members_groups=list(member_groups), 
-          members_roles=list(member_roles)
+          members_roles=list(member_roles),
+          members_leader=leader
         )
