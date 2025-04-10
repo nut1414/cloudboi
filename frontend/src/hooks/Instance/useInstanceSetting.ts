@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { InstanceStatus } from "../../constant/InstanceConstant"
 import { useInstanceList } from "./useInstanceList"
-import { formatDateTime, formatUptime } from "../../utils/dateTime"
+import { formatUptime } from "../../utils/dateTime"
 import { parseInstanceState } from "../../utils/instanceState"
 
 // 30 seconds
@@ -174,11 +174,6 @@ export const useInstanceSetting = () => {
         if (!selectedInstance) return "N/A"
         return formatUptime(lastUpdatedAt, selectedInstance.instance_status === InstanceStatus.RUNNING)
     }, [selectedInstance])
-
-    // Format any date to user's local timezone
-    const getFormattedDateTime = useCallback((utcDate: Date | string) => {
-        return formatDateTime(utcDate)
-    }, [])
   
     // Start polling when instance is running
     useEffect(() => {
@@ -224,6 +219,5 @@ export const useInstanceSetting = () => {
         restartInstance,
         deleteInstance,
         getFormattedUptime,
-        getFormattedDateTime,
     }
 }

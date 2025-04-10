@@ -1,7 +1,7 @@
-import React, { useState } from "react"
+import React, { useState, useCallback } from "react"
 import TopNavbar from "../../components/Common/Navbar/TopNavbar"
 import PageContainer from "../../components/Layout/PageContainer"
-import { BanknotesIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline"
+import { BanknotesIcon, MagnifyingGlassIcon, ChartBarIcon } from "@heroicons/react/24/outline"
 import Table from "../../components/Common/Table"
 import { TableColumn } from "../../components/Common/Table"
 import InputField from "../../components/Common/InputField"
@@ -9,10 +9,12 @@ import Button from "../../components/Common/Button/Button"
 import { useAdminBilling } from "../../hooks/Admin/useAdminBilling"
 import StatusBadge from "../../components/Common/StatusBadge"
 import { AdminTransactionResponse } from "../../client/types.gen"
-import { formatDateTime } from "../../utils/dateTime"
+import { formatDateTimeSimple } from "../../utils/dateTime"
 import Section from "../../components/Common/Section"
 import TransactionAmount from "../../components/Common/TransactionAmount"
 import { TransactionType } from "../../constant/TransactionConstant"
+import BillingStatsVisualizer from "../../components/Admin/BillingStatsVisualizer"
+import DateRangePicker from "../../components/Common/DateRangePicker"
 
 // SearchBar component
 interface SearchBarProps {
@@ -23,7 +25,7 @@ interface SearchBarProps {
     width?: string
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({
+const SearchBar: React.FC<SearchBarProps> = React.memo(({
     placeholder = "Search transactions...",
     onSearch = () => { },
     className = "",
@@ -32,10 +34,10 @@ const SearchBar: React.FC<SearchBarProps> = ({
 }) => {
     const [query, setQuery] = useState(initialValue)
 
-    const handleInputChange = (newQuery: string) => {
+    const handleInputChange = useCallback((newQuery: string) => {
         setQuery(newQuery)
         onSearch(newQuery)
-    }
+    }, [onSearch])
 
     return (
         <div className={`${className} ${width}`}>
@@ -47,14 +49,20 @@ const SearchBar: React.FC<SearchBarProps> = ({
             />
         </div>
     )
-}
+})
 
 const AdminBillingPage: React.FC = () => {
     const {
+        adminBillingStats,
         allTransactions,
         isLoading,
         handleSearch,
-        handleViewInstance
+        handleViewInstance,
+        isAllTime,
+        dateRange,
+        toggleTimeRange,
+        updateDateRange,
+        fetchBillingStats
     } = useAdminBilling()
 
     // Define columns for the transactions table
@@ -62,7 +70,7 @@ const AdminBillingPage: React.FC = () => {
         {
             key: 'date',
             label: 'Date',
-            render: (transaction) => formatDateTime(transaction.last_updated_at)
+            render: (transaction) => formatDateTimeSimple(transaction.last_updated_at)
         },
         {
             key: 'username',
@@ -143,6 +151,28 @@ const AdminBillingPage: React.FC = () => {
                 subtitleIcon={<BanknotesIcon className="w-4 h-4" />}
                 maxWidth="max-w-[1400px]"
             >
+                
+                {/* Billing Stats Visualization */}
+                <Section 
+                    title="Billing Statistics" 
+                    icon={<ChartBarIcon className="w-5 h-5" />}
+                    description="Overview of transaction values by type and status"
+                    className="bg-[#12203c] border-blue-900/20 mb-6"
+                >
+                    <DateRangePicker 
+                        isAllTime={isAllTime}
+                        startDate={dateRange.startDate}
+                        endDate={dateRange.endDate}
+                        onToggleTimeRange={toggleTimeRange}
+                        onDateRangeChange={updateDateRange}
+                        onApplyFilter={fetchBillingStats}
+                        className="mb-6"
+                    />
+                    <BillingStatsVisualizer 
+                        billingStats={adminBillingStats}
+                        isLoading={isLoading}
+                    />
+                </Section>
                 
                 {/* Transactions Table Section */}
                 <Section 

@@ -4,6 +4,7 @@ import { AdminService } from "../../client/services.gen"
 import { BILLING_ACTIONS } from "../../contexts/billingContext"
 import { useNavigate } from "react-router-dom"
 import { useForm } from "react-hook-form"
+import { formatDateForBackend } from "../../utils/dateTime"
 
 // Define form type for date range
 type DateRangeFormType = {
@@ -80,20 +81,6 @@ export const useAdminBilling = () => {
         }
     }, [dispatch])
     
-    // Format dates as strings in the format expected by the backend
-    const formatDate = (date: Date | null) => {
-        if (!date) return ""
-        
-        const year = date.getFullYear()
-        const month = String(date.getMonth() + 1).padStart(2, '0')
-        const day = String(date.getDate()).padStart(2, '0')
-        const hours = String(date.getHours()).padStart(2, '0')
-        const minutes = String(date.getMinutes()).padStart(2, '0')
-        const seconds = String(date.getSeconds()).padStart(2, '0')
-        
-        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
-    }
-    
     // Simplified function to fetch billing stats
     const fetchBillingStats = useCallback(async () => {
         if (!dispatch) return null
@@ -113,8 +100,8 @@ export const useAdminBilling = () => {
                 const endDateTime = new Date(dateRange.endDate)
                 endDateTime.setHours(23, 59, 59, 999)
                 
-                startDateStr = formatDate(startDateTime)
-                endDateStr = formatDate(endDateTime)
+                startDateStr = formatDateForBackend(startDateTime)
+                endDateStr = formatDateForBackend(endDateTime)
             } else {
                 // Default empty date strings
                 startDateStr = ""
