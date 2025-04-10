@@ -2,8 +2,15 @@ import { useBilling } from "../../contexts/billingContext"
 import { useEffect, useState, useCallback } from "react"
 import { AdminService } from "../../client/services.gen"
 import { BILLING_ACTIONS } from "../../contexts/billingContext"
-import { AdminBillingStatsRequest } from "../../client"
 import { useNavigate } from "react-router-dom"
+import { useForm } from "react-hook-form"
+
+// Define form type for date range
+type DateRangeFormType = {
+    isAllTime: boolean;
+    startDate: Date | null;
+    endDate: Date | null;
+}
 
 export const useAdminBilling = () => {
     const {
@@ -15,16 +22,30 @@ export const useAdminBilling = () => {
     } = useBilling()
     
     const [searchQuery, setSearchQuery] = useState("")
-    const [isAllTime, setIsAllTime] = useState(true)
-    const [dateRange, setDateRange] = useState<{
-        startDate: Date | null,
-        endDate: Date | null
-    }>({ startDate: null, endDate: null })
+    
+    // Initialize form using react-hook-form
+    const { 
+        watch, 
+        setValue, 
+        getValues,
+        formState: { errors } 
+    } = useForm<DateRangeFormType>({
+        defaultValues: {
+            isAllTime: true,
+            startDate: null,
+            endDate: null
+        },
+        mode: "onChange"
+    })
+    
+    // Watch form values
+    const isAllTime = watch("isAllTime")
+    const dateRange = {
+        startDate: watch("startDate"),
+        endDate: watch("endDate")
+    }
     
     const navigate = useNavigate()
-    
-    // Flag to control when to fetch data
-    const [shouldFetch, setShouldFetch] = useState(true)
     
     // Filtered transactions based on search query
     const filteredTransactions = allTransactions 
@@ -41,31 +62,49 @@ export const useAdminBilling = () => {
         if (!dispatch) return
         
         try {
+            dispatch({ type: BILLING_ACTIONS.START_FETCH })
+
             const { data: transactionsData } = await AdminService.adminGetAllTransactions()
             
             dispatch({ 
                 type: BILLING_ACTIONS.SET_ALL_TRANSACTIONS, 
                 payload: transactionsData 
             })
+            dispatch({ type: BILLING_ACTIONS.FETCH_SUCCESS})
             
             return transactionsData
         } catch (err) {
+            dispatch({ type: BILLING_ACTIONS.FETCH_ERROR, payload: err })
             console.error("Error fetching transactions:", err)
             return null
         }
     }, [dispatch])
     
-    // Simplified function to fetch billing stats only
-    const fetchBillingStatsOnly = useCallback(async () => {
+    // Format dates as strings in the format expected by the backend
+    const formatDate = (date: Date | null) => {
+        if (!date) return ""
+        
+        const year = date.getFullYear()
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        const day = String(date.getDate()).padStart(2, '0')
+        const hours = String(date.getHours()).padStart(2, '0')
+        const minutes = String(date.getMinutes()).padStart(2, '0')
+        const seconds = String(date.getSeconds()).padStart(2, '0')
+        
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+    }
+    
+    // Simplified function to fetch billing stats
+    const fetchBillingStats = useCallback(async () => {
         if (!dispatch) return null
         
         try {
-            // Default to all-time stats
-            const requestBody: AdminBillingStatsRequest = {
-                is_alltime: isAllTime
-            }
+            dispatch({ type: BILLING_ACTIONS.START_FETCH })
+
+            let startDateStr = ""
+            let endDateStr = ""
             
-            // Only add date range if not all-time and both dates are selected
+            // If custom date range selected, prepare the date strings
             if (!isAllTime && dateRange.startDate && dateRange.endDate) {
                 // Set time to midnight for start date and end of day for end date
                 const startDateTime = new Date(dateRange.startDate)
@@ -74,98 +113,52 @@ export const useAdminBilling = () => {
                 const endDateTime = new Date(dateRange.endDate)
                 endDateTime.setHours(23, 59, 59, 999)
                 
-                // Format dates as strings in the format expected by the backend
-                const formatDate = (date: Date) => {
-                    const year = date.getFullYear()
-                    const month = String(date.getMonth() + 1).padStart(2, '0')
-                    const day = String(date.getDate()).padStart(2, '0')
-                    const hours = String(date.getHours()).padStart(2, '0')
-                    const minutes = String(date.getMinutes()).padStart(2, '0')
-                    const seconds = String(date.getSeconds()).padStart(2, '0')
-                    
-                    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
-                }
-                
-                requestBody.start_date = formatDate(startDateTime) as unknown as Date
-                requestBody.end_date = formatDate(endDateTime) as unknown as Date
-                requestBody.is_alltime = false
-            } else if (!isAllTime && (!dateRange.startDate || !dateRange.endDate)) {
-                // If custom range is selected but dates are incomplete, default to all-time
-                requestBody.is_alltime = true
+                startDateStr = formatDate(startDateTime)
+                endDateStr = formatDate(endDateTime)
+            } else {
+                // Default empty date strings
+                startDateStr = ""
+                endDateStr = ""
             }
             
-            console.log(requestBody)
-            // Make the API call
+            // Make the API call with query parameters that match AdminGetBillingStatsData
             const response = await AdminService.adminGetBillingStats({
-                body: requestBody
+                query: {
+                    is_alltime: isAllTime || (!dateRange.startDate || !dateRange.endDate),
+                    start_date: startDateStr,
+                    end_date: endDateStr
+                }
             })
 
-            console.log(response.data)
+            dispatch({ type: BILLING_ACTIONS.SET_ADMIN_BILLING_STATS, payload: response.data })
+            dispatch({ type: BILLING_ACTIONS.FETCH_SUCCESS })
+
             return response.data
         } catch (err) {
-            throw err
+            dispatch({ type: BILLING_ACTIONS.FETCH_ERROR, payload: err })
+            console.error("Error fetching billing stats:", err)
+            return null
         }
-    }, [dispatch, isAllTime, dateRange])
-    
-    // Main fetch function that coordinates both data fetches
-    const fetchBillingStats = useCallback(async () => {
-        if (!dispatch || isLoading) return
-        
-        // Turn off the fetch flag to prevent additional fetches
-        setShouldFetch(false)
-        
-        dispatch({ type: BILLING_ACTIONS.START_FETCH })
-        
-        try {
-            // First fetch transactions - this is more likely to succeed
-            await fetchTransactions()
-            
-            // Then attempt to fetch billing stats
-            try {
-                const statsData = await fetchBillingStatsOnly()
-                
-                if (statsData) {
-                    dispatch({ 
-                        type: BILLING_ACTIONS.SET_ADMIN_BILLING_STATS, 
-                        payload: statsData 
-                    })
-                }
-            } catch (statsErr) {
-                console.error("Error fetching billing stats:", statsErr)
-                dispatch({ 
-                    type: BILLING_ACTIONS.FETCH_ERROR, 
-                    payload: statsErr instanceof Error ? statsErr.message : 'Error fetching billing statistics'
-                })
-            }
-            
-            dispatch({ type: BILLING_ACTIONS.FETCH_SUCCESS })
-        } catch (err) {
-            console.error("Error in fetch operation:", err)
-            dispatch({ 
-                type: BILLING_ACTIONS.FETCH_ERROR, 
-                payload: err instanceof Error ? err.message : 'Unknown error occurred' 
-            })
-        }
-    }, [dispatch, fetchTransactions, fetchBillingStatsOnly, isLoading])
+    }, [dispatch, isAllTime, dateRange.startDate, dateRange.endDate])
     
     const handleSearch = (query: string) => {
         setSearchQuery(query)
     }
     
     const toggleTimeRange = (allTime: boolean) => {
-        setIsAllTime(allTime)
+        setValue("isAllTime", allTime)
         // Reset date range if switching to all time
         if (allTime) {
-            setDateRange({ startDate: null, endDate: null })
+            setValue("startDate", null)
+            setValue("endDate", null)
         }
-        setShouldFetch(true)
     }
     
     const updateDateRange = (startDate: Date | null, endDate: Date | null) => {
-        setDateRange({ startDate, endDate })
+        setValue("startDate", startDate)
+        setValue("endDate", endDate)
         if (startDate && endDate) {
-            setIsAllTime(false)
-            setShouldFetch(true)
+            setValue("isAllTime", false)
         }
     }
 
@@ -173,13 +166,14 @@ export const useAdminBilling = () => {
         navigate(`/user/${username}/instance/${instance_name}`)
     }
     
-    // Simplified single useEffect for data fetching
     useEffect(() => {
-        // Only fetch if the flag is true and not already loading
-        if (shouldFetch && !isLoading) {
+        if (!allTransactions) {
+            fetchTransactions()
+        }
+        if (!adminBillingStats) {
             fetchBillingStats()
         }
-    }, [shouldFetch, fetchBillingStats, isLoading])
+    }, [fetchTransactions, fetchBillingStats])
     
     return {
         adminBillingStats,
@@ -189,6 +183,7 @@ export const useAdminBilling = () => {
         searchQuery,
         isAllTime,
         dateRange,
+        formErrors: errors,
         handleSearch,
         toggleTimeRange,
         updateDateRange,

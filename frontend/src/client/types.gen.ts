@@ -264,9 +264,9 @@ export type AdminGetAllUsersError = unknown;
 
 export type AdminGetBillingStatsData = {
     query: {
-        end_date: string;
+        end_date?: string;
         is_alltime: boolean;
-        start_date: string;
+        start_date?: string;
     };
 };
 

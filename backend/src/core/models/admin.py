@@ -29,11 +29,6 @@ class AdminBillingStatsByType(BaseModel):
 class AdminUsersResponse(BaseModel):
     users: List[AdminUser]
 
-class AdminBillingStatsRequest(BaseModel):
-    start_date: Optional[datetime] = None
-    end_date: Optional[datetime] = None
-    is_alltime: bool = False
-
 class AdminBillingStatsResponse(BaseModel):
     stats: List[AdminBillingStatsByType]
 

@@ -5,7 +5,7 @@ from datetime import datetime
 
 from ..container import AppContainer
 from ..utils.dependencies import get_admin_user
-from ..models.admin import AdminUsersResponse, AdminBillingStatsRequest, AdminBillingStatsResponse, AdminTransactionResponse
+from ..models.admin import AdminUsersResponse, AdminBillingStatsResponse, AdminTransactionResponse
 from ..service.admin import AdminService
 
 router = APIRouter(
@@ -31,16 +31,15 @@ async def get_all_users(
 @inject
 async def get_billing_stats(
     is_alltime: bool,
-    start_date: str,
-    end_date: str,
+    start_date: str = None,
+    end_date: str = None,
     admin_service: AdminService = Depends(Provide[AppContainer.admin_service])
 ):
-    billing_stats_request = AdminBillingStatsRequest(
+    return await admin_service.get_billing_stats(
         is_alltime=is_alltime,
         start_date=start_date,
         end_date=end_date
     )
-    return await admin_service.get_billing_stats(billing_stats_request)
 
 @router.get(
     "/transactions",

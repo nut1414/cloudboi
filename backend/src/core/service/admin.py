@@ -1,7 +1,8 @@
-from typing import List
+from typing import List, Optional
+from datetime import datetime
 
 from ..sql.operations import AdminOperation, BillingOperation, TransactionOperation
-from ..models.admin import AdminUser, AdminUsersResponse, AdminBillingStatsRequest, AdminBillingStatsResponse, AdminTransactionResponse
+from ..models.admin import AdminUser, AdminUsersResponse, AdminBillingStatsResponse, AdminTransactionResponse
 from ..utils.permission import require_roles
 from ..constants.user_const import UserRole
 from ..utils.datetime import DateTimeUtils
@@ -35,31 +36,35 @@ class AdminService:
         )
 
     @require_roles([UserRole.ADMIN])
-    async def get_billing_stats(self, request: AdminBillingStatsRequest) -> AdminBillingStatsResponse:
+    async def get_billing_stats(
+        self,
+        is_alltime: bool,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None
+    ) -> AdminBillingStatsResponse:
         # Check if all-time flag is enabled
-        if request.is_alltime:
+        if is_alltime:
             # For all-time queries, we don't need date ranges
             stats = await self.billing_opr.get_billing_stats_by_date_range(
                 is_alltime=True
             )
         else:
             # Validate required parameters
-            if not request.start_date or not request.end_date:
+            if not start_date or not end_date:
                 raise ValueError("Both start_date and end_date are required when is_alltime is False")
-                
-            # Ensure dates are properly formatted with timezone information
-            start_date = request.start_date
-            end_date = request.end_date
             
-            # If dates don't have timezone info, assume they're in UTC
-            if start_date.tzinfo is None:
-                start_date = DateTimeUtils.UTC_TZ.localize(start_date)
-            if end_date.tzinfo is None:
-                end_date = DateTimeUtils.UTC_TZ.localize(end_date)
+            # Parse string dates to datetime objects
+            # DateTimeUtils.from_string already localizes the datetime to UTC
+            start_dt = DateTimeUtils.from_string(start_date)
+            end_dt = DateTimeUtils.from_string(end_date)
+            
+            # Validate that end date is after start date
+            if end_dt <= start_dt:
+                raise ValueError("End date must be after start date")
                 
             stats = await self.billing_opr.get_billing_stats_by_date_range(
-                start_date=start_date,
-                end_date=end_date,
+                start_date=start_dt,
+                end_date=end_dt,
                 is_alltime=False
             )
         return AdminBillingStatsResponse(stats=stats)
