@@ -4,7 +4,7 @@ import { AdminService } from "../../client/services.gen"
 import { BILLING_ACTIONS } from "../../contexts/billingContext"
 import { useNavigate } from "react-router-dom"
 import { useForm } from "react-hook-form"
-import { formatDateForBackend } from "../../utils/dateTime"
+import { formatStandardDate, getFirstDayOfMonth, getLastDayOfMonth } from "../../utils/dateTime"
 
 // Define form type for date range
 type DateRangeFormType = {
@@ -94,15 +94,16 @@ export const useAdminBilling = () => {
             
             // If custom date range selected, prepare the date strings
             if (!isAllTime && dateRange.startDate && dateRange.endDate) {
-                // Set time to midnight for start date and end of day for end date
+                // Set time to midnight for start date
                 const startDateTime = new Date(dateRange.startDate)
                 startDateTime.setHours(0, 0, 0, 0)
                 
+                // Set time to end of day for end date
                 const endDateTime = new Date(dateRange.endDate)
                 endDateTime.setHours(23, 59, 59, 999)
                 
-                startDateStr = formatDateForBackend(startDateTime)
-                endDateStr = formatDateForBackend(endDateTime)
+                startDateStr = formatStandardDate(startDateTime)
+                endDateStr = formatStandardDate(endDateTime)
             } else {
                 // Default empty date strings
                 startDateStr = ""

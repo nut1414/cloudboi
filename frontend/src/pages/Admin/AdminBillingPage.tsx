@@ -8,12 +8,12 @@ import Button from "../../components/Common/Button/Button"
 import { useAdminBilling } from "../../hooks/Admin/useAdminBilling"
 import StatusBadge from "../../components/Common/StatusBadge"
 import { AdminTransactionResponse } from "../../client/types.gen"
-import { formatDateTimeSimple } from "../../utils/dateTime"
+import { formatStandardDate } from "../../utils/dateTime"
 import Section from "../../components/Common/Section"
 import TransactionAmount from "../../components/Common/TransactionAmount"
 import { TransactionType } from "../../constant/TransactionConstant"
 import BillingStatsVisualizer from "../../components/Admin/BillingStatsVisualizer"
-import DateRangePicker from "../../components/Common/DateRangePicker"
+import DateRangePicker from "../../components/Common/RangePicker/DateRangePicker"
 import SearchBar from "../../components/Common/SearchBar"
 
 const AdminBillingPage: React.FC = () => {
@@ -35,7 +35,7 @@ const AdminBillingPage: React.FC = () => {
         {
             key: 'date',
             label: 'Date',
-            render: (transaction) => formatDateTimeSimple(transaction.last_updated_at)
+            render: (transaction) => formatStandardDate(transaction.last_updated_at, "N/A")
         },
         {
             key: 'username',
