@@ -98,6 +98,23 @@ export type BaseInstanceState = {
     cpu: CPUUsage;
 };
 
+export type ClusterMemberInfo = {
+    server_name: string;
+    status: string;
+    message: string;
+    url: string;
+    roles: Array<(string)>;
+    groups: Array<(string)>;
+};
+
+export type ClusterMemberState = {
+    server_name: string;
+    storage_pools: {
+        [key: string]: StoragePoolState;
+    };
+    sysinfo: SysInfo;
+};
+
 export type CPUUsage = {
     usage: number;
     cores: number;
@@ -113,6 +130,14 @@ export type CreateJoinTokenResponse = {
 
 export type DiskUsage = {
     usage: number;
+};
+
+export type GetClusterMembersStateInfoResponse = {
+    members_states: Array<ClusterMemberState>;
+    members_infos: Array<ClusterMemberInfo>;
+    members_leader: string;
+    members_groups: Array<(string)>;
+    members_roles: Array<(string)>;
 };
 
 export type HTTPValidationError = {
@@ -185,6 +210,29 @@ export type OsType = {
     os_type_id: number;
     os_image_name: string;
     os_image_version: string;
+};
+
+export type StoragePoolState = {
+    inodes: StoragePoolUsage;
+    space: StoragePoolUsage;
+};
+
+export type StoragePoolUsage = {
+    total: number;
+    used: number;
+};
+
+export type SysInfo = {
+    buffered_ram: number;
+    free_ram: number;
+    free_swap: number;
+    load_averages: Array<(number)>;
+    logical_cpus: number;
+    processes: number;
+    shared_ram: number;
+    total_ram: number;
+    total_swap: number;
+    uptime: number;
 };
 
 export type TransactionStatus = 'PENDING' | 'FAILED' | 'SUCCESS' | 'SCHEDULED' | 'PAID' | 'OVERDUE' | 'EXPIRED';
@@ -382,6 +430,10 @@ export type ClusterAddMemberData = {
 export type ClusterAddMemberResponse = (AddMemberResponse);
 
 export type ClusterAddMemberError = (HTTPValidationError);
+
+export type ClusterGetMembersStateResponse = (GetClusterMembersStateInfoResponse);
+
+export type ClusterGetMembersStateError = unknown;
 
 export type InstanceInstanceDetailsResponse = (InstanceDetails);
 
