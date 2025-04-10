@@ -10,7 +10,7 @@ from ..service.lxd_cluster import LXDClusterService
 from ..container import AppContainer
 
 router = APIRouter(
-    prefix="/internal/cluster",
+    prefix="/system/cluster",
     tags=["cluster"],
 )
 

@@ -109,7 +109,7 @@ export class ClusterService {
     public static clusterCreateJoinToken<ThrowOnError extends boolean = false>(options: Options<ClusterCreateJoinTokenData, ThrowOnError>) {
         return (options?.client ?? client).post<ClusterCreateJoinTokenResponse, ClusterCreateJoinTokenError, ThrowOnError>({
             ...options,
-            url: '/internal/cluster/create_token'
+            url: '/system/cluster/create-token'
         });
     }
     
@@ -119,7 +119,7 @@ export class ClusterService {
     public static clusterAddMember<ThrowOnError extends boolean = false>(options: Options<ClusterAddMemberData, ThrowOnError>) {
         return (options?.client ?? client).post<ClusterAddMemberResponse, ClusterAddMemberError, ThrowOnError>({
             ...options,
-            url: '/internal/cluster/add_member'
+            url: '/system/cluster/add-member'
         });
     }
     
@@ -129,7 +129,7 @@ export class ClusterService {
     public static clusterGetMembersState<ThrowOnError extends boolean = false>(options?: Options<unknown, ThrowOnError>) {
         return (options?.client ?? client).get<ClusterGetMembersStateResponse, ClusterGetMembersStateError, ThrowOnError>({
             ...options,
-            url: '/internal/cluster/members/state_info'
+            url: '/system/cluster/members/state-info'
         });
     }
     

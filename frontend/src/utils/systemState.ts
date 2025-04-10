@@ -22,7 +22,7 @@ interface InstanceStateInfo {
     }
 }
 
-interface ClusterMemberStateInfo {
+export interface ClusterMemberStateInfo {
     server_name: string
     status: string
     roles: string[]
