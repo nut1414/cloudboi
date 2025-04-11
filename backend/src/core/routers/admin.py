@@ -1,11 +1,14 @@
 from fastapi import APIRouter, Depends, Request
 from dependency_injector.wiring import inject, Provide
 from typing import List
+from datetime import datetime
 
 from ..container import AppContainer
 from ..utils.dependencies import get_admin_user
 from ..models.admin import (
     AdminUsersResponse,
+    AdminBillingStatsResponse,
+    AdminTransactionResponse,
     AdminInstancePlan,
     AdminInstancePlanCreateRequest,
     AdminInstancePlanCreateResponse,
@@ -76,3 +79,31 @@ async def delete_instance_plan(
 ):
     return await admin_service.delete_instance_plan(instance_plan)
 
+
+
+@router.get(
+    "/billing-stats",
+    response_model=AdminBillingStatsResponse
+)
+@inject
+async def get_billing_stats(
+    is_alltime: bool,
+    start_date: str = None,
+    end_date: str = None,
+    admin_service: AdminService = Depends(Provide[AppContainer.admin_service])
+):
+    return await admin_service.get_billing_stats(
+        is_alltime=is_alltime,
+        start_date=start_date,
+        end_date=end_date
+    )
+
+@router.get(
+    "/transactions",
+    response_model=List[AdminTransactionResponse]
+)
+@inject
+async def get_all_transactions(
+    admin_service: AdminService = Depends(Provide[AppContainer.admin_service])
+):
+    return await admin_service.get_all_transactions()

@@ -15,3 +15,18 @@ class TransactionStatus(str, Enum):
     PAID = "PAID"
     OVERDUE = "OVERDUE"
     EXPIRED = "EXPIRED"
+
+# Mapping of transaction types to their valid statuses
+TRANSACTION_TYPE_TO_STATUS = {
+    TransactionType.TOP_UP: [
+        TransactionStatus.PENDING,
+        TransactionStatus.FAILED,
+        TransactionStatus.SUCCESS
+    ],
+    TransactionType.SUBSCRIPTION_PAYMENT: [
+        TransactionStatus.SCHEDULED,
+        TransactionStatus.PAID,
+        TransactionStatus.OVERDUE,
+        TransactionStatus.EXPIRED
+    ]
+}

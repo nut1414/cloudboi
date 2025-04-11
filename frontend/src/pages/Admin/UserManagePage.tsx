@@ -5,47 +5,12 @@ import Table, { TableColumn, ExpandIndicator, CardGrid } from "../../components/
 import PageContainer from "../../components/Layout/PageContainer"
 import TopNavbar from "../../components/Common/Navbar/TopNavbar"
 import { UsersIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline"
-import InputField from "../../components/Common/InputField"
 import StatusBadge from "../../components/Common/StatusBadge"
 import Button from "../../components/Common/Button/Button"
 import { useUserManage } from "../../hooks/Admin/useUserManage"
 import ItemCard from "../../components/Common/ItemCard"
 import { CURRENCY } from "../../constant/CurrencyConstant"
-
-// SearchBar component reusing our InputField - styled like InstanceListPage
-interface SearchBarProps {
-  placeholder?: string
-  onSearch?: (query: string) => void
-  className?: string
-  initialValue?: string
-  width?: string
-}
-
-const SearchBar: React.FC<SearchBarProps> = React.memo(({
-  placeholder = "Search by username...",
-  onSearch = () => { },
-  className = "",
-  initialValue = "",
-  width = "w-64",
-}) => {
-  const [query, setQuery] = React.useState(initialValue)
-
-  const handleInputChange = useCallback((newQuery: string) => {
-    setQuery(newQuery)
-    onSearch(newQuery)
-  }, [onSearch])
-
-  return (
-    <div className={`${className} ${width}`}>
-      <InputField
-        value={query}
-        onChange={handleInputChange}
-        placeholder={placeholder}
-        endIcon={<MagnifyingGlassIcon className="w-5 h-5" />}
-      />
-    </div>
-  )
-})
+import SearchBar from "../../components/Common/SearchBar"
 
 // Content for expanded rows - instances in card layout
 const InstancesContent = React.memo(({
@@ -293,7 +258,6 @@ const UserManagePage: React.FC = () => {
         title="User Management"
         subtitle="Manage system users and their instances"
         subtitleIcon={<UsersIcon className="w-4 h-4" />}
-        maxWidth="max-w-[1200px]"
       >
         {error && (
           <div className="bg-red-500/20 text-red-200 p-4 rounded-md mb-4">

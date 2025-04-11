@@ -20,10 +20,15 @@ const SystemStatusPage: React.FC = () => {
   }, [updateClusterState])
 
   if (error) {
+    // Extract the error message from the error object
+    const errorMessage = typeof error === 'object' 
+      ? error.message || 'An unknown error occurred' 
+      : String(error)
+      
     return (
       <PageContainer title="System Status">
         <div className="bg-red-500/20 text-red-400 p-4 rounded-lg">
-          Error loading system status: {error}
+          Error loading system status: {errorMessage}
         </div>
       </PageContainer>
     )

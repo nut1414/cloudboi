@@ -10,6 +10,7 @@ from ..tables.user import User
 from ..tables.user_wallet import UserWallet
 from ..tables.user_subscription import UserSubscription
 from ..tables.transaction import Transaction
+from ..tables.user_instance import UserInstance
 from ...models.user import UserInDB as UserModel, UserWallet as UserWalletModel
 from ...models.transaction import Transaction as TransactionModel
 from ...constants.transaction_const import TransactionStatus, TransactionType
@@ -87,6 +88,40 @@ class TransactionOperation(BaseOperation):
             stmt = select(Transaction).join(User).where(User.username == username)
             result = (await db.execute(stmt)).scalars().all()
             return self.to_pydantic(TransactionModel, result)
+    
+    async def get_all_transactions(self) -> List[TransactionModel]:
+        async with self.session() as db:
+            stmt = select(Transaction)
+            result = (await db.execute(stmt)).scalars().all()
+            return self.to_pydantic(TransactionModel, result)
+    
+    async def get_all_transactions_with_details(self) -> List[Tuple[Transaction, User, Optional[UserInstance]]]:
+        async with self.session() as db:
+            # Join with User to get username
+            stmt = select(Transaction, User).join(User, Transaction.user_id == User.user_id)
+            result = (await db.execute(stmt)).all()
+            
+            # Process each transaction to fetch related instance info if needed
+            detailed_transactions = []
+            for transaction, user in result:
+                instance = None
+                # Only for subscription payments, extract subscription_id and find the instance
+                if transaction.transaction_type == TransactionType.SUBSCRIPTION_PAYMENT:
+                    # Extract subscription ID from reference_id (format: "subscription_{subscription_id}")
+                    if transaction.reference_id.startswith("subscription_"):
+                        subscription_id = int(transaction.reference_id.split("_")[1])
+                        # Get the subscription and related instance
+                        subscription_stmt = select(UserSubscription, UserInstance).join(
+                            UserInstance, 
+                            UserSubscription.instance_id == UserInstance.instance_id
+                        ).where(UserSubscription.subscription_id == subscription_id)
+                        subscription_result = (await db.execute(subscription_stmt)).first()
+                        if subscription_result:
+                            _, instance = subscription_result
+                
+                detailed_transactions.append((transaction, user, instance))
+            
+            return detailed_transactions
     
     async def get_transactions_by_reference_ids(
         self,

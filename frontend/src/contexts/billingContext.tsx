@@ -4,6 +4,8 @@ import {
     UserWalletResponse,
     UserTransactionResponse,
     UserBillingOverviewResponse,
+    AdminBillingStatsResponse,
+    AdminTransactionResponse,
 } from "../client"
 import { createContextProvider, BaseContextState, ReducerAction } from './baseContext'
 
@@ -12,6 +14,8 @@ interface BillingContextState extends BaseContextState {
     userWallets: Record<string, UserWalletResponse | null>
     userTransactions: UserTransactionResponse[] | null
     userBillingOverview: UserBillingOverviewResponse | null
+    adminBillingStats: AdminBillingStatsResponse | null
+    allTransactions: AdminTransactionResponse[] | null
     isLoading: boolean
     error: string | null
     dispatch?: React.Dispatch<ReducerAction<BillingContextState>>
@@ -22,6 +26,8 @@ export const BILLING_ACTIONS = {
     SET_USER_WALLET: 'SET_USER_WALLET',
     SET_USER_TRANSACTIONS: 'SET_USER_TRANSACTIONS',
     SET_USER_BILLING_OVERVIEW: 'SET_USER_BILLING_OVERVIEW',
+    SET_ADMIN_BILLING_STATS: 'SET_ADMIN_BILLING_STATS',
+    SET_ALL_TRANSACTIONS: 'SET_ALL_TRANSACTIONS',
     SET_LOADING: 'SET_LOADING',
     SET_ERROR: 'SET_ERROR',
     START_FETCH: 'START_FETCH',
@@ -52,6 +58,16 @@ const billingReducer = (
             return {
                 ...state,
                 userBillingOverview: action.payload,
+            }
+        case BILLING_ACTIONS.SET_ADMIN_BILLING_STATS:
+            return {
+                ...state,
+                adminBillingStats: action.payload,
+            }
+        case BILLING_ACTIONS.SET_ALL_TRANSACTIONS:
+            return {
+                ...state,
+                allTransactions: action.payload,
             }
         case BILLING_ACTIONS.SET_LOADING:
             return {
@@ -91,6 +107,8 @@ const initialState: BillingContextState = {
     userWallets: {},
     userTransactions: null,
     userBillingOverview: null,
+    adminBillingStats: null,
+    allTransactions: null,
     isLoading: false,
     error: null,
 }

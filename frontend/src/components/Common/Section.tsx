@@ -7,6 +7,7 @@ interface SectionProps {
   description?: string
   children: ReactNode
   rightContent?: ReactNode
+  className?: string
 }
 
 const Section: React.FC<SectionProps> = ({
@@ -14,10 +15,11 @@ const Section: React.FC<SectionProps> = ({
   icon,
   description,
   children,
-  rightContent
+  rightContent,
+  className = ""
 }) => {
   return (
-    <div className="bg-[#192A51] rounded-xl p-6 border border-blue-900/30">
+    <div className={`bg-[#192A51] rounded-xl p-6 border border-blue-900/30 ${className}`}>
       <div className="flex justify-between items-start mb-4">
         <div>
           <h2 className="text-xl font-medium text-white flex items-center gap-2">

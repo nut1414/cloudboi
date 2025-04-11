@@ -24,6 +24,7 @@ const Support = lazy(() => import("./pages/User/support"))
 
 // Admin pages
 const UserManagePage = lazy(() => import("./pages/Admin/UserManagePage"))
+const AdminBillingPage = lazy(() => import("./pages/Admin/AdminBillingPage"))
 const InstancePlanManagePage = lazy(() => import("./pages/Admin/InstancePlanManagePage"))
 const SystemStatusPage = lazy(() => import("./pages/Admin/SystemStatusPage"))
 /**
@@ -114,7 +115,7 @@ const routes: RouteObject[] = [
       },
       {
         path: "billing",
-        element: <div>Billing Page</div>,
+        element: <AdminBillingPage />,
       },
       {
         path: "credits",

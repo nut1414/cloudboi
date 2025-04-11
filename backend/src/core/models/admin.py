@@ -1,10 +1,11 @@
 from typing import List, Optional
 from datetime import datetime
 import uuid
+
 from .base_model import BaseModel
 from .user import UserRole, UserInDB
 from .instance import UserInstanceFromDB, InstancePlan
-
+from ..constants.transaction_const import TransactionStatus, TransactionType
 
 class AdminUsersWithDetails(UserInDB):
     role: UserRole
@@ -17,8 +18,29 @@ class AdminUser(BaseModel):
     role: UserRole
     instances: List[UserInstanceFromDB]
 
+class AdminBillingStatsByStatus(BaseModel):
+    status: TransactionStatus
+    amount: float
+
+class AdminBillingStatsByType(BaseModel):
+    type: TransactionType
+    stats: List[AdminBillingStatsByStatus]
+
 class AdminUsersResponse(BaseModel):
     users: List[AdminUser]
+
+class AdminBillingStatsResponse(BaseModel):
+    stats: List[AdminBillingStatsByType]
+
+class AdminTransactionResponse(BaseModel):
+    transaction_id: uuid.UUID
+    username: str
+    instance_name: Optional[str] = None
+    transaction_type: TransactionType
+    transaction_status: TransactionStatus
+    amount: float
+    created_at: datetime
+    last_updated_at: datetime
 
 class AdminInstancePlan(InstancePlan):
     is_editable: bool
