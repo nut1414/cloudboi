@@ -6,7 +6,7 @@ from ...core.commons.exception import create_exception_class
 from ..config import LXDConfig
 from ...core.utils.decorator import create_decorator
 from ...core.utils.logging import logger
-from ...core.models.instance import LxdInstanceState
+from ...core.models.instance import LxdInstanceState, WebsocketUrls
 from ...core.models.lxd_cluster import ClusterMemberState, SysInfo, StoragePoolState, StoragePoolUsage
 
 LXDManagerException = create_exception_class("LXDManager")
@@ -169,10 +169,10 @@ class LXDManager:
             raise LXDManagerException(f"Failed to execute command: {str(e)}")
     
     @_ensure_connected()
-    def get_interactive_websocket(
+    def get_interactive_terminal_websocket(
         self,
         container: models.Instance
-    ) -> Dict[str, str]:
+    ) -> WebsocketUrls:
         try:
             if container.status != "Running":
                 self.start_container(container)
@@ -181,18 +181,64 @@ class LXDManager:
             for command in shell_options:
                 res = container.raw_interactive_execute(
                     commands=[command],
-                    environment={"TERM": "xterm-256color"}
+                    environment={
+                        "TERM": "xterm-256color",
+                        "HOME": "/root"
+                    }
                 )
                 
                 if "ws" in res and "control" in res:
                     ws_url = f"wss://{LXDConfig.LXD_HOST}{res['ws']}"
                     control_url = f"wss://{LXDConfig.LXD_HOST}{res['control']}"
 
-                    return {"ws": ws_url, "control": control_url}
+                    return WebsocketUrls(ws=ws_url, control=control_url)
             
             raise LXDManagerException("Failed to obtain interactive WebSocket URL")
         except exceptions.LXDAPIException as e:
             raise LXDManagerException(f"Failed to setup websocket execution: {str(e)}")
+    
+    @_ensure_connected()
+    def get_interactive_console_websocket(
+        self,
+        container: models.Instance
+    ) -> WebsocketUrls:
+        # Reference: https://github.com/canonical/lxd-ui/blob/main/src/pages/instances/InstanceTextConsole.tsx#L88
+        try:
+            if container.status != "Running":
+                self.start_container(container)
+            
+            # Request a console from the LXD API
+            response = self.client.api.instances[container.name].console.post(
+                json={
+                    "wait-for-websocket": True,
+                    "type": "console"
+                }
+            )
+            
+            response_data = response.json()
+            operation_url = response_data["operation"].split("?")[0]
+            secret_0 = response_data["metadata"]["metadata"]["fds"]["0"]
+            secret_control = response_data["metadata"]["metadata"]["fds"]["control"]
+            
+            # Construct WebSocket URLs
+            base_url = f"wss://{LXDConfig.LXD_HOST}{operation_url}"
+            ws_url = f"{base_url}/websocket?secret={secret_0}"
+            control_url = f"{base_url}/websocket?secret={secret_control}"
+            
+            return WebsocketUrls(ws=ws_url, control=control_url)
+            
+        except exceptions.LXDAPIException as e:
+            raise LXDManagerException(f"Failed to setup console websocket: {str(e)}")
+    
+    @_ensure_connected()
+    def get_console_buffer(self, container: models.Instance) -> str:
+        try:
+            response = self.client.api.instances[container.name].console.get()
+            # The response is a requests.Response object
+            # Use .text property (not method) to get the decoded content
+            return response.text
+        except exceptions.LXDAPIException as e:
+            raise LXDManagerException(f"Failed to get console buffer: {str(e)}")
     
     @_ensure_connected()
     def set_root_password(self, container: models.Instance, password: str) -> bool:

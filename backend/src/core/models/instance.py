@@ -14,7 +14,6 @@ class MemoryUsageRaw(BaseModel):
     usage_peak: int # in bytes
     swap_usage: int # in bytes
     swap_usage_peak: int # in bytes
-    
 
 class MemoryUsage(BaseModel):
     usage: int # in bytes
@@ -60,6 +59,9 @@ class BaseInstanceState(BaseModel):
     memory: MemoryUsage
     cpu: CPUUsage  
 
+class WebsocketUrls(BaseModel):
+    ws: str
+    control: str
 
 class UserInstance(BaseModel):
     instance_id: Optional[uuid.UUID] = None

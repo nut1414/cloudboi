@@ -543,6 +543,16 @@ export type InstanceRestartInstanceResponse = (InstanceControlResponse);
 
 export type InstanceRestartInstanceError = (HTTPValidationError);
 
+export type InstanceGetInstanceConsoleBufferData = {
+    path: {
+        instance_name: string;
+    };
+};
+
+export type InstanceGetInstanceConsoleBufferResponse = (string);
+
+export type InstanceGetInstanceConsoleBufferError = (HTTPValidationError);
+
 export type InstanceGetInstanceStateData = {
     path: {
         instance_name: string;

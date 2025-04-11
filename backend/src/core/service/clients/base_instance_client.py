@@ -67,7 +67,7 @@ class BaseInstanceClient(ABC, Generic[InstanceType]):
         pass
 
     @abstractmethod
-    def websocket_session(
+    def terminal_websocket_session(
         self, 
         instance_identifier: Any, 
         client_ws: WebSocket, 

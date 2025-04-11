@@ -115,21 +115,50 @@ async def restart_instance(
     return await instance_service.start_instance(instance_name=instance_name)
 
 @router.websocket(
-    "/ws/{instance_name}",
+    "/ws/terminal/{instance_name}",
     dependencies=[Depends(get_current_user_ws)]
 )
 @inject
-async def websocket_instance(
+async def terminal_websocket_instance(
     websocket: WebSocket,
     instance_name: str,
     instance_service: InstanceService = Depends(Provide[AppContainer.instance_service]),
 ):
     try:
-        await instance_service.websocket_session(instance_name=instance_name, client_ws=websocket)
+        await instance_service.terminal_websocket_session(instance_name=instance_name, client_ws=websocket)
     except Exception as e:
         logger.error(f"Failed to create websocket session: {str(e)}")
         if websocket.client_state != WebSocketState.DISCONNECTED:
             await websocket.close(code=1011, reason=str(e))
+
+@router.websocket(
+    "/ws/console/{instance_name}",
+    dependencies=[Depends(get_current_user_ws)]
+)
+@inject
+async def console_websocket_instance(
+    websocket: WebSocket,
+    instance_name: str,
+    instance_service: InstanceService = Depends(Provide[AppContainer.instance_service]),
+):
+    try:
+        await instance_service.console_websocket_session(instance_name=instance_name, client_ws=websocket)
+    except Exception as e:
+        logger.error(f"Failed to create console websocket session: {str(e)}")
+        if websocket.client_state != WebSocketState.DISCONNECTED:
+            await websocket.close(code=1011, reason=str(e))
+
+@router.get(
+    "/{instance_name}/console-buffer",
+    response_model=str,
+    dependencies=[Depends(get_current_user)]
+)
+@inject
+async def get_instance_console_buffer(
+    instance_name: str,
+    instance_service: InstanceService = Depends(Provide[AppContainer.instance_service])
+):
+    return await instance_service.get_instance_console_buffer(instance_name=instance_name)
 
 @router.get(
     "/{instance_name}/state",

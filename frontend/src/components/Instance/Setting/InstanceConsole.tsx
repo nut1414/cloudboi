@@ -1,16 +1,16 @@
-import React, { useEffect, useMemo } from 'react'
-import { useTerminalWebSocket } from '../../../hooks/Instance/useTerminalConnection'
+import React, { useEffect } from 'react'
+import { useConsoleWebSocket } from '../../../hooks/Instance/useConsoleConnection'
 import { useXTerm } from '../../../hooks/useXTerm'
 import { ArrowPathIcon } from '@heroicons/react/24/outline'
 import { WS_URL } from '../../../config/api'
 import 'xterm/css/xterm.css'
 
-interface InstanceTerminalProps {
+interface InstanceConsoleProps {
     instanceName: string,
     isRunning: boolean,
 }
 
-const InstanceTerminal: React.FC<InstanceTerminalProps> = ({ instanceName, isRunning }) => {
+const InstanceConsole: React.FC<InstanceConsoleProps> = ({ instanceName, isRunning }) => {
     // Use terminal hook
     const {
         terminalRef,
@@ -25,8 +25,9 @@ const InstanceTerminal: React.FC<InstanceTerminalProps> = ({ instanceName, isRun
         connected,
         error,
         sendData,
-        updateTerminalSize
-    } = useTerminalWebSocket(
+        updateTerminalSize,
+        isBufferLoaded
+    } = useConsoleWebSocket(
         WS_URL,
         instanceName,
         writeToTerminal,
@@ -74,7 +75,7 @@ const InstanceTerminal: React.FC<InstanceTerminalProps> = ({ instanceName, isRun
                 )}
 
                 <div className="text-xs text-gray-400">
-                    {instanceName}
+                    {instanceName} - Text Console
                 </div>
             </div>
 
@@ -85,14 +86,16 @@ const InstanceTerminal: React.FC<InstanceTerminalProps> = ({ instanceName, isRun
                 {!isRunning ? (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
                         <div className="flex items-center space-x-3 bg-red-900/20 px-4 py-2 rounded-md border border-red-800/30">
-                            <span className="text-gray-300">Terminal unavailable - <span className="text-red-400 font-medium">Instance not running</span></span>
+                            <span className="text-gray-300">Console unavailable - <span className="text-red-400 font-medium">Instance not running</span></span>
                         </div>
                     </div>
                 ) : !connected && !error ? (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
                         <div className="flex items-center space-x-3 bg-[#172a47] px-4 py-2 rounded-md border border-blue-800/30">
                             <div className="w-5 h-5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
-                            <span className="text-blue-200">Connecting to terminal...</span>
+                            <span className="text-blue-200">
+                                {isBufferLoaded ? 'Connecting to console...' : 'Loading console buffer...'}
+                            </span>
                         </div>
                     </div>
                 ) : null}
@@ -104,10 +107,10 @@ const InstanceTerminal: React.FC<InstanceTerminalProps> = ({ instanceName, isRun
             </div>
 
             <div className="px-3 py-2 bg-[#172a47] border-t border-blue-900/30 text-xs text-gray-400">
-                Press Ctrl+C to cancel, Ctrl+D to exit
+                Instance Text Console - Press Ctrl+C to cancel, Ctrl+D to exit
             </div>
         </div>
     )
 }
 
-export default InstanceTerminal
+export default InstanceConsole 

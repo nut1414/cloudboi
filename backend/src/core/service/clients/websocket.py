@@ -99,8 +99,8 @@ class LXDWebSocketSession:
                     data_to_send = message
                 bytearray_data = self._to_uint8_array(data_to_send)
                 await self.lxd_ws.send(bytearray_data)
-        except WebSocketDisconnect:
-            logger.info(f"Client disconnected from instance {self.instance_name}")
+        except (asyncio.CancelledError, WebSocketDisconnect) as e:
+            logger.info(f"Client connection ended for instance {self.instance_name}: {str(e)}")
         except Exception as e:
             raise WebSocketException(f"Error in client_to_lxd: {str(e)}")
 
@@ -108,31 +108,23 @@ class LXDWebSocketSession:
         """Handle messages from LXD to the client"""
         try:
             while self._running:
-                # Receive data from LXD
                 message = await self.lxd_ws.recv()
-                
-                # If it's already bytes, send directly, otherwise encode
-                if isinstance(message, bytes):
-                    await self.client_ws.send_bytes(message)
-                else:
-                    # Convert to binary data for the frontend's expected format
-                    binary_data = message.encode('utf-8')
-                    await self.client_ws.send_bytes(binary_data)
-                    
-        except websockets.exceptions.ConnectionClosed:
-            logger.info(f"LXD connection closed for instance {self.instance_name}")
+                await self.client_ws.send_bytes(
+                    message if isinstance(message, bytes) 
+                    else message.encode('utf-8')
+                )
+        except (asyncio.CancelledError, websockets.exceptions.ConnectionClosed) as e:
+            logger.info(f"LXD connection ended for instance {self.instance_name}: {str(e)}")
         except Exception as e:
             raise WebSocketException(f"Error in lxd_to_client: {str(e)}")
 
     async def _start_tasks(self):
         """Create and start the forwarding tasks"""
         try:
-            client_to_lxd_task = asyncio.create_task(self._client_to_lxd())
-            self._tasks.append(client_to_lxd_task)
-
-            lxd_to_client_task = asyncio.create_task(self._lxd_to_client())
-            self._tasks.append(lxd_to_client_task)
-
+            self._tasks.extend([
+                asyncio.create_task(self._client_to_lxd()),
+                asyncio.create_task(self._lxd_to_client())
+            ])
         except Exception as e:
             raise WebSocketException(f"Failed to start tasks: {str(e)}")
     
@@ -147,16 +139,11 @@ class LXDWebSocketSession:
     async def _handle_resize(self, resize_args: dict):
         """Handle terminal resize events"""
         try:
-            # Extract width and height from frontend format
-            width = resize_args.get('width', '80')
-            height = resize_args.get('height', '24')
-            
-            # Create resize data for LXD
             resize_data = {
                 'command': 'window-resize',
                 'args': {
-                    'width': width,
-                    'height': height
+                    'width': resize_args.get('width', '80'),
+                    'height': resize_args.get('height', '24')
                 }
             }
             await self.lxd_control.send(json.dumps(resize_data))
@@ -166,15 +153,17 @@ class LXDWebSocketSession:
     async def run(self):
         """Start the WebSocket forwarding"""
         try:
-            done, pending = await asyncio.wait(
+            done, _ = await asyncio.wait(
                 self._tasks,
                 return_when=asyncio.FIRST_COMPLETED
             )
-
+            
+            # Check for exceptions in completed tasks
             for task in done:
                 if task.exception():
                     raise task.exception()
-
+        except asyncio.CancelledError:
+            logger.info(f"WebSocket session cancelled for instance {self.instance_name}")
         except Exception as e:
             raise WebSocketException(f"Error in WebSocket session: {str(e)}")
         finally:
