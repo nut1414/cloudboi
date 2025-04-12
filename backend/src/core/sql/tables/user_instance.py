@@ -25,9 +25,6 @@ class UserInstance(Base):
     status: Mapped[str] = mapped_column(nullable=False)
     created_at: Mapped[datetime] = mapped_column(UTCDateTime, nullable=False)
     last_updated_at: Mapped[datetime] = mapped_column(UTCDateTime, nullable=False)
-    # TBD: password_hash, ip_address
-    # password_hash: Mapped[str] = mapped_column(nullable=False)
-    # ip_address: Mapped[str] = mapped_column(nullable=False)
 
     instance_plan: Mapped['InstancePlan'] = relationship('InstancePlan', back_populates='user_instances')
     os_type: Mapped['OsType'] = relationship('OsType', back_populates='user_instances')

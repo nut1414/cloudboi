@@ -93,6 +93,7 @@ export const useXTerm = () => {
 
     return {
         terminalRef,
+        xtermRef,
         writeToTerminal,
         setTerminalDataHandlerV2,
         fitTerminal,

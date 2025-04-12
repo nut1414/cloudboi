@@ -100,7 +100,7 @@ class LXDWebSocketSession:
                 bytearray_data = self._to_uint8_array(data_to_send)
                 await self.lxd_ws.send(bytearray_data)
         except (asyncio.CancelledError, WebSocketDisconnect) as e:
-            logger.info(f"Client connection ended for instance {self.instance_name}: {str(e)}")
+            raise WebSocketException(f"Client connection ended: {str(e)}")
         except Exception as e:
             raise WebSocketException(f"Error in client_to_lxd: {str(e)}")
 
@@ -114,7 +114,7 @@ class LXDWebSocketSession:
                     else message.encode('utf-8')
                 )
         except (asyncio.CancelledError, websockets.exceptions.ConnectionClosed) as e:
-            logger.info(f"LXD connection ended for instance {self.instance_name}: {str(e)}")
+            raise WebSocketException(f"LXD connection ended: {str(e)}")
         except Exception as e:
             raise WebSocketException(f"Error in lxd_to_client: {str(e)}")
 
@@ -163,7 +163,7 @@ class LXDWebSocketSession:
                 if task.exception():
                     raise task.exception()
         except asyncio.CancelledError:
-            logger.info(f"WebSocket session cancelled for instance {self.instance_name}")
+            raise WebSocketException(f"WebSocket session cancelled: {str(self.instance_name)}")
         except Exception as e:
             raise WebSocketException(f"Error in WebSocket session: {str(e)}")
         finally:

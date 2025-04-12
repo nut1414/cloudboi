@@ -197,6 +197,10 @@ export type InstancePlan = {
     cost_hour: number;
 };
 
+export type InstanceResetPasswordRequest = {
+    password: string;
+};
+
 export type MemoryUsage = {
     usage: number;
     total: number;
@@ -562,6 +566,17 @@ export type InstanceGetInstanceStateData = {
 export type InstanceGetInstanceStateResponse = (BaseInstanceState);
 
 export type InstanceGetInstanceStateError = (HTTPValidationError);
+
+export type InstanceResetInstancePasswordData = {
+    body: InstanceResetPasswordRequest;
+    path: {
+        instance_name: string;
+    };
+};
+
+export type InstanceResetInstancePasswordResponse = (InstanceControlResponse);
+
+export type InstanceResetInstancePasswordError = (HTTPValidationError);
 
 export type RootRootResponse = (unknown);
 

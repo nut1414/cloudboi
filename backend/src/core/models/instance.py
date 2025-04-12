@@ -109,6 +109,9 @@ class InstanceCreateResponse(BaseModel):
     instance_status: str
     created_at: datetime
 
+class InstanceResetPasswordRequest(BaseModel):
+    password: str
+
 class UserInstanceResponse(BaseModel):
     instance_id: uuid.UUID
     instance_name: str

@@ -8,7 +8,7 @@ from ..service.helpers.instance_helper import InstanceHelper
 from ..utils.logging import logger
 from ..utils.dependencies import get_current_user, get_current_user_ws
 from ..service.instance import InstanceService
-from ..models.instance import BaseInstanceState, InstanceDetails, InstanceCreateRequest, InstanceCreateResponse, UserInstanceResponse, InstanceControlResponse
+from ..models.instance import BaseInstanceState, InstanceDetails, InstanceCreateRequest, InstanceCreateResponse, InstanceResetPasswordRequest, UserInstanceResponse, InstanceControlResponse
 from ..container import AppContainer
 
 
@@ -171,3 +171,17 @@ async def get_instance_state(
     instance_service: InstanceService = Depends(Provide[AppContainer.instance_service])
 ):
     return await instance_service.get_instance_state(instance_name=instance_name)
+
+@router.post(
+    "/{instance_name}/reset-password",
+    response_model=InstanceControlResponse,
+    dependencies=[Depends(get_current_user)]
+)
+@inject
+async def reset_instance_password(
+    instance_name: str,
+    reset_password_request: InstanceResetPasswordRequest,
+    instance_service: InstanceService = Depends(Provide[AppContainer.instance_service])
+):
+    return await instance_service.reset_instance_password(instance_name=instance_name, reset_password_request=reset_password_request)
+

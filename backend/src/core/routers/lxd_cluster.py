@@ -8,6 +8,7 @@ from ..models.lxd_cluster import (
 )
 from ..service.lxd_cluster import LXDClusterService
 from ..container import AppContainer
+from ..utils.dependencies import get_admin_user
 
 router = APIRouter(
     prefix="/system/cluster",
@@ -39,7 +40,8 @@ async def add_member(
   
 @router.get(
     "/members/state-info",
-    response_model=GetClusterMembersStateInfoResponse
+    response_model=GetClusterMembersStateInfoResponse,
+    dependencies=[Depends(get_admin_user)]
 )
 @inject
 async def get_members_state(

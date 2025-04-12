@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { useWebSocketBase } from "../useWebsocket"
 import { InstanceService } from "../../client"
+import { Terminal } from "xterm";
 
 // Hook for managing WebSocket connection for console
 export const useConsoleWebSocket = (
@@ -8,7 +9,8 @@ export const useConsoleWebSocket = (
     instanceName: string,
     onMessage: (data: string | ArrayBuffer) => void,
     getTerminalDimensions: () => { rows: string; cols: string } | undefined,
-    isRunning: boolean
+    isRunning: boolean,
+    xtermRef: React.RefObject<Terminal>
 ) => {
     const [consoleBuffer, setConsoleBuffer] = useState<string>("")
 
@@ -46,7 +48,7 @@ export const useConsoleWebSocket = (
     // Apply console buffer to terminal when it's loaded
     useEffect(() => {
         if (baseConnection.isPreconnectionComplete && consoleBuffer && isRunning) {
-            onMessage(consoleBuffer)
+            xtermRef.current?.write(consoleBuffer)
         }
     }, [baseConnection.isPreconnectionComplete, consoleBuffer, onMessage, isRunning])
 

@@ -15,7 +15,7 @@ from ..models.instance import (
     UserInstanceResponse,
     InstanceControlResponse,
     BaseInstanceState,
-    LxdInstanceState
+    InstanceResetPasswordRequest
 )
 from ..sql.operations import InstanceOperation
 from ..utils.dependencies import user_session_ctx
@@ -205,7 +205,6 @@ class InstanceService:
     @require_roles([UserRole.ADMIN, UserRole.USER])
     @require_instance_ownership()
     async def terminal_websocket_session(self, instance_name: str, client_ws: WebSocket):
-        # Only check if instance is running
         instance = await self.instance_opr.get_instance_by_name(instance_name)
 
         if instance.status != "Running":
@@ -216,7 +215,6 @@ class InstanceService:
     @require_roles([UserRole.ADMIN, UserRole.USER])
     @require_instance_ownership()
     async def console_websocket_session(self, instance_name: str, client_ws: WebSocket):
-        # Only check if instance is running
         instance = await self.instance_opr.get_instance_by_name(instance_name)
 
         if instance.status != "Running":
@@ -227,11 +225,10 @@ class InstanceService:
     @require_roles([UserRole.ADMIN, UserRole.USER])
     @require_instance_ownership()
     async def get_instance_console_buffer(self, instance_name: str) -> str:
-        # Get instance console buffer
         instance = await self.instance_opr.get_instance_by_name(instance_name)
         
-        if not instance:
-            raise HTTPException(status_code=404, detail="Instance not found")
+        if instance.status != "Running":
+            raise HTTPException(status_code=400, detail="Instance is not running")
         
         try:
             return await self.lxd_client.get_instance_console_buffer(instance_name)
@@ -240,6 +237,22 @@ class InstanceService:
                 status_code=500,
                 detail=f"Failed to get instance console buffer: {str(e)}"
             )
+    
+    @require_roles([UserRole.ADMIN, UserRole.USER])
+    @require_instance_ownership()
+    async def reset_instance_password(self, instance_name: str, reset_password_request: InstanceResetPasswordRequest) -> InstanceControlResponse:
+        instance = await self.instance_opr.get_instance_by_name(instance_name)
+
+        if instance.status != "Running":
+            raise HTTPException(status_code=400, detail="Instance is not running")
+        
+        await self.lxd_client.set_instance_password(instance_name, reset_password_request.password)
+
+        return InstanceControlResponse(
+            instance_id=instance.instance_id,
+            instance_name=instance.hostname,
+            is_success=True
+        )
 
     @require_roles([UserRole.ADMIN, UserRole.USER])
     @require_instance_ownership()
