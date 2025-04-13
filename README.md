@@ -101,7 +101,10 @@ make setup
 
 ## Running tests locally
 ```sh
-# Run all E2E tests
+# First, navigate to the test directory
+cd test
+
+# Run all E2E tests locally
 make test-e2e
 
 # Generate HTML report
@@ -113,6 +116,7 @@ make test-e2e-headed
 
 ## Running tests with Docker
 ```sh
+# Make sure you're in the project root directory (not in the test directory)
 # Build the test container
 make test-build
 

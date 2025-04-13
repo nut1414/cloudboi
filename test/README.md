@@ -67,7 +67,7 @@ The report will be available at `test/reports/e2e-report.html`.
 
 ### Run a specific test file:
 ```
-make test-file FILE=e2e/test_example.py
+make test-file FILE=e2e/scenarios/test_example.py
 ```
 
 ### Run tests with a specific marker:
@@ -99,14 +99,19 @@ The testing setup follows the same pattern as other services in the project:
 
 ### Build and Run Tests
 ```
+# First, navigate to the project root directory (if you're in the test directory)
+cd ..
+
+# Then run the Docker test commands
 make test-build    # Build the test container
 make test-e2e      # Run all E2E tests in the container
 ```
 
 ### Other Docker Test Commands
 ```
+# Run these from the project root directory
 make test-e2e-report               # Generate HTML test report
-make test-file FILE=e2e/test.py    # Run a specific test file
+make test-file FILE=e2e/scenarios/test_example.py    # Run a specific test file
 make test-marked MARKER=smoke      # Run tests with a specific marker
 ```
 
@@ -167,21 +172,28 @@ The E2E testing architecture follows the Page Object Model (POM) pattern with so
 ### Directory Structure
 
 ```
-test/e2e/
-├── pages/              # Page objects
-│   ├── base_class.py   # Base page class
-│   ├── page_navigator.py # Navigation helper
-│   ├── landing_page.py  # Landing page used as a template for other pages
-│   ├── auth/           # Authentication pages
-│   ├── instance/       # Instance management pages
-│   └── admin/          # Admin pages
-├── data/               # Data models for test fixtures
-│   ├── models.py       # Data classes for structured test data
-│   └── __init__.py
-├── scenarios/          # Test scenarios
-│   └── test_*.py       # Test scenario files
-├── conftest.py         # Global fixtures and test configuration
-└── README.md           # This documentation
+test/
+├── Dockerfile           # Docker configuration for tests
+├── Makefile             # Make commands for test operations
+├── README.md            # This documentation
+├── requirements.in      # Core dependencies
+├── requirements.txt     # Generated dependencies with versions
+└── e2e/                 # End-to-end tests directory
+    ├── pages/           # Page objects
+    │   ├── base_class.py   # Base page class
+    │   ├── page_navigator.py # Navigation helper
+    │   ├── landing_page.py  # Landing page used as a template for other pages
+    │   ├── auth/           # Authentication pages
+    │   ├── instance/       # Instance management pages
+    │   ├── admin/          # Admin pages
+    │   └── user/           # User profile pages
+    ├── data/            # Data models for test fixtures
+    │   ├── models.py       # Data classes for structured test data
+    │   └── __init__.py
+    ├── scenarios/       # Test scenarios
+    │   └── test_*.py       # Test scenario files
+    ├── conftest.py      # Global fixtures and test configuration
+    └── __init__.py
 ```
 
 ### Writing Page Objects
