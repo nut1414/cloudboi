@@ -137,3 +137,6 @@ db_data
 certs
 
 cloud-init.yaml
+
+.pytest_cache
+test/reports

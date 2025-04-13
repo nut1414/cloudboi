@@ -2,6 +2,7 @@ SHELL := /bin/bash
 
 DC_DB = docker compose -f ./docker/db/docker-compose.yaml
 DC_APP = docker compose -f ./docker/app/docker-compose.yaml
+DC_TEST = docker compose -f ./docker/test/docker-compose.yaml
 
 # DOCKER
 
@@ -53,6 +54,26 @@ frontend-rebuild: frontend-down frontend-build frontend-up
 
 rebuild-all: db-rebuild backend-rebuild
 	@echo "All containers rebuilt successfully"
+
+# TESTING
+
+test-build:
+	${DC_TEST} build
+
+test-run:
+	${DC_TEST} run --rm test
+
+test-e2e:
+	${DC_TEST} run --rm test make test-e2e
+
+test-e2e-report:
+	${DC_TEST} run --rm test make test-e2e-report
+
+test-file:
+	${DC_TEST} run --rm test make test-file FILE=${FILE}
+
+test-marked:
+	${DC_TEST} run --rm test make test-marked MARKER=${MARKER}
 
 # LOCAL
 

@@ -26,15 +26,15 @@ const HeroSection: React.FC<HeroSectionProps> = ({
   platformFeatures
 }) => {
   return (
-    <div className="flex flex-col md:flex-row items-center justify-between gap-10 mb-16">
+    <div className="flex flex-col md:flex-row items-center justify-between gap-10 mb-16" data-testid="hero-section">
       <div className="md:w-1/2">
-        <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
+        <h1 className="text-4xl md:text-5xl font-bold text-white mb-6" data-testid="hero-title">
           {title}
         </h1>
-        <p className="text-xl md:text-2xl text-gray-300 mb-6">
+        <p className="text-xl md:text-2xl text-gray-300 mb-6" data-testid="hero-subtitle">
           {subtitle}
         </p>
-        <p className="text-lg text-gray-300 mb-8">
+        <p className="text-lg text-gray-300 mb-8" data-testid="hero-description">
           {description}
         </p>
         <div className="flex flex-wrap gap-4">
@@ -42,11 +42,13 @@ const HeroSection: React.FC<HeroSectionProps> = ({
             label={primaryButton.label}
             href={primaryButton.href}
             variant={primaryButton.variant}
+            data-testid="hero-primary-button"
           />
           <Button 
             label={secondaryButton.label}
             href={secondaryButton.href}
             variant={secondaryButton.variant}
+            data-testid="hero-secondary-button"
           />
         </div>
       </div>
@@ -59,7 +61,10 @@ const HeroSection: React.FC<HeroSectionProps> = ({
 
 const PlatformCard: React.FC<{ features: FeatureItem[] }> = ({ features }) => {
   return (
-    <div className="bg-[#192A51] rounded-xl overflow-hidden shadow-xl border border-blue-900/30">
+    <div 
+      className="bg-[#192A51] rounded-xl overflow-hidden shadow-xl border border-blue-900/30"
+      data-testid="platform-card"
+    >
       <div className="p-6">
         <CloudIcon className="h-16 w-16 text-purple-500 mb-4" />
         <h2 className="text-2xl font-bold text-white mb-2">CloudBoi Platform</h2>
@@ -70,7 +75,7 @@ const PlatformCard: React.FC<{ features: FeatureItem[] }> = ({ features }) => {
       <div className="bg-[#23375F] p-6 border-t border-blue-900/30">
         <ul className="space-y-4">
           {features.map((feature, index) => (
-            <li key={index} className="flex items-start gap-3">
+            <li key={index} className="flex items-start gap-3" data-testid={`platform-feature-${index}`}>
               <span className="text-purple-500 flex-shrink-0 mt-1">{feature.icon}</span>
               <span className="text-white">{feature.label}</span>
             </li>
