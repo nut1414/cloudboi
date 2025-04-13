@@ -37,7 +37,7 @@ install-browsers:
 	$(PYTHON) -m playwright install chromium
 	$(PYTHON) -m playwright install-deps chromium
 
-setup: install sync install-browsers
+setup: install install-browsers
 
 # Run tests
 test-e2e:

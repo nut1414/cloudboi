@@ -14,6 +14,10 @@ idna==3.10
     # via requests
 iniconfig==2.1.0
     # via pytest
+jinja2==3.1.6
+    # via pytest-html
+markupsafe==3.0.2
+    # via jinja2
 packaging==24.2
     # via pytest
 playwright==1.51.0
@@ -27,9 +31,15 @@ pyee==12.1.1
 pytest==8.3.5
     # via
     #   pytest-base-url
+    #   pytest-html
+    #   pytest-metadata
     #   pytest-playwright
 pytest-base-url==2.1.0
     # via pytest-playwright
+pytest-html==4.1.1
+    # via -r requirements.in
+pytest-metadata==3.1.1
+    # via pytest-html
 pytest-playwright==0.7.0
     # via -r requirements.in
 python-slugify==8.0.4
