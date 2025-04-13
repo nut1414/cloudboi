@@ -89,6 +89,39 @@ please create a branch with feature as name then request a pull request review o
         make service_name-up # Replace service_name with the service you want to run Ex. make dev-frontend
         ```
 
+# Testing
+
+The project uses Playwright for end-to-end (E2E) testing. Tests can be run both locally and in Docker.
+
+## Setting up the test environment
+```sh
+cd test
+make setup
+```
+
+## Running tests locally
+```sh
+# Run all E2E tests
+make test-e2e
+
+# Generate HTML report
+make test-e2e-report
+
+# Run tests in visible browser mode
+make test-e2e-headed
+```
+
+## Running tests with Docker
+```sh
+# Build the test container
+make test-build
+
+# Run all E2E tests in the container
+make test-e2e
+```
+
+For more detailed information about the testing architecture, writing tests, and available test commands, see the [Testing README](test/README.md).
+
 # Debugging
 
 #### Frontend

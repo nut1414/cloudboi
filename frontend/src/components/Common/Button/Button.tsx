@@ -13,6 +13,7 @@ export interface ButtonProps {
   hasBorder?: boolean
   disabled?: boolean
   size?: 'default' | 'small' | 'xs'
+  'data-testid'?: string
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -24,7 +25,8 @@ export const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
   hasBorder = false,
   disabled = false,
-  size = 'default'
+  size = 'default',
+  'data-testid': dataTestId
 }) => {
   // Define variant styles
   const variantStyles = {
@@ -83,6 +85,7 @@ export const Button: React.FC<ButtonProps> = ({
       onClick={onClick}
       disabled={disabled}
       className={buttonStyles}
+      data-testid={dataTestId}
     >
       {icon && <span>{icon}</span>}
       <span className="flex-grow">{label}</span>
@@ -92,7 +95,7 @@ export const Button: React.FC<ButtonProps> = ({
   // If "to" prop is provided, wrap in Link component
   if (href) {
     return (
-      <Link to={href} className="inline-block">
+      <Link to={href} className="inline-block" data-testid={dataTestId ? `${dataTestId}-link` : undefined}>
         {ButtonElement}
       </Link>
     )

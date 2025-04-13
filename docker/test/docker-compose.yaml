@@ -1,0 +1,18 @@
+services:
+  test:
+    build:
+      context: ../../test
+      dockerfile: Dockerfile
+    volumes:
+      - ../../test:/app
+    environment:
+      - DOCKER=true
+      - FRONTEND_URL=${FRONTEND_URL:-http://frontend:3000}
+      - BACKEND_URL=${BACKEND_URL:-http://backend:8000}
+    networks:
+      - cloudboi-network
+    command: make test-e2e
+
+networks:
+  cloudboi-network:
+    external: true 
