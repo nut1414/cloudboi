@@ -141,13 +141,13 @@ def test_user() -> UserData:
     Returns a UserData object that supports both dict and dot notation.
     
     Returns:
-        UserData object with randomly generated valid test data
+        UserData object with valid test data
     """
-    unique_id = str(uuid.uuid4())[:8]
     return UserData(
-        username=f"testuser_{unique_id}",
-        email=f"testuser_{unique_id}@example.com",
-        password=f"Password{unique_id}!"
+        username="testuser",
+        email="testuser@example.com",
+        password="Password123!",
+        role="user"
     )
 
 

@@ -5,6 +5,23 @@ These models ensure type safety and data consistency across tests.
 from dataclasses import dataclass, field
 from typing import List, Optional
 
+@dataclass
+class RegisterData:
+    """
+    Data model for register fixture data used in register tests.
+    """
+    email: str
+    username: str
+    password: str
+
+@dataclass
+class LoginData:
+    """
+    Data model for login fixture data used in login tests.
+    """
+    username: str
+    password: str
+
 
 @dataclass
 class UserData:
@@ -14,8 +31,7 @@ class UserData:
     username: str
     email: str
     password: str
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
+    role: str
 
 
 @dataclass

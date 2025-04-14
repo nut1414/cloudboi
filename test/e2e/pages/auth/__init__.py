@@ -4,9 +4,9 @@ This package contains page objects for login, registration, and other auth-relat
 """
 
 # from .login_page import LoginPage
-# from .register_page import RegisterPage
+from .register_page import RegisterPage
 
 __all__ = [
     # 'LoginPage',
-    # 'RegisterPage'
+    'RegisterPage'
 ]

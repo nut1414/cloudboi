@@ -34,6 +34,7 @@ class LandingPage(BasePage):
         self.feature_cards = self.page.locator('[data-testid^="feature-card-"]')
         self.cta_section = self.page.get_by_test_id("cta-section")
         self.cta_button = self.page.get_by_test_id("cta-button-link")
+        self.sign_in_button = self.page.get_by_test_id("public-navbar-sign-in-button")
         
     # ATOMIC ACTIONS - Each method performs a single action
     
@@ -54,6 +55,12 @@ class LandingPage(BasePage):
         Click the CTA button.
         """
         self.cta_button.click()
+    
+    def click_sign_in_button(self) -> None:
+        """
+        Click the sign in button.
+        """
+        self.sign_in_button.click()
     
     # ASSERTIONS - Each method checks one aspect of the page state
     
