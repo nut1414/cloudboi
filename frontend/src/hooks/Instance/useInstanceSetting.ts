@@ -169,6 +169,27 @@ export const useInstanceSetting = () => {
         }
     }, [selectedInstance, dispatch, getInstanceAndUpdate, navigate])
 
+    // Reset root password
+    const resetPassword = useCallback(async (password: string) => {
+        if (!selectedInstance) return
+
+        try {
+            dispatch?.({ type: INSTANCE_ACTIONS.START_FETCH })
+            await InstanceService.instanceResetInstancePassword({
+                path: { instance_name: selectedInstance.instance_name },
+                body: { password }
+            })
+            await getInstanceAndUpdate()
+            alert(`Root password for ${selectedInstance.instance_name} has been updated successfully`)
+        } catch (err) {
+            dispatch?.({
+                type: INSTANCE_ACTIONS.FETCH_ERROR,
+                payload: "Failed to reset the root password"
+            })
+            alert("Failed to reset the root password")
+        }
+    }, [selectedInstance, dispatch, getInstanceAndUpdate])
+
     // Format instance uptime with user's timezone
     const getFormattedUptime = useCallback((lastUpdatedAt: Date) => {
         if (!selectedInstance) return "N/A"
@@ -218,6 +239,7 @@ export const useInstanceSetting = () => {
         stopInstance,
         restartInstance,
         deleteInstance,
+        resetPassword,
         getFormattedUptime,
     }
 }

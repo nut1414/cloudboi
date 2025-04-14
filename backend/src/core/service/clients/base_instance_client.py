@@ -67,13 +67,32 @@ class BaseInstanceClient(ABC, Generic[InstanceType]):
         pass
 
     @abstractmethod
-    def websocket_session(
+    def terminal_websocket_session(
         self, 
         instance_identifier: Any, 
         client_ws: WebSocket, 
         **kwargs: Any
     ) -> Any:
         """Start a WebSocket session"""
+        pass
+
+    @abstractmethod
+    def console_websocket_session(
+        self, 
+        instance_identifier: Any, 
+        client_ws: WebSocket, 
+        **kwargs: Any
+    ) -> Any:
+        """Start a WebSocket session"""
+        pass
+    
+    @abstractmethod
+    def get_instance_console_buffer(
+        self, 
+        instance_identifier: Any, 
+        **kwargs: Any
+    ) -> Any:
+        """Get the console buffer of an instance"""
         pass
 
     @abstractmethod

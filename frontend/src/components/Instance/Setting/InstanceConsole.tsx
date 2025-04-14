@@ -1,19 +1,21 @@
 import React, { useEffect } from 'react'
-import { useTerminalWebSocket } from '../../../hooks/Instance/useTerminalConnection'
+import { useConsoleWebSocket } from '../../../hooks/Instance/useConsoleConnection'
 import { useXTerm } from '../../../hooks/useXTerm'
+import { ArrowPathIcon } from '@heroicons/react/24/outline'
 import { WS_URL } from '../../../config/api'
 import 'xterm/css/xterm.css'
 import { StatusHeader, StatusMessage, StatusFooter } from './InstanceStatus'
 
-interface InstanceTerminalProps {
+interface InstanceConsoleProps {
     instanceName: string,
     isRunning: boolean,
 }
 
-const InstanceTerminal: React.FC<InstanceTerminalProps> = ({ instanceName, isRunning }) => {
+const InstanceConsole: React.FC<InstanceConsoleProps> = ({ instanceName, isRunning }) => {
     // Use terminal hook
     const {
         terminalRef,
+        xtermRef,
         writeToTerminal,
         setTerminalDataHandlerV2,
         fitTerminal,
@@ -25,13 +27,15 @@ const InstanceTerminal: React.FC<InstanceTerminalProps> = ({ instanceName, isRun
         connected,
         error,
         sendData,
-        updateTerminalSize
-    } = useTerminalWebSocket(
+        updateTerminalSize,
+        isBufferLoaded
+    } = useConsoleWebSocket(
         WS_URL,
         instanceName,
         writeToTerminal,
         getTerminalDimensions,
-        isRunning
+        isRunning,
+        xtermRef
     )
 
     // Connect terminal data events to WebSocket
@@ -56,8 +60,8 @@ const InstanceTerminal: React.FC<InstanceTerminalProps> = ({ instanceName, isRun
             <StatusHeader 
                 connected={connected} 
                 instanceName={instanceName} 
-                error={error || undefined} 
-                type="Terminal"
+                error={error || undefined}
+                type="Text Console" 
             />
 
             <div
@@ -67,8 +71,9 @@ const InstanceTerminal: React.FC<InstanceTerminalProps> = ({ instanceName, isRun
                 <StatusMessage 
                     isRunning={isRunning} 
                     connected={connected} 
-                    error={error || undefined} 
-                    type="terminal"
+                    error={error || undefined}
+                    isBufferLoaded={isBufferLoaded}
+                    type="console"
                 />
 
                 <div
@@ -77,9 +82,9 @@ const InstanceTerminal: React.FC<InstanceTerminalProps> = ({ instanceName, isRun
                 />
             </div>
 
-            <StatusFooter type="terminal" />
+            <StatusFooter type="console" />
         </div>
     )
 }
 
-export default InstanceTerminal
+export default InstanceConsole 

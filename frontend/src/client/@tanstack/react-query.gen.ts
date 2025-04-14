@@ -3,7 +3,7 @@
 import type { Options } from '@hey-api/client-axios';
 import { queryOptions, type UseMutationOptions } from '@tanstack/react-query';
 import { client, AdminService, BillingService, ClusterService, InstanceService, RootService, UserService } from '../services.gen';
-import type { AdminCreateInstancePlanData, AdminCreateInstancePlanError, AdminCreateInstancePlanResponse, AdminUpdateInstancePlanData, AdminUpdateInstancePlanError, AdminUpdateInstancePlanResponse, AdminDeleteInstancePlanData, AdminDeleteInstancePlanError, AdminDeleteInstancePlanResponse, AdminGetBillingStatsData, BillingGetBillingOverviewData, BillingGetAllUserTransactionsData, BillingTopUpData, BillingTopUpError, BillingTopUpResponse, BillingGetUserWalletData, ClusterCreateJoinTokenData, ClusterCreateJoinTokenError, ClusterCreateJoinTokenResponse, ClusterAddMemberData, ClusterAddMemberError, ClusterAddMemberResponse, InstanceListInstancesData, InstanceGetInstanceData, InstanceCreateInstanceData, InstanceCreateInstanceError, InstanceCreateInstanceResponse, InstanceStartInstanceData, InstanceStartInstanceError, InstanceStartInstanceResponse, InstanceStopInstanceData, InstanceStopInstanceError, InstanceStopInstanceResponse, InstanceDeleteInstanceData, InstanceDeleteInstanceError, InstanceDeleteInstanceResponse, InstanceRestartInstanceData, InstanceRestartInstanceError, InstanceRestartInstanceResponse, InstanceGetInstanceStateData, UserCreateUserData, UserCreateUserError, UserCreateUserResponse, UserLoginUserData, UserLoginUserError, UserLoginUserResponse, UserLogoutUserError, UserLogoutUserResponse } from '../types.gen';
+import type { AdminCreateInstancePlanData, AdminCreateInstancePlanError, AdminCreateInstancePlanResponse, AdminUpdateInstancePlanData, AdminUpdateInstancePlanError, AdminUpdateInstancePlanResponse, AdminDeleteInstancePlanData, AdminDeleteInstancePlanError, AdminDeleteInstancePlanResponse, AdminGetBillingStatsData, BillingGetBillingOverviewData, BillingGetAllUserTransactionsData, BillingTopUpData, BillingTopUpError, BillingTopUpResponse, BillingGetUserWalletData, ClusterCreateJoinTokenData, ClusterCreateJoinTokenError, ClusterCreateJoinTokenResponse, ClusterAddMemberData, ClusterAddMemberError, ClusterAddMemberResponse, InstanceListInstancesData, InstanceGetInstanceData, InstanceCreateInstanceData, InstanceCreateInstanceError, InstanceCreateInstanceResponse, InstanceStartInstanceData, InstanceStartInstanceError, InstanceStartInstanceResponse, InstanceStopInstanceData, InstanceStopInstanceError, InstanceStopInstanceResponse, InstanceDeleteInstanceData, InstanceDeleteInstanceError, InstanceDeleteInstanceResponse, InstanceRestartInstanceData, InstanceRestartInstanceError, InstanceRestartInstanceResponse, InstanceGetInstanceConsoleBufferData, InstanceGetInstanceStateData, InstanceResetInstancePasswordData, InstanceResetInstancePasswordError, InstanceResetInstancePasswordResponse, UserCreateUserData, UserCreateUserError, UserCreateUserResponse, UserLoginUserData, UserLoginUserError, UserLoginUserResponse, UserLogoutUserError, UserLogoutUserResponse } from '../types.gen';
 import type { AxiosError } from 'axios';
 
 type QueryKey<TOptions extends Options> = [
@@ -567,6 +567,25 @@ export const instanceRestartInstanceMutation = (options?: Partial<Options<Instan
     return mutationOptions;
 };
 
+export const instanceGetInstanceConsoleBufferQueryKey = (options: Options<InstanceGetInstanceConsoleBufferData>) => [
+    createQueryKey('instanceGetInstanceConsoleBuffer', options)
+];
+
+export const instanceGetInstanceConsoleBufferOptions = (options: Options<InstanceGetInstanceConsoleBufferData>) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await InstanceService.instanceGetInstanceConsoleBuffer({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: instanceGetInstanceConsoleBufferQueryKey(options)
+    });
+};
+
 export const instanceGetInstanceStateQueryKey = (options: Options<InstanceGetInstanceStateData>) => [
     createQueryKey('instanceGetInstanceState', options)
 ];
@@ -584,6 +603,39 @@ export const instanceGetInstanceStateOptions = (options: Options<InstanceGetInst
         },
         queryKey: instanceGetInstanceStateQueryKey(options)
     });
+};
+
+export const instanceResetInstancePasswordQueryKey = (options: Options<InstanceResetInstancePasswordData>) => [
+    createQueryKey('instanceResetInstancePassword', options)
+];
+
+export const instanceResetInstancePasswordOptions = (options: Options<InstanceResetInstancePasswordData>) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await InstanceService.instanceResetInstancePassword({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: instanceResetInstancePasswordQueryKey(options)
+    });
+};
+
+export const instanceResetInstancePasswordMutation = (options?: Partial<Options<InstanceResetInstancePasswordData>>) => {
+    const mutationOptions: UseMutationOptions<InstanceResetInstancePasswordResponse, AxiosError<InstanceResetInstancePasswordError>, Options<InstanceResetInstancePasswordData>> = {
+        mutationFn: async (localOptions) => {
+            const { data } = await InstanceService.instanceResetInstancePassword({
+                ...options,
+                ...localOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
 };
 
 export const rootRootQueryKey = (options?: Options) => [

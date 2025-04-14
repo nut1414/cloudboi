@@ -138,17 +138,17 @@ class LXDClient(BaseInstanceClient[models.Instance]):
         )
     
     @_resolve_instance()
-    async def websocket_session(self, instance_identifier: models.Instance, client_ws: WebSocket):
+    async def terminal_websocket_session(self, instance_identifier: models.Instance, client_ws: WebSocket):
         try:
             await client_ws.accept()
             
-            ws_response = self.lxd_manager.get_interactive_websocket(instance_identifier)
+            ws_response = self.lxd_manager.get_interactive_terminal_websocket(instance_identifier)
 
             session: LXDWebSocketSession = await self.lxd_ws_manager.create_session(
                 client_ws=client_ws,
                 instance_name=instance_identifier.name,
-                lxd_ws_url=ws_response.get("ws"),
-                lxd_control_url=ws_response.get("control")
+                lxd_ws_url=ws_response.ws,
+                lxd_control_url=ws_response.control
             )
 
             async with session:
@@ -157,6 +157,34 @@ class LXDClient(BaseInstanceClient[models.Instance]):
             raise LXDClientException(f"Error in websocket_session: {str(e)}")
         finally:
             await self.lxd_ws_manager.remove_session(instance_identifier.name)
+    
+    @_resolve_instance()
+    async def console_websocket_session(self, instance_identifier: models.Instance, client_ws: WebSocket):
+        try:
+            await client_ws.accept()
+            
+            ws_response = self.lxd_manager.get_interactive_console_websocket(instance_identifier)
+
+            session: LXDWebSocketSession = await self.lxd_ws_manager.create_session(
+                client_ws=client_ws,
+                instance_name=instance_identifier.name,
+                lxd_ws_url=ws_response.ws,
+                lxd_control_url=ws_response.control
+            )
+
+            async with session:
+                await session.run()
+        except Exception as e:
+            raise LXDClientException(f"Error in console_websocket_session: {str(e)}")
+        finally:
+            await self.lxd_ws_manager.remove_session(instance_identifier.name)
+    
+    @_resolve_instance()
+    async def get_instance_console_buffer(self, instance_identifier: models.Instance) -> str:
+        return await asyncio.to_thread(
+            self.lxd_manager.get_console_buffer,
+            instance_identifier
+        )
 
     def create_lxd_cluster_join_token(self, server_name: str) -> str:
         return self.lxd_manager.create_cluster_join_token(server_name)
