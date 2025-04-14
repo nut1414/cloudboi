@@ -2,6 +2,11 @@ import os
 import secrets
 
 class DatabaseConfig:
+    MODE = os.environ.get("MODE", "dev")
+    
+    # Use test database when MODE=test
+    DB_NAME = "cloudboidb_test" if MODE == "test" else os.environ.get("DB_NAME", "cloudboidb") 
+    
     DB_URL = os.environ.get(
         "SQLALCHEMY_DATABASE_URL",
         "postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}".format(
@@ -9,7 +14,7 @@ class DatabaseConfig:
             DB_PASSWORD=os.environ.get("DB_PASSWORD", "cloudboi"),
             DB_HOST=os.environ.get("DB_HOST", "localhost"),
             DB_PORT=os.environ.get("DB_PORT", "5432"),
-            DB_NAME=os.environ.get("DB_NAME", "cloudboidb"),
+            DB_NAME=DB_NAME,
         )
     )
     DB_CONFIG = {

@@ -6,10 +6,12 @@ services:
       POSTGRES_USER: ${DATABASE_USER:-cloudboi} # Set the PostgreSQL username
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-cloudboi} # Set a strong password
       POSTGRES_DB: ${DATABASE_NAME:-cloudboidb} # Set the default database name
+      POSTGRES_MULTIPLE_DATABASES: "cloudboidb_test" # Format: "db1,db2" uses main user, "db3:password3" creates custom user
     ports:
       - "5433:5432" # Map port 5433 on the host to port 5432 in the container
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d
     networks:
       - cloudboi-network
 

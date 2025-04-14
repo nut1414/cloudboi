@@ -13,6 +13,15 @@ docker-up: db-up backend-up frontend-up
 
 docker-down: frontend-down backend-down db-down
 
+# Test environment setup
+test-env-up:
+	MODE=test ${MAKE} docker-up
+	@echo "Test environment started"
+
+test-env-down:
+	${MAKE} docker-down
+	@echo "Test environment stopped"
+
 db-up:
 	${DC_DB} up -d
 
@@ -60,20 +69,25 @@ rebuild-all: db-rebuild backend-rebuild
 test-build:
 	${DC_TEST} build
 
-test-run:
+test-run: test-env-up
 	${DC_TEST} run --rm test
+	${MAKE} test-env-down
 
-test-e2e:
+test-e2e: test-env-up
 	${DC_TEST} run --rm test make test-e2e
+	${MAKE} test-env-down
 
-test-e2e-report:
+test-e2e-report: test-env-up
 	${DC_TEST} run --rm test make test-e2e-report
+	${MAKE} test-env-down
 
-test-file:
+test-file: test-env-up
 	${DC_TEST} run --rm test make test-file FILE=${FILE}
+	${MAKE} test-env-down
 
-test-marked:
+test-marked: test-env-up
 	${DC_TEST} run --rm test make test-marked MARKER=${MARKER}
+	${MAKE} test-env-down
 
 # LOCAL
 
