@@ -15,7 +15,9 @@ from ..models.admin import (
     AdminInstancePlanUpdateRequest,
     AdminInstancePlanUpdateResponse,
     AdminInstancePlanDeleteRequest,
-    AdminInstancePlanDeleteResponse
+    AdminInstancePlanDeleteResponse,
+    AdminTopUpRequest,
+    AdminTopUpResponse
 )
 from ..models.instance import InstancePlan
 from ..service.admin import AdminService
@@ -107,3 +109,14 @@ async def get_all_transactions(
     admin_service: AdminService = Depends(Provide[AppContainer.admin_service])
 ):
     return await admin_service.get_all_transactions()
+
+@router.post(
+    "/topup",
+    response_model=AdminTopUpResponse
+)
+@inject
+async def topup(
+    topup_request: AdminTopUpRequest,
+    admin_service: AdminService = Depends(Provide[AppContainer.admin_service])
+):
+    return await admin_service.topup(topup_request)

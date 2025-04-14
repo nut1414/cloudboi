@@ -64,3 +64,15 @@ class AdminInstancePlanDeleteResponse(BaseModel):
     instance_plan_id: int
     instance_package_name: str
     is_success: bool
+
+class AdminTopUpRequest(BaseModel):
+    username: str
+    amount: float
+
+class AdminTopUpResponse(BaseModel):
+    transaction_id: uuid.UUID
+    transaction_type: str
+    transaction_status: str
+    amount: float
+    created_at: str
+    last_updated_at: str

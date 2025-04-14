@@ -12,12 +12,20 @@ from ..models.admin import (
     AdminInstancePlanUpdateRequest,
     AdminInstancePlanUpdateResponse,
     AdminInstancePlanDeleteRequest,
-    AdminInstancePlanDeleteResponse
+    AdminInstancePlanDeleteResponse,
+    AdminTopUpRequest,
+    AdminTopUpResponse
 )
 from ..utils.permission import require_roles
 from ..constants.user_const import UserRole
 from ..utils.datetime import DateTimeUtils
 from ..service.validators.instance_validator import InstanceValidator
+from ..sql.operations.transaction import TransactionOperation
+from ..sql.operations.billing import BillingOperation
+from ..sql.operations.user import UserOperation
+from ..service.subscription import SubscriptionService
+from ..models.transaction import Transaction
+from ..constants.transaction_const import TransactionType, TransactionStatus
 
 class AdminService:
     def __init__(
@@ -26,11 +34,15 @@ class AdminService:
         billing_opr: BillingOperation,
         transaction_opr: TransactionOperation,
         instance_opr: InstanceOperation,
+        user_opr: UserOperation,
+        subscription_service: SubscriptionService
     ):
         self.admin_opr = admin_opr
         self.billing_opr = billing_opr
         self.transaction_opr = transaction_opr
         self.instance_opr = instance_opr
+        self.user_opr = user_opr
+        self.subscription_service = subscription_service
     
     @require_roles([UserRole.ADMIN])
     async def get_all_users_with_details(self) -> List[AdminUsersResponse]:
@@ -41,8 +53,8 @@ class AdminService:
                     user_id=user.user_id,
                     username=user.username,
                     email=user.email,
-                    role=user.role,
                     instances=user.user_instances,
+                    role=user.role,
                 )
                 for user in users
             ]
@@ -173,4 +185,40 @@ class AdminService:
             instance_plan_id=instance_plan.instance_plan_id,
             instance_package_name=instance_plan.instance_package_name,
             is_success=True
+        )
+
+    async def topup(self, topup_request: AdminTopUpRequest) -> AdminTopUpResponse:
+        # Get user by username
+        user = await self.user_opr.get_user_by_username(topup_request.username)
+        if not user:
+            raise HTTPException(
+                status_code=404,
+                detail="User not found"
+            )
+
+        # Create topup transaction
+        transaction = self.subscription_service._create_topup_transaction(
+            user_id=user.user_id,
+            username=topup_request.username,
+            amount=topup_request.amount
+        )
+
+        # Save transaction
+        created_transaction = await self.transaction_opr.upsert_transaction(transaction)
+
+        # Process transaction
+        result = await self.subscription_service.process_transaction(created_transaction)
+        if not result:
+            raise HTTPException(
+                status_code=500,
+                detail="Failed to process top-up"
+            )
+
+        return AdminTopUpResponse(
+            transaction_id=result.transaction_id,
+            transaction_type=result.transaction_type,
+            transaction_status=result.transaction_status,
+            amount=result.amount,
+            created_at=DateTimeUtils.to_bkk_string(result.created_at),
+            last_updated_at=DateTimeUtils.to_bkk_string(result.last_updated_at)
         )
