@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
-import Button from '../Button/Button'
+import { useTestId } from '../../../utils/testUtils'
 
 export interface ModalProps {
   isOpen: boolean
@@ -19,8 +19,10 @@ const Modal: React.FC<ModalProps> = ({
   children,
   footer,
   size = 'md',
-  closeOnClickOutside = true
+  closeOnClickOutside = true,
+  ...restProps
 }) => {
+  const { dataTestId } = useTestId(restProps)
   const modalRef = useRef<HTMLDivElement>(null)
   const initialFocusRef = useRef<HTMLButtonElement>(null)
 
@@ -76,6 +78,7 @@ const Modal: React.FC<ModalProps> = ({
       aria-modal="true"
       role="dialog"
       tabIndex={-1}
+      data-testid={dataTestId ? `${dataTestId}-modal` : undefined}
     >
       <div 
         className={`bg-[#192A51] rounded-xl shadow-lg border border-blue-900/30 w-full ${sizeClasses[size]}
@@ -83,6 +86,7 @@ const Modal: React.FC<ModalProps> = ({
           transform transition-all duration-200 ease-out`}
         ref={modalRef}
         onClick={(e) => e.stopPropagation()} // Prevent clicks inside modal from closing it
+        data-testid={dataTestId ? `${dataTestId}-modal-content` : undefined}
       >
         {/* Modal Header */}
         <div className="flex justify-between items-center p-5 border-b border-blue-800/30">
@@ -92,19 +96,20 @@ const Modal: React.FC<ModalProps> = ({
             onClick={onClose}
             className="text-gray-400 hover:text-white transition-colors"
             aria-label="Close"
+            data-testid={dataTestId ? `${dataTestId}-modal-close-button` : undefined}
           >
             <XMarkIcon className="h-6 w-6" />
           </button>
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 max-h-[calc(100vh-12rem)] overflow-y-auto">
+        <div className="p-6 max-h-[calc(100vh-12rem)] overflow-y-auto" data-testid={dataTestId ? `${dataTestId}-modal-body` : undefined}>
           {children}
         </div>
 
         {/* Modal Footer */}
         {footer && (
-          <div className="p-4 border-t border-blue-800/30 flex justify-end space-x-3">
+          <div className="p-4 border-t border-blue-800/30 flex justify-end space-x-3" data-testid={dataTestId ? `${dataTestId}-modal-footer` : undefined}>
             {footer}
           </div>
         )}

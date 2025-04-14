@@ -1,6 +1,7 @@
 import React, { ReactNode, useState, useEffect, useRef, useCallback, memo, useMemo } from 'react'
 import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
 import SkeletonLoader from './SkeletonLoader'
+import { useTestId } from '../../utils/testUtils'
 
 export interface ItemCardProps {
   title: string
@@ -75,7 +76,10 @@ const ItemCard: React.FC<ItemCardProps> = ({
   isCollapsed = false,
   onCollapseToggle = () => { },
   isLoading = false,
+  ...restProps
 }) => {
+  const { dataTestId } = useTestId(restProps)
+
   // Ref for content height calculation
   const contentRef = useRef<HTMLDivElement>(null)
   const [contentHeight, setContentHeight] = useState<number>(0)
@@ -161,7 +165,9 @@ const ItemCard: React.FC<ItemCardProps> = ({
   }, [actionButton])
 
   return (
-    <div className={`bg-[#23375F] rounded-lg border border-blue-900/50 overflow-hidden shadow-sm ${className}`}>
+    <div className={`bg-[#23375F] rounded-lg border border-blue-900/50 overflow-hidden shadow-sm ${className}`}
+      data-testid={dataTestId ? `${dataTestId}-item-card` : undefined}
+    >
       {isLoading ? (
         // Show the skeleton loader when loading
         <ItemCardSkeleton detailItemCount={detailItems.length || 4} />

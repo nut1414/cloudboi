@@ -200,6 +200,7 @@ const SideNavbar: React.FC<SideNavbarProps> = ({
           fullWidth={true}
           className="p-0"
           customMenuItems={userMenuItems}
+          data-testid="side-navbar-user-menu"
         />
       </div>
     </nav>

@@ -176,6 +176,7 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({
     return (
         <span
             className={`capitalize font-medium inline-flex items-center ${bgColor} ${textColor} ${badgeClass} ${className}`}
+            data-testid={`status-badge-${status}`}
         >
             {showDot && (
                 <span className={`${styles.dotColor} ${dotSize[size]} rounded-full ${!showBackground ? 'mr-1.5' : 'mr-1.5'}`}></span>

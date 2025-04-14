@@ -2,6 +2,7 @@ import React from "react"
 import { useNavigate } from "react-router-dom"
 import { ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/outline"
 import DropdownButton, { DropdownItemProps } from "../Button/DropdownButton"
+import { useTestId } from "../../../utils/testUtils"
 
 // Common interface for the NavUser component
 export interface NavUserProps {
@@ -26,9 +27,11 @@ export const NavUser: React.FC<NavUserProps> = ({
     className = "",
     position = "bottom-right",
     fullWidth = false,
-    customMenuItems
+    customMenuItems,
+    ...restProps
 }) => {
     const navigate = useNavigate()
+    const { dataTestId, cleanProps } = useTestId(restProps)
 
     const handleLogout = async () => {
         await logout()
@@ -98,6 +101,8 @@ export const NavUser: React.FC<NavUserProps> = ({
                 position={position}
                 disableHover={true}
                 fullWidth={fullWidth}
+                data-testid={dataTestId || undefined}
+                {...cleanProps}
             />
         </div>
     )

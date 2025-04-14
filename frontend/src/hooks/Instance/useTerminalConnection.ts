@@ -1,4 +1,4 @@
-import { useWebSocketBase } from "../useWebsocket"
+import { useWebSocketBase } from "../useWebSocketBase"
 
 // Terminal WebSocket hook
 export const useTerminalWebSocket = (

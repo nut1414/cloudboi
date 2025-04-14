@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from "react"
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline"
 import InputField from "./InputField"
+import { useTestId } from "../../utils/testUtils"
 
 interface SearchBarProps {
     placeholder?: string
@@ -16,8 +17,10 @@ const SearchBar: React.FC<SearchBarProps> = React.memo(({
     className = "",
     initialValue = "",
     width = "w-64",
+    ...restProps
 }) => {
     const [query, setQuery] = useState(initialValue)
+    const { dataTestId } = useTestId(restProps)
 
     const handleInputChange = useCallback((newQuery: string) => {
         setQuery(newQuery)
@@ -31,6 +34,7 @@ const SearchBar: React.FC<SearchBarProps> = React.memo(({
                 onChange={handleInputChange}
                 placeholder={placeholder}
                 endIcon={<MagnifyingGlassIcon className="w-5 h-5" />}
+                data-testid={dataTestId || undefined}
             />
         </div>
     )

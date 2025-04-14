@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
-import { useWebSocketBase } from "../useWebsocket"
+import { useWebSocketBase } from "../useWebSocketBase"
 import { InstanceService } from "../../client"
 import { Terminal } from "xterm";
 

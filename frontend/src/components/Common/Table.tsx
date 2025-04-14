@@ -2,6 +2,7 @@ import React, { useState, ReactNode, useEffect, useRef, useMemo, useCallback } f
 import { Button } from "./Button/Button" // Import the unified Button component
 import SkeletonLoader from "./SkeletonLoader" // Import the skeleton loader
 import { ArchiveBoxXMarkIcon, ChevronRightIcon } from "@heroicons/react/24/outline" // Import the icons
+import { useTestId } from "../../utils/testUtils"
 
 // Types for the table
 export interface TableColumn<T> {
@@ -202,7 +203,10 @@ function Table<T>({
   renderExpanded,
   isRowExpanded = () => false,
   onRowExpand,
+  ...restProps
 }: TableProps<T>) {
+  const { dataTestId } = useTestId(restProps)
+
   // Internal expanded state if not provided externally
   const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({})
   const tableRef = useRef<HTMLDivElement>(null)
@@ -266,6 +270,7 @@ function Table<T>({
           key={rowKey}
           className={`text-gray-300 bg-[#23375F] hover:bg-blue-800/80 transition-colors border-b ${isExpanded ? 'border-indigo-600/50' : 'border-blue-800/30'} ${onRowClick || expandableRows ? 'cursor-pointer' : ''} ${isExpanded ? 'bg-[#2A3C69]' : ''}`}
           onClick={() => handleRowClick(item, index)}
+          data-testid={dataTestId ? `${dataTestId}-table-row-${rowKey}` : undefined}
         >
           {columns.map((column, idx) => (
             <td
