@@ -27,6 +27,7 @@ const UserManagePage = lazy(() => import("./pages/Admin/UserManagePage"))
 const AdminBillingPage = lazy(() => import("./pages/Admin/AdminBillingPage"))
 const InstancePlanManagePage = lazy(() => import("./pages/Admin/InstancePlanManagePage"))
 const SystemStatusPage = lazy(() => import("./pages/Admin/SystemStatusPage"))
+const AdminCreditPage = lazy(() => import("./pages/Admin/AdminCreditPage"))
 /**
  * Route configuration with authentication guards
  * 
@@ -119,7 +120,7 @@ const routes: RouteObject[] = [
       },
       {
         path: "credits",
-        element: <div>Credits Page</div>,
+        element: <AdminCreditPage />,
       },
     ],
   },
