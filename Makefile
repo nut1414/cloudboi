@@ -4,6 +4,15 @@ DC_DB = docker compose -f ./docker/db/docker-compose.yaml
 DC_APP = docker compose -f ./docker/app/docker-compose.yaml
 DC_TEST = docker compose -f ./docker/test/docker-compose.yaml
 
+FORWARD_DOCKER_DISPLAY = -e DISPLAY=$${DISPLAY} -v /tmp/.X11-unix:/tmp/.X11-unix
+
+# Define common test pattern to avoid repetition
+define run_test
+	${DC_TEST} run --rm $(2) test make $(1) || EXIT_CODE=$$?; \
+	${MAKE} test-env-down; \
+	exit $${EXIT_CODE:-0}
+endef
+
 # DOCKER
 
 docker-clean:
@@ -69,25 +78,28 @@ rebuild-all: db-rebuild backend-rebuild
 test-build:
 	${DC_TEST} build
 
-test-run: test-env-up
-	${DC_TEST} run --rm test
-	${MAKE} test-env-down
-
 test-e2e: test-env-up
-	${DC_TEST} run --rm test make test-e2e
-	${MAKE} test-env-down
+	$(call run_test,test-e2e,)
 
 test-e2e-report: test-env-up
-	${DC_TEST} run --rm test make test-e2e-report
-	${MAKE} test-env-down
+	$(call run_test,test-e2e-report,)
 
 test-file: test-env-up
-	${DC_TEST} run --rm test make test-file FILE=${FILE}
-	${MAKE} test-env-down
+	$(call run_test,test-file FILE=${FILE},)
 
 test-marked: test-env-up
-	${DC_TEST} run --rm test make test-marked MARKER=${MARKER}
-	${MAKE} test-env-down
+	$(call run_test,test-marked MARKER=${MARKER},)
+
+# DEBUG TESTING
+
+test-e2e-debug: test-env-up
+	$(call run_test,test-e2e-debug,${FORWARD_DOCKER_DISPLAY})
+
+test-file-debug: test-env-up
+	$(call run_test,test-file-debug FILE=${FILE},${FORWARD_DOCKER_DISPLAY})
+
+test-marked-debug: test-env-up
+	$(call run_test,test-marked-debug MARKER=${MARKER},${FORWARD_DOCKER_DISPLAY})
 
 # LOCAL
 

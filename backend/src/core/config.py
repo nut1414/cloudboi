@@ -4,8 +4,7 @@ import secrets
 class DatabaseConfig:
     MODE = os.environ.get("MODE", "dev")
     
-    # Use test database when MODE=test
-    DB_NAME = "cloudboidb_test" if MODE == "test" else os.environ.get("DB_NAME", "cloudboidb") 
+    DB_NAME = "cloudboidb_test" if MODE == "test" else os.environ.get("DB_NAME", "cloudboidb")
     
     DB_URL = os.environ.get(
         "SQLALCHEMY_DATABASE_URL",

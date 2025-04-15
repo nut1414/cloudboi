@@ -103,6 +103,12 @@ def page(browser: Browser, browser_context_args: Dict[str, Any]) -> Generator[Pa
     """
     context = browser.new_context(**browser_context_args)
     page = context.new_page()
+    
+    # In debug mode, explicitly navigate to the base URL to avoid starting with about:blank
+    if os.environ.get("PWDEBUG") == "1":
+        frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:3000")
+        page.goto(frontend_url)
+    
     yield page
     page.close()
     context.close()

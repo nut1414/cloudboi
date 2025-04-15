@@ -4,8 +4,8 @@ WORKDIR /app
 
 ENV DOCKER=true
 
-# Install make and git
-RUN apt-get update && apt-get install -y make git
+# Install make, git and xvfb
+RUN apt-get update && apt-get install -y make git xvfb
 
 # Copy the test directory
 COPY . .

@@ -1,11 +1,11 @@
 import { Config } from "@hey-api/client-axios"
 
 const getBaseURL = () => {
-  const mode = import.meta.env.MODE || 'dev'
+  const mode = import.meta.env.VITE_MODE || import.meta.env.MODE || 'dev'
   
   // In production, use the provided API_URL
   if (mode === 'production') {
-    return import.meta.env.API_URL || 'localhost:8000'
+    return import.meta.env.VITE_API_URL || 'localhost:8000'
   }
   
   // In test mode, use backend service name
