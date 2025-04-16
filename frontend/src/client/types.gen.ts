@@ -83,6 +83,20 @@ export type AdminInstancePlanUpdateResponse = {
     cost_hour: number;
 };
 
+export type AdminTopUpRequest = {
+    username: string;
+    amount: number;
+};
+
+export type AdminTopUpResponse = {
+    transaction_id: string;
+    transaction_type: string;
+    transaction_status: string;
+    amount: number;
+    created_at: string;
+    last_updated_at: string;
+};
+
 export type AdminTransactionResponse = {
     transaction_id: string;
     username: string;
@@ -413,6 +427,14 @@ export type AdminGetBillingStatsError = (HTTPValidationError);
 export type AdminGetAllTransactionsResponse = (Array<AdminTransactionResponse>);
 
 export type AdminGetAllTransactionsError = unknown;
+
+export type AdminTopupData = {
+    body: AdminTopUpRequest;
+};
+
+export type AdminTopupResponse = (AdminTopUpResponse);
+
+export type AdminTopupError = (HTTPValidationError);
 
 export type BillingGetBillingOverviewData = {
     path: {

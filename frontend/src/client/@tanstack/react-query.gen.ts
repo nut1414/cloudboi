@@ -3,7 +3,7 @@
 import type { Options } from '@hey-api/client-axios';
 import { queryOptions, type UseMutationOptions } from '@tanstack/react-query';
 import { client, AdminService, BillingService, ClusterService, InstanceService, RootService, UserService } from '../services.gen';
-import type { AdminCreateInstancePlanData, AdminCreateInstancePlanError, AdminCreateInstancePlanResponse, AdminUpdateInstancePlanData, AdminUpdateInstancePlanError, AdminUpdateInstancePlanResponse, AdminDeleteInstancePlanData, AdminDeleteInstancePlanError, AdminDeleteInstancePlanResponse, AdminGetBillingStatsData, BillingGetBillingOverviewData, BillingGetAllUserTransactionsData, BillingTopUpData, BillingTopUpError, BillingTopUpResponse, BillingGetUserWalletData, ClusterCreateJoinTokenData, ClusterCreateJoinTokenError, ClusterCreateJoinTokenResponse, ClusterAddMemberData, ClusterAddMemberError, ClusterAddMemberResponse, InstanceListInstancesData, InstanceGetInstanceData, InstanceCreateInstanceData, InstanceCreateInstanceError, InstanceCreateInstanceResponse, InstanceStartInstanceData, InstanceStartInstanceError, InstanceStartInstanceResponse, InstanceStopInstanceData, InstanceStopInstanceError, InstanceStopInstanceResponse, InstanceDeleteInstanceData, InstanceDeleteInstanceError, InstanceDeleteInstanceResponse, InstanceRestartInstanceData, InstanceRestartInstanceError, InstanceRestartInstanceResponse, InstanceGetInstanceConsoleBufferData, InstanceGetInstanceStateData, InstanceResetInstancePasswordData, InstanceResetInstancePasswordError, InstanceResetInstancePasswordResponse, UserCreateUserData, UserCreateUserError, UserCreateUserResponse, UserLoginUserData, UserLoginUserError, UserLoginUserResponse, UserLogoutUserError, UserLogoutUserResponse } from '../types.gen';
+import type { AdminCreateInstancePlanData, AdminCreateInstancePlanError, AdminCreateInstancePlanResponse, AdminUpdateInstancePlanData, AdminUpdateInstancePlanError, AdminUpdateInstancePlanResponse, AdminDeleteInstancePlanData, AdminDeleteInstancePlanError, AdminDeleteInstancePlanResponse, AdminGetBillingStatsData, AdminTopupData, AdminTopupError, AdminTopupResponse, BillingGetBillingOverviewData, BillingGetAllUserTransactionsData, BillingTopUpData, BillingTopUpError, BillingTopUpResponse, BillingGetUserWalletData, ClusterCreateJoinTokenData, ClusterCreateJoinTokenError, ClusterCreateJoinTokenResponse, ClusterAddMemberData, ClusterAddMemberError, ClusterAddMemberResponse, InstanceListInstancesData, InstanceGetInstanceData, InstanceCreateInstanceData, InstanceCreateInstanceError, InstanceCreateInstanceResponse, InstanceStartInstanceData, InstanceStartInstanceError, InstanceStartInstanceResponse, InstanceStopInstanceData, InstanceStopInstanceError, InstanceStopInstanceResponse, InstanceDeleteInstanceData, InstanceDeleteInstanceError, InstanceDeleteInstanceResponse, InstanceRestartInstanceData, InstanceRestartInstanceError, InstanceRestartInstanceResponse, InstanceGetInstanceConsoleBufferData, InstanceGetInstanceStateData, InstanceResetInstancePasswordData, InstanceResetInstancePasswordError, InstanceResetInstancePasswordResponse, UserCreateUserData, UserCreateUserError, UserCreateUserResponse, UserLoginUserData, UserLoginUserError, UserLoginUserResponse, UserLogoutUserError, UserLogoutUserResponse } from '../types.gen';
 import type { AxiosError } from 'axios';
 
 type QueryKey<TOptions extends Options> = [
@@ -168,6 +168,39 @@ export const adminGetAllTransactionsOptions = (options?: Options) => {
         },
         queryKey: adminGetAllTransactionsQueryKey(options)
     });
+};
+
+export const adminTopupQueryKey = (options: Options<AdminTopupData>) => [
+    createQueryKey('adminTopup', options)
+];
+
+export const adminTopupOptions = (options: Options<AdminTopupData>) => {
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await AdminService.adminTopup({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: adminTopupQueryKey(options)
+    });
+};
+
+export const adminTopupMutation = (options?: Partial<Options<AdminTopupData>>) => {
+    const mutationOptions: UseMutationOptions<AdminTopupResponse, AxiosError<AdminTopupError>, Options<AdminTopupData>> = {
+        mutationFn: async (localOptions) => {
+            const { data } = await AdminService.adminTopup({
+                ...options,
+                ...localOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
 };
 
 export const billingGetBillingOverviewQueryKey = (options: Options<BillingGetBillingOverviewData>) => [

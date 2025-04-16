@@ -72,7 +72,9 @@ class AppContainer(containers.DeclarativeContainer):
         admin_opr=admin_opr,
         billing_opr=billing_opr,
         transaction_opr=transaction_opr,
-        instance_opr=instance_opr
+        instance_opr=instance_opr,
+        user_opr=user_opr,
+        subscription_service=subscription_service
     )
 
     # Workers
