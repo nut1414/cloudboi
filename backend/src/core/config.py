@@ -21,7 +21,7 @@ class DatabaseConfig:
     }
 
 class TokenConfig:
-    ENV = os.environ.get("ENV", "development")
+    MODE = os.environ.get("MODE", "dev")
     SECRET_KEY = os.environ.get("SECRET_KEY", secrets.token_hex(32))
     ALGORITHM = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES = 30
@@ -30,7 +30,8 @@ class TokenConfig:
     AUDIENCE = os.environ.get("TOKEN_AUDIENCE", "cloudboi-users")
 
     # HTTPS only in production
-    SECURE_COOKIES = ENV == "production"
+    SECURE_COOKIES = MODE == "production"
+    SAMESITE = "lax" if MODE == "test" else "strict"
 
 class BillingConfig:
     # Check for overdue subscriptions every x minutes
