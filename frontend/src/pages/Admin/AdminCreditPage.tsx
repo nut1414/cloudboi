@@ -6,7 +6,7 @@ import OptionButton from "../../components/Common/Button/OptionButton"
 import { CURRENCY } from "../../constant/CurrencyConstant"
 import { useAdminCredit } from "../../hooks/Admin/useAdminCredit"
 import PageContainer from "../../components/Layout/PageContainer"
-import SearchBar from "../../components/Common/SearchBar"
+import Dropdown from "../../components/Common/Dropdown"
 import Section from "../../components/Common/Section"
 
 const AdminCreditPage: React.FC = () => {
@@ -25,6 +25,14 @@ const AdminCreditPage: React.FC = () => {
     handleSelectUser
   } = useAdminCredit()
 
+  const userOptions = useMemo(() => {
+    return users.map(user => ({
+      value: user.user_id,
+      label: user.username,
+      sublabel: user.email
+    }))
+  }, [users])
+
   const CreditContent = useMemo(() => {
     return (
       <Section
@@ -33,33 +41,21 @@ const AdminCreditPage: React.FC = () => {
         description="Add credit to user accounts"
         className="space-y-8"
       >
-        {/* User Search */}
+        {/* User Search Dropdown */}
         <div className="space-y-4">
-          <div className="relative">
-            <SearchBar
-              initialValue={searchQuery}
-              onSearch={handleSearch}
-              placeholder="Search users by username or email"
-            />
-            {users.length > 0 && (
-              <div className="absolute z-10 w-full mt-1 bg-[#1B2B4E] rounded-lg border border-blue-800/30 shadow-lg">
-                <ul className="py-2">
-                  {users.map((user) => (
-                    <li
-                      key={user.user_id}
-                      className="px-4 py-2 hover:bg-blue-800/20 cursor-pointer"
-                      onClick={() => handleSelectUser(user)}
-                    >
-                      <div className="flex flex-col">
-                        <span className="text-white">{user.username}</span>
-                        <span className="text-gray-400 text-sm">{user.email}</span>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
+          <Dropdown
+            options={userOptions}
+            value={username}
+            onChange={(userId) => {
+              const selectedUser = users.find(u => u.user_id === userId);
+              if (selectedUser) {
+                handleSelectUser(selectedUser);
+              }
+            }}
+            onSearch={handleSearch}
+            placeholder="Select a user"
+            searchPlaceholder="Search users by username or email"
+          />
           {username && (
             <div className="bg-[#23375F] rounded-lg p-4 border border-blue-800/30">
               <p className="text-gray-400">Selected User</p>
@@ -127,7 +123,7 @@ const AdminCreditPage: React.FC = () => {
         )}
       </Section>
     )
-  }, [username, creditValue, isLoading, error, successMessage, predefinedAmounts, searchQuery, users, handleSearch, handleSelectUser, handleInputChange, processCredit])
+  }, [username, creditValue, isLoading, error, successMessage, predefinedAmounts, userOptions, handleSearch, handleSelectUser, handleInputChange, processCredit])
 
   return (
     <PageContainer
