@@ -91,7 +91,7 @@ class TestAuthorization:
         login_page = LoginPage(page)
         login_page.navigate()
         login_page.fill_form(LoginData(
-            username=invalid_user_data.username,
+            username="UwU",
             password=invalid_user_data.password
         ))
         login_page.click_login()
