@@ -10,7 +10,6 @@ const Login: React.FC = () => {
   const {
     loginForm,
     isSubmitting,
-    error,
     handleLoginSubmit
   } = useAuth()
   
@@ -21,7 +20,6 @@ const Login: React.FC = () => {
       title="Sign in to your account"
       subtitle="Enter your credentials to access your cloud resources"
       onSubmit={handleSubmit(handleLoginSubmit)}
-      error={error}
       footerText="Don't have an account?"
       footerLinkText="Sign up"
       footerLinkPath="/register"

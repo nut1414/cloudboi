@@ -3,10 +3,12 @@ import { useForm, SubmitHandler } from 'react-hook-form'
 import { UserService, UserCreateUserData, UserLoginUserData, UserCreateRequest, UserLoginRequest } from '../../client'
 import { useUser, USER_ACTIONS } from '../../contexts/userContext'
 import { useNavigate } from 'react-router-dom'
+import useToast from '../useToast'
 
 export const useAuth = () => {
-  const { user, dispatch, error: contextError } = useUser()
+  const { dispatch, error: contextError } = useUser()
   const navigate = useNavigate()
+  const toast = useToast()
   
   // Shared state
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -88,6 +90,7 @@ export const useAuth = () => {
       await UserService.userLogoutUser()
       
       dispatch?.({ type: USER_ACTIONS.LOGOUT })
+      toast.success('Logout successful')
       navigate('/login', { replace: true })
     } catch (error: any) {
       const errorMessage = error.response?.data?.detail || 'Logout failed'
@@ -103,6 +106,7 @@ export const useAuth = () => {
     
     try {
       const userData = await loginUser(data.username, data.password)
+      toast.success('Login successful')
       // Use the returned userData directly to determine redirect path
       navigate(userData.role === "admin" ? `/admin/system` : `/user/${data.username}/instance`, { replace: true })
     } catch (err: any) {
@@ -122,6 +126,7 @@ export const useAuth = () => {
         data.password,
         data.username
       )
+      toast.success('Registration successful')
       navigate(`/login`, { replace: true })
     } catch (err: any) {
       // Error is already set in the context by the register function

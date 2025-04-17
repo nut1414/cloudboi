@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { MESSAGE_TYPES } from "../constant/TerminalConstant"
+import useToast from "./useToast";
 
 // Base WebSocket hook for terminal/console connections
 export const useWebSocketBase = (
@@ -15,6 +16,7 @@ export const useWebSocketBase = (
     const [connected, setConnected] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [isPreconnectionComplete, setIsPreconnectionComplete] = useState(!preConnectionCallback)
+    const toast = useToast()
 
     // Execute pre-connection callback if provided
     useEffect(() => {
@@ -22,7 +24,7 @@ export const useWebSocketBase = (
             preConnectionCallback()
                 .then(() => setIsPreconnectionComplete(true))
                 .catch(error => {
-                    console.error("Pre-connection action failed:", error)
+                    toast.error("Pre-connection action failed:", error)
                     setIsPreconnectionComplete(true) // Continue even if pre-connection fails
                 })
         }
@@ -94,11 +96,11 @@ export const useWebSocketBase = (
                 }
         
                 ws.onerror = (error) => {
-                    console.error('WebSocket error:', error)
+                    toast.error('WebSocket connection error')
                     setError('Connection error. Please try again later.')
                 }
             } catch (error) {
-                console.error('Failed to connect:', error)
+                toast.error('Failed to connect to WebSocket')
                 setError('Failed to connect. Please try again later.')
             }
         }

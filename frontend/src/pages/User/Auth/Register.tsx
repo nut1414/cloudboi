@@ -14,7 +14,6 @@ const Register: React.FC = () => {
     const {
         registerForm,
         isSubmitting,
-        error,
         handleRegisterSubmit
     } = useAuth()
     
@@ -25,7 +24,6 @@ const Register: React.FC = () => {
             title="Create your account"
             subtitle="Start your cloud journey with CloudBoi"
             onSubmit={handleSubmit(handleRegisterSubmit)}
-            error={error}
             footerText="Already have an account?"
             footerLinkText="Sign in"
             footerLinkPath="/login"

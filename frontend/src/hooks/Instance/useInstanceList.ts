@@ -32,7 +32,6 @@ export const useInstanceList = () => {
                 type: INSTANCE_ACTIONS.FETCH_ERROR, 
                 payload: "Failed to load instances. Please try again later." 
             })
-            alert("Error fetching instances")
         }
     }, [dispatch, userName])
 
@@ -127,7 +126,6 @@ export const useInstanceList = () => {
                 type: INSTANCE_ACTIONS.FETCH_ERROR,
                 payload: `Failed to ${action} instance: ${instance.instance_name}`
             })
-            alert(`Failed to ${action} instance: ${instance.instance_name}`)
         }
     }, [dispatch, fetchInstances])
 

@@ -11,28 +11,12 @@ const SystemStatusPage: React.FC = () => {
     clusterMembers,
     updateClusterState,
     isLoading,
-    error,
   } = useClusterState()
 
   useEffect(() => {
     // Initial fetch
     updateClusterState()
   }, [updateClusterState])
-
-  if (error) {
-    // Extract the error message from the error object
-    const errorMessage = typeof error === 'object' 
-      ? error.message || 'An unknown error occurred' 
-      : String(error)
-      
-    return (
-      <PageContainer title="System Status">
-        <div className="bg-red-500/20 text-red-400 p-4 rounded-lg">
-          Error loading system status: {errorMessage}
-        </div>
-      </PageContainer>
-    )
-  }
 
   return (
     <PageContainer

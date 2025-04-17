@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from 'react'
+import { ReactNode } from 'react'
 import { AdminGetAllUsersResponse, ClusterGetMembersStateResponse } from '../client'
 import { BaseContextState, createContextProvider, ReducerAction } from './baseContext'
 

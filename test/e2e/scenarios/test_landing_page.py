@@ -12,6 +12,7 @@ class TestLandingPage:
     These tests verify the content and functionality of the main landing page.
     """
     
+    @pytest.mark.skip_auth
     def test_landing_page_elements(self, page: Page) -> None:
         """
         Test that all the main elements of the landing page are visible.
@@ -34,6 +35,7 @@ class TestLandingPage:
         # Check that there are 3 feature cards
         landing_page.expect_feature_count(3)
     
+    @pytest.mark.skip_auth
     def test_join_waitlist_navigation(self, page: Page) -> None:
         """
         Test that clicking the 'Join the waitlist' button navigates to the registration page.
@@ -52,6 +54,7 @@ class TestLandingPage:
         # Check that we are redirected to the registration page
         expect(page).to_have_url("/register")
     
+    @pytest.mark.skip_auth
     def test_learn_more_navigation(self, page: Page) -> None:
         """
         Test that clicking the 'Learn more' button navigates to the about page.
@@ -69,6 +72,7 @@ class TestLandingPage:
         # Check that we are redirected to the about page
         expect(page).to_have_url("/about")
     
+    @pytest.mark.skip_auth
     def test_landing_page_workflow(self, page: Page) -> None:
         """
         Test a common workflow starting from the landing page.

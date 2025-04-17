@@ -10,6 +10,7 @@ import {
 import { useInstance } from "../../contexts/instanceContext"
 import { INSTANCE_ACTIONS } from "../../contexts/instanceContext"
 import { useInstanceList } from "./useInstanceList"
+import useToast from "../useToast"
 
 export const useInstanceCreate = () => {
     const {
@@ -107,6 +108,7 @@ export const useInstanceCreate = () => {
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
     const [selectedImageName, setSelectedImageName] = useState<string>("")
     const [selectedVersion, setSelectedVersion] = useState<string>("")
+    const toast = useToast()
 
     // Fetch instance details on component mount
     useEffect(() => {
@@ -128,7 +130,6 @@ export const useInstanceCreate = () => {
                 type: INSTANCE_ACTIONS.SET_ERROR,
                 payload: "Failed to load instance details. Please try again."
             })
-            alert("Error fetching instance details")
         } finally {
             dispatch?.({ type: INSTANCE_ACTIONS.SET_LOADING, payload: false })
         }
@@ -201,6 +202,7 @@ export const useInstanceCreate = () => {
                 })
 
                 refreshInstances()
+                toast.success('Instance created successfully')
                 result = {
                     success: true,
                     data: response.data,

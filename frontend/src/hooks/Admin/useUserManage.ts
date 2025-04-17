@@ -44,10 +44,9 @@ export const useUserManage = () => {
         payload: data.users
       })
     } catch (err) {
-      console.error("Failed to fetch users:", err)
       dispatch({
         type: ADMIN_ACTIONS.FETCH_ERROR,
-        payload: "Failed to load user data. Please try again later."
+        payload: `Failed to load user data. Please try again later. ${err}`
       })
     }
   }, [dispatch])

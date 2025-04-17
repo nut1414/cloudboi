@@ -8,7 +8,10 @@ from ..data.models import RegisterData, UserData, LoginData
 
 
 class TestAuthorization:
-    def test_valid_register_login_logout(self, page: Page, test_user: UserData, browser: Browser) -> None:
+    @pytest.mark.skip_auth
+    def test_valid_register_login_logout(self, page: Page, test_user_auth: UserData, browser: Browser) -> None:
+        test_user = test_user_auth
+
         # Start with registration
         register_page = RegisterPage(page)
         register_page.navigate()

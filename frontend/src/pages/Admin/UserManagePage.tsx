@@ -4,7 +4,7 @@ import { AdminUser, UserInstanceFromDB } from "../../client/types.gen"
 import Table, { TableColumn, ExpandIndicator, CardGrid } from "../../components/Common/Table"
 import PageContainer from "../../components/Layout/PageContainer"
 import TopNavbar from "../../components/Common/Navbar/TopNavbar"
-import { UsersIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline"
+import { UsersIcon } from "@heroicons/react/24/outline"
 import StatusBadge from "../../components/Common/StatusBadge"
 import Button from "../../components/Common/Button/Button"
 import { useUserManage } from "../../hooks/Admin/useUserManage"
@@ -112,7 +112,6 @@ const UserManagePage: React.FC = () => {
   const {
     users,
     isLoading,
-    error,
     handleSearch,
     handleRowExpand,
     isRowExpanded,
@@ -259,11 +258,6 @@ const UserManagePage: React.FC = () => {
         subtitle="Manage system users and their instances"
         subtitleIcon={<UsersIcon className="w-4 h-4" />}
       >
-        {error && (
-          <div className="bg-red-500/20 text-red-200 p-4 rounded-md mb-4">
-            {error}
-          </div>
-        )}
         <Table
           columns={columns}
           data={users}

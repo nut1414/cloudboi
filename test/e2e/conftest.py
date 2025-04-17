@@ -3,16 +3,23 @@ Global pytest fixtures for E2E tests.
 This file contains fixtures that are automatically available to all test files.
 """
 import pytest
-from typing import Dict, Any, Generator
-from playwright.sync_api import sync_playwright, Browser, Page, Playwright
+from typing import Dict, Any, Generator, Optional, Callable, List, Union, cast, TypeVar
+from playwright.sync_api import sync_playwright, Browser, Page, Playwright, Response, APIResponse
 import os
 import uuid
 import json
 
 from .data.models import UserData, InstanceData, BillingData
 
+# Type variables for complex type annotations
+APIRequestCallable = TypeVar('APIRequestCallable', bound=Callable[[Optional[Page], str, Dict[str, Any], str], Optional[APIResponse]])
+UserActionCallable = TypeVar('UserActionCallable', bound=Callable[[Optional[Page], Optional[UserData]], Optional[APIResponse]])
 
-def pytest_addoption(parser):
+def pytest_configure(config: pytest.Config) -> None:
+    """Register custom markers."""
+    config.addinivalue_line("markers", "skip_auth: Skip authentication for this test")
+
+def pytest_addoption(parser: pytest.Parser) -> None:
     """Add command-line options for the tests."""
     parser.addoption(
         "--headless",
@@ -41,7 +48,7 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture(scope="session")
-def browser_type_launch_args(pytestconfig) -> Dict[str, Any]:
+def browser_type_launch_args(pytestconfig: pytest.Config) -> Dict[str, Any]:
     """
     Define browser launch arguments based on command line options.
     This can be used to set browser-specific options.
@@ -75,7 +82,7 @@ def browser_context_args(frontend_url: str) -> Dict[str, Any]:
 
 
 @pytest.fixture(scope="session", autouse=True)
-def set_frontend_url(pytestconfig) -> None:
+def set_frontend_url(pytestconfig: pytest.Config) -> None:
     """
     Set the frontend URL from command line option or environment variable.
     """
@@ -84,7 +91,7 @@ def set_frontend_url(pytestconfig) -> None:
         os.environ["FRONTEND_URL"] = frontend_url
 
 @pytest.fixture(scope="session", autouse=True)
-def set_backend_url(pytestconfig) -> None:
+def set_backend_url(pytestconfig: pytest.Config) -> None:
     """
     Set the backend URL from command line option or environment variable.
     """
@@ -127,13 +134,13 @@ def browser(playwright: Playwright, browser_type_launch_args: Dict[str, Any]) ->
     browser.close()
 
 
-@pytest.fixture
-def api_request():
+@pytest.fixture(scope="session")
+def api_request() -> APIRequestCallable:
     """
     Fixture that provides a helper function for making API requests.
     Handles common error scenarios and logging.
     """
-    def _api_request(page, url, data, action_name="API request"):
+    def _api_request(page: Optional[Page], url: str, data: Dict[str, Any], action_name: str = "API request") -> Optional[APIResponse]:
         """Make an API request and handle common error scenarios."""
         if page is None:
             return None
@@ -176,45 +183,51 @@ def api_request():
     return _api_request
 
 
-@pytest.fixture
-def register_user(backend_url: str, test_user: UserData, api_request):
+@pytest.fixture(scope="session")
+def register_user(
+    backend_url: str,
+    api_request: APIRequestCallable
+) -> UserActionCallable:
     """
     Fixture that registers a test user.
     Returns a function that will register the user when called with a page object.
     
     The page parameter is optional - if not provided, registration will be skipped.
     """
-    def _register_user(page: Page = None):
+    def _register_user(page: Optional[Page] = None, user: Optional[UserData] = None) -> Optional[APIResponse]:
         """Register a test user using the provided page."""
         if page is None:
             return None
             
         register_data = {
-            "username": test_user.username,
-            "email": test_user.email,
-            "password": test_user.password
+            "username": user.username,
+            "email": user.email,
+            "password": user.password
         }
         return api_request(page, f"{backend_url}/user/register", register_data, "Registration")
             
     return _register_user
 
 
-@pytest.fixture
-def login_user(backend_url: str, test_user: UserData, api_request):
+@pytest.fixture(scope="session")
+def login_user(
+    backend_url: str,
+    api_request: APIRequestCallable
+) -> UserActionCallable:
     """
     Fixture that logs in a test user.
     Returns a function that will log in the user when called with a page object.
     
     The page parameter is optional - if not provided, login will be skipped.
     """
-    def _login_user(page: Page = None):
+    def _login_user(page: Optional[Page] = None, user: Optional[UserData] = None) -> Optional[APIResponse]:
         """Login a test user using the provided page."""
         if page is None:
             return None
             
         login_data = {
-            "username": test_user.username,
-            "password": test_user.password
+            "username": user.username,
+            "password": user.password
         }
         return api_request(page, f"{backend_url}/user/login", login_data, "Login")
             
@@ -222,18 +235,21 @@ def login_user(backend_url: str, test_user: UserData, api_request):
 
 
 @pytest.fixture
-def page(browser: Browser, browser_context_args: Dict[str, Any], backend_url: str, 
-         register_user, login_user, request) -> Generator[Page, None, None]:
+def page(
+    browser: Browser,
+    browser_context_args: Dict[str, Any],
+    login_user: UserActionCallable,
+    test_user: UserData,
+    request: pytest.FixtureRequest
+) -> Generator[Page, None, None]:
     """
     Create a new page for each test with auth cookies already set based on markers.
     
     Markers:
         skip_auth: Skip authentication entirely
-        skip_register: Skip registration but still login
     """
     # Check for markers
     skip_auth = request.node.get_closest_marker("skip_auth") is not None
-    skip_register = request.node.get_closest_marker("skip_register") is not None
     
     # Create browser context with default args
     context = browser.new_context(**browser_context_args)
@@ -241,12 +257,8 @@ def page(browser: Browser, browser_context_args: Dict[str, Any], backend_url: st
     
     if not skip_auth:
         try:
-            # Register user if needed
-            if not skip_register:
-                register_user(page)
-            
             # Login to get auth cookies
-            login_response = login_user(page)
+            login_response = login_user(page, test_user)
             
             # Report authentication status
             if login_response and login_response.status == 200:
@@ -282,37 +294,38 @@ def test_user() -> UserData:
     )
 
 
-@pytest.fixture
-def test_instance() -> InstanceData:
+@pytest.fixture(scope="session")
+def test_user_auth() -> UserData:
     """
-    Fixture that provides test instance data.
-    Returns an InstanceData object that supports both dict and dot notation.
-    
-    Returns:
-        InstanceData object with randomly generated valid test data
+    Fixture that provides test user data for authenticated tests.
+    Returns a UserData object that supports both dict and dot notation.
     """
-    unique_id = str(uuid.uuid4())[:8]
-    return InstanceData(
-        name=f"test-instance-{unique_id}",
-        plan="Basic Plan",
-        description=f"Test instance created by automated test ({unique_id})"
+    return UserData(
+        username="testuser_auth",
+        email="testuser_auth@example.com",
+        password="Password123!",
+        role="user"
     )
 
 
-@pytest.fixture
-def test_billing() -> BillingData:
+@pytest.fixture(scope="session", autouse=True)
+def app_startup(
+    browser: Browser,
+    browser_context_args: Dict[str, Any],
+    register_user: UserActionCallable,
+    test_user: UserData,
+) -> None:
     """
-    Fixture that provides test billing data.
-    Returns a BillingData object that supports both dict and dot notation.
-    
-    Returns:
-        BillingData object with valid test card data
+    Startup function that runs once at the beginning of the test session.
+    This is automatically executed before any tests run.
     """
-    return BillingData(
-        card_number="4111111111111111",  # Test Visa card
-        expiry_month=12,
-        expiry_year=2030,
-        cvv="123",
-        name_on_card="Test User",
-        billing_address="123 Test St, Test City, Test Country"
-    )
+    context = browser.new_context(**browser_context_args)
+    page = context.new_page()
+
+    try:
+        register_user(page, test_user)
+    except Exception as e:
+        print(f"Error during app startup: {str(e)}")
+    finally:
+        page.close()
+        context.close()

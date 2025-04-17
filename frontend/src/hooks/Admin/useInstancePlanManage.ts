@@ -1,9 +1,9 @@
-import { useInstanceCreate } from "../Instance/useInstanceCreate"
 import { useInstance } from "../../contexts/instanceContext"
 import { useEffect, useState, useCallback, useMemo } from "react"
 import { useForm } from "react-hook-form"
 import { InstancePlan, AdminService } from "../../client"
 import { INSTANCE_ACTIONS } from "../../contexts/instanceContext"
+import useToast from "../useToast"
 
 export type InstancePlanFormData = {
     instance_plan_id?: number | null
@@ -18,9 +18,6 @@ export type ModalType = 'create' | 'update' | 'delete' | 'view' | null
 
 export const useInstancePlanManage = () => {
     const {
-        fetchInstanceDetails
-    } = useInstanceCreate()
-    const {
         allInstancePlans,
         isLoading,
         error,
@@ -29,8 +26,7 @@ export const useInstancePlanManage = () => {
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
     const [modalType, setModalType] = useState<ModalType>(null)
     const [selectedPlan, setSelectedPlan] = useState<InstancePlan | null>(null)
-    const [actionError, setActionError] = useState<string | null>(null)
-    const [actionSuccess, setActionSuccess] = useState<string | null>(null)
+    const toast = useToast()
     
     const createForm = useForm<InstancePlanFormData>({
         defaultValues: {
@@ -63,7 +59,6 @@ export const useInstancePlanManage = () => {
             dispatch?.({ type: INSTANCE_ACTIONS.FETCH_SUCCESS })
         } catch (error) {
             dispatch?.({ type: INSTANCE_ACTIONS.SET_ERROR, payload: error })
-            console.error(error)
         }
     }, [dispatch])
     
@@ -81,8 +76,6 @@ export const useInstancePlanManage = () => {
             storage_amount: 10,
             cost_hour: 0.01
         })
-        setActionError(null)
-        setActionSuccess(null)
         setModalType('create')
     }, [createForm])
     
@@ -96,8 +89,6 @@ export const useInstancePlanManage = () => {
             cost_hour: plan.cost_hour
         })
         setSelectedPlan(plan)
-        setActionError(null)
-        setActionSuccess(null)
         setModalType('update')
     }, [updateForm])
     
@@ -111,30 +102,23 @@ export const useInstancePlanManage = () => {
             cost_hour: plan.cost_hour
         })
         setSelectedPlan(plan)
-        setActionError(null)
-        setActionSuccess(null)
         setModalType('view')
     }, [updateForm])
     
     const openDeleteModal = useCallback((plan: InstancePlan) => {
         deleteForm.reset(plan)
         setSelectedPlan(plan)
-        setActionError(null)
-        setActionSuccess(null)
         setModalType('delete')
     }, [deleteForm])
     
     const closeModal = useCallback(() => {
         setModalType(null)
         setSelectedPlan(null)
-        setActionError(null)
-        setActionSuccess(null)
     }, [])
     
     const handleCreatePlan = useCallback(async (data: InstancePlanFormData) => {
         try {
             setIsSubmitting(true)
-            setActionError(null)
             
             const result = await AdminService.adminCreateInstancePlan({
                 body: data
@@ -142,15 +126,14 @@ export const useInstancePlanManage = () => {
             
             // Refresh instance plans after creating
             await fetchAllInstancePlans()
-            setActionSuccess(`Plan "${result?.data?.instance_package_name}" created successfully`)
+            toast.success(`Plan "${result?.data?.instance_package_name}" created successfully`)
             
             // Close modal after a short delay
             setTimeout(() => {
                 closeModal()
             }, 1500)
         } catch (err: any) {
-            setActionError(err.message || 'Failed to create instance plan')
-            console.error(err)
+            dispatch?.({ type: INSTANCE_ACTIONS.SET_ERROR, payload: err.message || 'Failed to create instance plan' })
         } finally {
             setIsSubmitting(false)
         }
@@ -159,7 +142,6 @@ export const useInstancePlanManage = () => {
     const handleUpdatePlan = useCallback(async (data: InstancePlanFormData) => {
         try {
             setIsSubmitting(true)
-            setActionError(null)
             
             // Ensure instance_plan_id is a number
             if (!data.instance_plan_id) {
@@ -175,15 +157,14 @@ export const useInstancePlanManage = () => {
             
             // Refresh instance plans after updating
             await fetchAllInstancePlans()
-            setActionSuccess(`Plan "${result?.data?.instance_package_name}" updated successfully`)
+            toast.success(`Plan "${result?.data?.instance_package_name}" updated successfully`)
             
             // Close modal after a short delay
             setTimeout(() => {
                 closeModal()
             }, 1500)
         } catch (err: any) {
-            setActionError(err.message || 'Failed to update instance plan')
-            console.error(err)
+            dispatch?.({ type: INSTANCE_ACTIONS.SET_ERROR, payload: err.message || 'Failed to update instance plan' })
         } finally {
             setIsSubmitting(false)
         }
@@ -192,7 +173,6 @@ export const useInstancePlanManage = () => {
     const handleDeletePlan = useCallback(async (data: InstancePlanFormData) => {
         try {
             setIsSubmitting(true)
-            setActionError(null)
             
             if (!selectedPlan?.instance_plan_id) {
                 throw new Error('Instance plan ID is required')
@@ -207,15 +187,14 @@ export const useInstancePlanManage = () => {
             
             // Refresh instance plans after deleting
             await fetchAllInstancePlans()
-            setActionSuccess(`Plan "${selectedPlan?.instance_package_name}" deleted successfully`)
+            toast.success(`Plan "${selectedPlan?.instance_package_name}" deleted successfully`)
             
             // Close modal after a short delay
             setTimeout(() => {
                 closeModal()
             }, 1500)
         } catch (err: any) {
-            setActionError(err.message || 'Failed to delete instance plan')
-            console.error(err)
+            dispatch?.({ type: INSTANCE_ACTIONS.SET_ERROR, payload: err.message || 'Failed to delete instance plan' })
         } finally {
             setIsSubmitting(false)
         }
@@ -225,8 +204,6 @@ export const useInstancePlanManage = () => {
         instancePlans: allInstancePlans || [],
         isLoading,
         error,
-        actionError,
-        actionSuccess,
         isSubmitting,
         createForm,
         updateForm,
