@@ -2,7 +2,6 @@ import pytest
 from typing import Dict, Any
 from playwright.sync_api import Page, expect
 
-from ..pages.page_navigator import PageNavigator
 from ..pages.landing_page import LandingPage
 
 
@@ -13,7 +12,7 @@ class TestLandingPage:
     These tests verify the content and functionality of the main landing page.
     """
     
-    def test_landing_page_elements(self, navigator: PageNavigator) -> None:
+    def test_landing_page_elements(self, page: Page) -> None:
         """
         Test that all the main elements of the landing page are visible.
         
@@ -23,8 +22,9 @@ class TestLandingPage:
         3. The CTA section is visible
         4. There are exactly 3 feature cards
         """
-        # Navigate to the landing page
-        landing_page = navigator.landing_page()
+        # Create and navigate to the landing page
+        landing_page = LandingPage(page)
+        landing_page.navigate()
         
         # Check that all sections are visible
         landing_page.expect_hero_section_visible()
@@ -34,47 +34,51 @@ class TestLandingPage:
         # Check that there are 3 feature cards
         landing_page.expect_feature_count(3)
     
-    def test_join_waitlist_navigation(self, navigator: PageNavigator) -> None:
+    def test_join_waitlist_navigation(self, page: Page) -> None:
         """
         Test that clicking the 'Join the waitlist' button navigates to the registration page.
         
         This test checks that:
         1. Clicking the join waitlist button navigates to the registration page
         """
-        # Navigate to the landing page
-        landing_page = navigator.landing_page()
+        # Create and navigate to the landing page
+        landing_page = LandingPage(page)
+        landing_page.navigate()
+        landing_page.wait_for_page_load()
         
         # Click the join waitlist button
         landing_page.click_join_waitlist()
         
         # Check that we are redirected to the registration page
-        expect(navigator.page).to_have_url(f"{LandingPage.base_url}/register")
+        expect(page).to_have_url("/register")
     
-    def test_learn_more_navigation(self, navigator: PageNavigator) -> None:
+    def test_learn_more_navigation(self, page: Page) -> None:
         """
         Test that clicking the 'Learn more' button navigates to the about page.
         
         This test checks that:
         1. Clicking the learn more button navigates to the about page
         """
-        # Navigate to the landing page
-        landing_page = navigator.landing_page()
+        # Create and navigate to the landing page
+        landing_page = LandingPage(page)
+        landing_page.navigate()
         
         # Click the learn more button
         landing_page.click_learn_more()
         
         # Check that we are redirected to the about page
-        expect(navigator.page).to_have_url(f"{LandingPage.base_url}/about")
+        expect(page).to_have_url("/about")
     
-    def test_landing_page_workflow(self, navigator: PageNavigator) -> None:
+    def test_landing_page_workflow(self, page: Page) -> None:
         """
         Test a common workflow starting from the landing page.
         
         This test shows how to use the workflow methods in the page object
         and combine multiple pages into a scenario.
         """
-        # Navigate to the landing page
-        landing_page = navigator.landing_page()
+        # Create and navigate to the landing page
+        landing_page = LandingPage(page)
+        landing_page.navigate()
         
         # Verify the landing page content
         landing_page.expect_hero_section_visible()
@@ -84,4 +88,4 @@ class TestLandingPage:
         landing_page.navigate_to_registration()
         
         # Verify that we are on the registration page
-        expect(navigator.page).to_have_url(f"{LandingPage.base_url}/register") 
+        expect(page).to_have_url("/register") 

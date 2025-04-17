@@ -7,8 +7,8 @@ services:
       - ../../test:/app
     environment:
       - DOCKER=true
-      - FRONTEND_URL=${FRONTEND_URL:-http://frontend:3000}
-      - BACKEND_URL=${BACKEND_URL:-http://backend:8000}
+      - FRONTEND_URL=${FRONTEND_URL:-http://proxy}
+      - BACKEND_URL=${BACKEND_URL:-http://proxy/api}
     networks:
       - cloudboi-network
     command: make test-e2e

@@ -98,5 +98,4 @@ class LandingPage(BasePage):
         """
         Navigate to the registration page by clicking the 'Join the waitlist' button.
         """
-        # The navigate() call is handled by the PageNavigator
         self.click_join_waitlist() 

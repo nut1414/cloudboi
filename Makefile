@@ -18,14 +18,16 @@ endef
 docker-clean:
 	docker system prune -a --volumes --force
 
-docker-up: db-up backend-up frontend-up
+docker-up: db-up backend-up frontend-up proxy-up
 
-docker-down: frontend-down backend-down db-down
+docker-down: proxy-down frontend-down backend-down db-down
 
 # Test environment setup
 test-env-up:
 	MODE=test ${MAKE} docker-up
 	@echo "Test environment started"
+	# Give backend time to fully start up
+	sleep 5
 
 test-env-down:
 	${MAKE} docker-down
@@ -60,7 +62,13 @@ frontend-down:
 
 frontend-build:
 	${DC_APP} build --no-cache frontend
-	
+
+proxy-up:
+	${DC_APP} up -d proxy
+
+proxy-down:
+	${DC_APP} down proxy
+
 db-rebuild: db-down db-build db-up
 	@echo "Database rebuilt successfully"
 
@@ -70,7 +78,10 @@ backend-rebuild: backend-down backend-build backend-up
 frontend-rebuild: frontend-down frontend-build frontend-up
 	@echo "Frontend rebuilt successfully"
 
-rebuild-all: db-rebuild backend-rebuild
+proxy-rebuild: proxy-down proxy-up
+	@echo "Proxy rebuilt successfully"
+
+rebuild-all: db-rebuild backend-rebuild frontend-rebuild proxy-rebuild
 	@echo "All containers rebuilt successfully"
 
 # TESTING

@@ -31,7 +31,7 @@ class TokenConfig:
 
     # HTTPS only in production
     SECURE_COOKIES = MODE == "production"
-    SAMESITE = "lax" if MODE == "test" else "strict"
+    SAMESITE = "strict"  # Using strict now that we have a proxy
 
 class BillingConfig:
     # Check for overdue subscriptions every x minutes

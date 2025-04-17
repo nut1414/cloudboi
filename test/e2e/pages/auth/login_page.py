@@ -30,10 +30,10 @@ class LoginPage(BasePage):
         expect(password_error).to_be_visible()
     
     def should_navigate_to_user_dashboard(self, username: str):
-        expect(self.page).to_have_url(f"{self.base_url}/user/{username}/instance")
+        expect(self.page).to_have_url(f"/user/{username}/instance")
     
     def should_navigate_to_admin_dashboard(self):
-        expect(self.page).to_have_url(f"{self.base_url}/admin")
+        expect(self.page).to_have_url("/admin")
         
         
         

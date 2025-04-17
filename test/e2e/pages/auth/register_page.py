@@ -36,5 +36,5 @@ class RegisterPage(BasePage):
         expect(password_error).to_be_visible()
 
     def should_navigate_to_login_page(self):
-        expect(self.page).to_have_url(f"{self.base_url}/login")
+        expect(self.page).to_have_url("/login")
         

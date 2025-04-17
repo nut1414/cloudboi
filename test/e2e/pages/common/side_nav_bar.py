@@ -12,9 +12,9 @@ class SideNavBar:
             "setting": self.page.get_by_test_id("side-navbar-item-setting"),
         }
         self.user_menu_items = {
-            "view_profile": self.page.get_by_test_id("side-navbar-user-menu-item-link-0"),
-            "preferences": self.page.get_by_test_id("side-navbar-user-menu-item-link-1"),
-            "logout": self.page.get_by_test_id("side-navbar-user-menu-item-button-2"),
+            "view_profile": self.page.get_by_test_id("side-navbar-user-menu-dropdown-item-link-0"),
+            "preferences": self.page.get_by_test_id("side-navbar-user-menu-dropdown-item-link-1"),
+            "logout": self.page.get_by_test_id("side-navbar-user-menu-dropdown-item-button-3"),
         }
         
     def click_user_menu_item(self, item_name: str):
@@ -26,4 +26,4 @@ class SideNavBar:
         self.side_navbar_items[item_name].click()
         
     def should_navigate_to_user_dashboard(self, username: str):
-        expect(self.page).to_have_url(f"{self.base_url}/user/{username}/instance")
+        expect(self.page).to_have_url(f"/user/{username}/instance")

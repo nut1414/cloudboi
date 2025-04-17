@@ -25,11 +25,11 @@ class UserService:
         # Check if user already exists
         existing_user = await self.user_opr.get_user_by_username(user_create.username)
         if existing_user:
-            raise HTTPException(status_code=400, detail="Username already existed")
+            raise HTTPException(status_code=409, detail="Username already existed")
         
         existing_email = await self.user_opr.get_user_by_email(user_create.email)
         if existing_email:
-            raise HTTPException(status_code=400, detail="Email already existed")
+            raise HTTPException(status_code=409, detail="Email already existed")
         
         # Create user with hashed password and store in database
         user_create_in_db = UserInDB(

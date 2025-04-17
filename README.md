@@ -49,6 +49,19 @@ make install
 
 - then run `make dev` to start the project
 
+# Architecture
+
+## Service Structure
+
+CloudBoi uses a multi-service architecture:
+
+- **Frontend**: React application for user interface
+- **Backend**: FastAPI server providing the API
+- **Proxy**: Nginx proxy that unifies frontend and backend under a single domain
+- **Database**: PostgreSQL database for data storage
+
+The Nginx proxy serves as a unified entry point for both frontend and backend services, solving cross-domain cookie issues by making them appear as a single origin to browsers.
+
 # Infrastructure Management
 
 CloudBoi provides a CLI tool for managing MAAS and LXD infrastructure. The tool allows you to:
@@ -86,42 +99,57 @@ please create a branch with feature as name then request a pull request review o
         ```
     - In Docker:
         ```sh
-        make service_name-up # Replace service_name with the service you want to run Ex. make dev-frontend
+        make service_name-up # Replace service_name with the service you want to run Ex. make frontend-up
         ```
+
+## Accessing the Application
+
+When running with Docker, the application is accessible at:
+- **Frontend and Backend**: http://localhost (port 80)
+  
+The Nginx proxy automatically routes requests to the appropriate service:
+- Frontend requests go to: http://localhost/
+- Backend API requests go to: http://localhost/api/
+
+When running locally:
+- **Frontend**: http://localhost:3000
+- **Backend**: http://localhost:8000
 
 # Testing
 
-The project uses Playwright for end-to-end (E2E) testing. Tests can be run both locally and in Docker.
+The project uses Playwright for end-to-end (E2E) testing. We recommend running tests in Docker for the most consistent experience across environments.
 
-## Setting up the test environment
+## Running tests with Docker (Recommended)
 ```sh
-cd test
-make setup
-```
-
-## Running tests locally
-```sh
-# First, navigate to the test directory
-cd test
-
-# Run all E2E tests locally
-make test-e2e
-
-# Generate HTML report
-make test-e2e-report
-
-# Run tests in visible browser mode
-make test-e2e-headed
-```
-
-## Running tests with Docker
-```sh
-# Make sure you're in the project root directory (not in the test directory)
+# Make sure you're in the project root directory
 # Build the test container
 make test-build
 
 # Run all E2E tests in the container
 make test-e2e
+
+# Generate HTML report
+make test-e2e-report
+
+# Run a specific test file
+make test-file FILE=e2e/scenarios/test_example.py
+```
+
+## Running tests locally (Alternative)
+For development purposes, you can also run tests locally:
+
+```sh
+# First, navigate to the test directory
+cd test
+
+# Set up the test environment
+make setup
+
+# Run all E2E tests locally
+make test-e2e
+
+# Run tests in visible browser mode
+make test-e2e-headed
 ```
 
 For more detailed information about the testing architecture, writing tests, and available test commands, see the [Testing README](test/README.md).
@@ -143,7 +171,7 @@ For more detailed information about the testing architecture, writing tests, and
 
 # Document for backend
 
-fastapi should auto generate schema at http://localhost:8000/docs
+fastapi should auto generate schema at http://localhost/api/docs when running with Docker or http://localhost:8000/docs when running locally.
 
 # Generating client for frontend
 
