@@ -10,7 +10,7 @@ from ..data.models import RegisterData, UserData, LoginData
 def invalid_user_data() -> UserData:
     return UserData(
         email="email",
-        username="idk",
+        username="uw",
         password="1234",
         role="user"
     )
