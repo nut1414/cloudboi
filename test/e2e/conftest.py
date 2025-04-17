@@ -294,20 +294,6 @@ def test_user() -> UserData:
     )
 
 
-@pytest.fixture(scope="session")
-def test_user_auth() -> UserData:
-    """
-    Fixture that provides test user data for authenticated tests.
-    Returns a UserData object that supports both dict and dot notation.
-    """
-    return UserData(
-        username="testuser_auth",
-        email="testuser_auth@example.com",
-        password="Password123!",
-        role="user"
-    )
-
-
 @pytest.fixture(scope="session", autouse=True)
 def app_startup(
     browser: Browser,

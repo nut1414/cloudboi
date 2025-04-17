@@ -109,8 +109,6 @@ export const useAuth = () => {
       toast.success('Login successful')
       // Use the returned userData directly to determine redirect path
       navigate(userData.role === "admin" ? `/admin/system` : `/user/${data.username}/instance`, { replace: true })
-    } catch (err: any) {
-      // Error is already set in the context by the login function
     } finally {
       setIsSubmitting(false)
     }
@@ -128,8 +126,6 @@ export const useAuth = () => {
       )
       toast.success('Registration successful')
       navigate(`/login`, { replace: true })
-    } catch (err: any) {
-      // Error is already set in the context by the register function
     } finally {
       setIsSubmitting(false)
     }

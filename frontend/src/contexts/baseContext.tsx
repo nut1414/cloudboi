@@ -27,7 +27,7 @@ const CommonProvider = <T extends BaseContextState>({
   
   // Handle error state at the context level
   useEffect(() => {
-    if (contextValue.error) {
+    if (contextValue.error && contextValue.error !== '') {
       toast.error(contextValue.error)
     }
   }, [contextValue.error, toast])

@@ -1,5 +1,6 @@
 from typing import Optional, Any, TypeVar, Dict, List, Union
 from playwright.sync_api import Page, Locator, expect
+from .common.toast import Toast
 
 
 class BasePage:
@@ -18,6 +19,7 @@ class BasePage:
             path: Optional path to navigate to (overrides the class path)
         """
         self.page = page
+        self.toast = Toast(self.page)
         if path is not None:
             self.path = path
     

@@ -4,7 +4,6 @@ import { UserProvider } from './userContext'
 import { InstanceProvider } from './instanceContext'
 import { BillingProvider } from './billingContext'
 import { AdminProvider } from './adminContext'
-import NotificationProvider from './NotificationContext'
 
 interface AppProvidersProps {
   children: ReactNode
@@ -16,9 +15,7 @@ export const AppProviders = ({ children }: AppProvidersProps) => {
       <AdminProvider>
         <BillingProvider>
           <InstanceProvider>
-            <NotificationProvider>
-              {children}
-            </NotificationProvider>
+            {children}
           </InstanceProvider>
         </BillingProvider>
       </AdminProvider>

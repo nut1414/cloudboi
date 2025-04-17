@@ -5,7 +5,7 @@ import PageAlert from '../../components/Common/PageAlert'
 import useToast from '../../hooks/useToast'
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline'
 
-const Support: React.FC = () => {
+const SupportPage: React.FC = () => {
   const toast = useToast();
   const [showPageAlert, setShowPageAlert] = useState(true);
 
@@ -135,4 +135,4 @@ const Support: React.FC = () => {
   )
 }
 
-export default Support
+export default React.memo(SupportPage)
