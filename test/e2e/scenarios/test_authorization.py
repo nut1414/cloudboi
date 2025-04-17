@@ -11,7 +11,8 @@ def invalid_user_data() -> UserData:
     return UserData(
         email="email",
         username="idk",
-        password="1234"
+        password="1234",
+        role="user"
     )
 
 @pytest.fixture
@@ -68,6 +69,7 @@ class TestAuthorization:
             username=invalid_user_data.username,
             password=invalid_user_data.password
         ))
+        register_page.click_register()
         register_page.should_show_email_error()
         register_page.should_show_username_error()
         register_page.should_show_password_error()
