@@ -1,10 +1,10 @@
 import { Config } from "@hey-api/client-axios"
 
 const getBaseURL = () => {
-  const mode = import.meta.env.VITE_MODE || import.meta.env.MODE || 'dev'
+  const app_env = import.meta.env.VITE_APP_ENV || import.meta.env.APP_ENV || 'dev'
   
-  // In test mode, use docker proxy
-  if (mode === 'test') {
+  // In test APP_ENV, use docker proxy
+  if (app_env === 'test') {
     return 'proxy/api'
   }
   

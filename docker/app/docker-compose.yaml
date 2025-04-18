@@ -16,7 +16,7 @@ services:
       - DB_HOST=postgresql
       - LXD_CERT_PATH=/app/certs/lxd.crt
       - LXD_KEY_PATH=/app/certs/lxd.key
-      - MODE=${MODE:-dev}
+      - APP_ENV=${APP_ENV:-dev}
       - DOCKER=true
     networks:
       - cloudboi-network
@@ -31,7 +31,7 @@ services:
       - cloudboi_fe-node_modules:/app/node_modules
     environment:
       - VITE_API_URL=${API_URL}
-      - VITE_MODE=${MODE:-dev}
+      - VITE_APP_ENV=${APP_ENV:-dev}
     depends_on:
       - backend
     networks:

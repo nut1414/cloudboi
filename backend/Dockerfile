@@ -15,4 +15,4 @@ COPY . .
 RUN make install
 
 # Run the backend using make (with Docker flag)
-CMD ["bash", "-c", "make ${MODE}"]
+CMD ["bash", "-c", "make ${APP_ENV}"]

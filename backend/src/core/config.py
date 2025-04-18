@@ -1,10 +1,10 @@
 import os
 import secrets
 
+APP_ENV = os.environ.get("APP_ENV", "dev")
+
 class DatabaseConfig:
-    MODE = os.environ.get("MODE", "dev")
-    
-    DB_NAME = "cloudboidb_test" if MODE == "test" else os.environ.get("DB_NAME", "cloudboidb")
+    DB_NAME = "cloudboidb_test" if APP_ENV == "test" else os.environ.get("DB_NAME", "cloudboidb")
     
     DB_URL = os.environ.get(
         "SQLALCHEMY_DATABASE_URL",
@@ -21,7 +21,6 @@ class DatabaseConfig:
     }
 
 class TokenConfig:
-    MODE = os.environ.get("MODE", "dev")
     SECRET_KEY = os.environ.get("SECRET_KEY", secrets.token_hex(32))
     ALGORITHM = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES = 30
@@ -30,7 +29,7 @@ class TokenConfig:
     AUDIENCE = os.environ.get("TOKEN_AUDIENCE", "cloudboi-users")
 
     # HTTPS only in production
-    SECURE_COOKIES = MODE == "production"
+    SECURE_COOKIES = APP_ENV == "production"
     SAMESITE = "strict"  # Using strict now that we have a proxy
 
 class BillingConfig:

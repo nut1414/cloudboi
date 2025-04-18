@@ -24,7 +24,7 @@ docker-down: proxy-down frontend-down backend-down db-down
 
 # Test environment setup
 test-env-up:
-	MODE=test ${MAKE} docker-up
+	APP_ENV=test ${MAKE} docker-up
 	@echo "Test environment started"
 	# Give backend time to fully start up
 	sleep 5
@@ -52,7 +52,7 @@ backend-build:
 	${DC_APP} build --no-cache backend
 
 backend-debug:
-	MODE=debug ${DC_APP} up backend
+	APP_ENV=debug ${DC_APP} up backend
 
 frontend-up:
 	${DC_APP} up -d frontend
