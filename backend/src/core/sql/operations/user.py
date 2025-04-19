@@ -1,5 +1,5 @@
 from typing import Optional
-from sqlalchemy import select
+from sqlalchemy import select, insert
 from sqlalchemy.orm import selectinload
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 import uuid
@@ -43,6 +43,23 @@ class UserOperation(BaseOperation):
                     'last_updated_at': user.last_updated_at
                 }
             ).returning(User)
+            result = (await db.execute(stmt)).scalar()
+            return self.to_pydantic(UserModel, result)
+    
+    async def create_admin_user(self, user: UserModel) -> UserModel:
+        async with self.session() as db:
+            if user.user_id is None:
+                user.user_id = uuid.uuid4()
+                
+            stmt = insert(User).values(
+                user_id=user.user_id,
+                username=user.username,
+                email=user.email,
+                password_hash=user.password_hash,
+                role_id=2,  # Admin role
+                last_updated_at=user.last_updated_at
+            ).returning(User)
+            
             result = (await db.execute(stmt)).scalar()
             return self.to_pydantic(UserModel, result)
     

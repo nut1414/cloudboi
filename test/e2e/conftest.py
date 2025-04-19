@@ -6,10 +6,9 @@ import pytest
 from typing import Dict, Any, Generator, Optional, Callable, List, Union, cast, TypeVar
 from playwright.sync_api import sync_playwright, Browser, Page, Playwright, Response, APIResponse
 import os
-import uuid
 import json
 
-from .data.models import UserData, InstanceData, BillingData
+from .data.models import UserData
 
 # Type variables for complex type annotations
 APIRequestCallable = TypeVar('APIRequestCallable', bound=Callable[[Optional[Page], str, Dict[str, Any], str], Optional[APIResponse]])
@@ -210,6 +209,32 @@ def register_user(
 
 
 @pytest.fixture(scope="session")
+def create_admin_user(
+    backend_url: str,
+    api_request: APIRequestCallable
+) -> UserActionCallable:
+    """
+    Fixture that creates an admin user.
+    Returns a function that will create the admin user when called with a page object.
+    
+    The page parameter is optional - if not provided, creation will be skipped.
+    """
+    def _create_admin_user(page: Optional[Page] = None, user: Optional[UserData] = None) -> Optional[APIResponse]:
+        """Create an admin user using the provided page."""
+        if page is None:
+            return None
+            
+        create_admin_data = {
+            "username": user.username,
+            "email": user.email,
+            "password": user.password
+        }
+        return api_request(page, f"{backend_url}/user/admin/create", create_admin_data, "Admin creation")
+            
+    return _create_admin_user
+
+
+@pytest.fixture(scope="session")
 def login_user(
     backend_url: str,
     api_request: APIRequestCallable
@@ -298,7 +323,7 @@ def test_user() -> UserData:
 def app_startup(
     browser: Browser,
     browser_context_args: Dict[str, Any],
-    register_user: UserActionCallable,
+    create_admin_user: UserActionCallable,
     test_user: UserData,
 ) -> None:
     """
@@ -309,7 +334,7 @@ def app_startup(
     page = context.new_page()
 
     try:
-        register_user(page, test_user)
+        create_admin_user(page, test_user)
     except Exception as e:
         print(f"Error during app startup: {str(e)}")
     finally:

@@ -6,7 +6,7 @@ from ..sql.operations import UserOperation
 from .validators.user_validator import UserValidator
 from ..utils.token import TokenUtils
 from .helpers.user_helper import UserHelper
-
+from ..utils.permission import require_test_environment
 
 class UserService:
     def __init__(
@@ -44,6 +44,48 @@ class UserService:
         user_wallet_create_in_db = UserWallet(
             user_id=created_user.user_id,
             balance=0.0,
+            last_updated_at=DateTimeUtils.now_dt()
+        )
+        created_user_wallet = await self.user_opr.upsert_user_wallet(user_wallet_create_in_db)
+        
+        # Return user info with created_at timestamp
+        return UserCreateResponse(
+            username=created_user.username,
+            email=created_user.email,
+            balance=created_user_wallet.balance,
+            created_at=created_user.last_updated_at
+        )
+
+    @require_test_environment
+    async def create_admin_user(self, user_create: UserCreateRequest) -> UserCreateResponse:
+        """Create a new admin user for testing purposes."""
+        # Validate user input
+        UserValidator.validate_email(user_create.email)
+        UserValidator.validate_password(user_create.password)
+        UserValidator.validate_username(user_create.username)
+        
+        # Check if user already exists
+        existing_user = await self.user_opr.get_user_by_username(user_create.username)
+        if existing_user:
+            raise HTTPException(status_code=409, detail="Username already exists")
+        
+        existing_email = await self.user_opr.get_user_by_email(user_create.email)
+        if existing_email:
+            raise HTTPException(status_code=409, detail="Email already exists")
+        
+        # Create admin user with hashed password and store in database
+        user_create_in_db = UserInDB(
+            username=user_create.username,
+            email=user_create.email,
+            password_hash=UserHelper.hash_password(user_create.password),
+            last_updated_at=DateTimeUtils.now_dt()
+        )
+        created_user = await self.user_opr.create_admin_user(user_create_in_db)
+
+        # Create user wallet with initial balance of 100.0 for admin users
+        user_wallet_create_in_db = UserWallet(
+            user_id=created_user.user_id,
+            balance=9999.0,  # Higher initial balance for admin users
             last_updated_at=DateTimeUtils.now_dt()
         )
         created_user_wallet = await self.user_opr.upsert_user_wallet(user_wallet_create_in_db)
