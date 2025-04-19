@@ -3,11 +3,11 @@ import PageContainer from "../../components/Layout/PageContainer"
 import Button from "../../components/Common/Button/Button"
 import Table, { TableColumn } from "../../components/Common/Table"
 import { AdminInstancePlan } from "../../client"
-import { useInstancePlanManage, InstancePlanFormData } from "../../hooks/Admin/useInstancePlanManage"
+import { useInstancePlanManage } from "../../hooks/Admin/useInstancePlanManage"
 import Modal from "../../components/Common/Modal/Modal"
 import InputField from "../../components/Common/InputField"
 import { Controller } from "react-hook-form"
-import { TrashIcon, PencilIcon, CheckCircleIcon, ExclamationCircleIcon, ClipboardDocumentIcon, EyeIcon } from "@heroicons/react/24/outline"
+import { TrashIcon, PencilIcon, ClipboardDocumentIcon, EyeIcon } from "@heroicons/react/24/outline"
 import { CURRENCY } from "../../constant/CurrencyConstant"
 
 const InstancePlanManagePage: React.FC = () => {
@@ -15,8 +15,6 @@ const InstancePlanManagePage: React.FC = () => {
         instancePlans,
         isLoading,
         isSubmitting,
-        actionError,
-        actionSuccess,
         createForm,
         updateForm,
         deleteForm,
@@ -219,29 +217,6 @@ const InstancePlanManagePage: React.FC = () => {
         )
     }, [createForm, updateForm])
 
-    // Render error or success message
-    const renderStatusMessage = useMemo(() => {
-        if (actionSuccess) {
-            return (
-                <div className="mb-4 p-3 bg-green-900/30 border-l-4 border-green-500 text-green-300 rounded flex items-center">
-                    <CheckCircleIcon className="h-5 w-5 mr-2" />
-                    <p>{actionSuccess}</p>
-                </div>
-            )
-        }
-
-        if (actionError) {
-            return (
-                <div className="mb-4 p-3 bg-red-900/30 border-l-4 border-red-500 text-red-300 rounded flex items-center">
-                    <ExclamationCircleIcon className="h-5 w-5 mr-2" />
-                    <p>{actionError}</p>
-                </div>
-            )
-        }
-
-        return null
-    }, [actionSuccess, actionError])
-
     // Create Plan Modal
     const renderCreateModal = useMemo(() => (
         <Modal
@@ -264,10 +239,9 @@ const InstancePlanManagePage: React.FC = () => {
                 </>
             }
         >
-            {renderStatusMessage}
             {renderFormFields('create')}
         </Modal>
-    ), [modalType, closeModal, isSubmitting, createForm, handleCreatePlan, renderStatusMessage, renderFormFields])
+    ), [modalType, closeModal, isSubmitting, createForm, handleCreatePlan, renderFormFields])
 
     // Update Plan Modal
     const renderUpdateModal = useMemo(() => (
@@ -291,10 +265,9 @@ const InstancePlanManagePage: React.FC = () => {
                 </>
             }
         >
-            {renderStatusMessage}
             {renderFormFields('update')}
         </Modal>
-    ), [modalType, closeModal, selectedPlan, isSubmitting, updateForm, handleUpdatePlan, renderStatusMessage, renderFormFields])
+    ), [modalType, closeModal, selectedPlan, isSubmitting, updateForm, handleUpdatePlan, renderFormFields])
 
     // View Plan Modal (Read-only)
     const renderViewModal = useMemo(() => (
@@ -337,7 +310,6 @@ const InstancePlanManagePage: React.FC = () => {
                 </>
             }
         >
-            {renderStatusMessage}
             <div className="text-center">
                 <p className="text-gray-300 mb-4">
                     Are you sure you want to delete plan "{selectedPlan?.instance_package_name}"?
@@ -347,7 +319,7 @@ const InstancePlanManagePage: React.FC = () => {
                 </p>
             </div>
         </Modal>
-    ), [modalType, closeModal, isSubmitting, deleteForm, handleDeletePlan, selectedPlan, renderStatusMessage])
+    ), [modalType, closeModal, isSubmitting, deleteForm, handleDeletePlan, selectedPlan])
 
     const headerContent = useMemo(() => (
         <Button label="Create Instance Plan" variant="purple" onClick={openCreateModal} />

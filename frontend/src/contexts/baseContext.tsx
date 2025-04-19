@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useReducer, ReactNode, Reducer } from 'react'
+import { createContext, useContext, useState, useReducer, ReactNode, Reducer, useEffect } from 'react'
+import useToast from '../hooks/useToast'
 
 // Generic type for context state
 export interface BaseContextState {
@@ -10,6 +11,32 @@ export interface BaseContextState {
 export type ReducerAction<T> = {
   type: string
   payload?: Partial<T> | any
+}
+
+// Common provider component that includes error handling
+const CommonProvider = <T extends BaseContextState>({ 
+  children, 
+  contextValue, 
+  Context 
+}: { 
+  children: ReactNode
+  contextValue: T
+  Context: React.Context<T | undefined> 
+}) => {
+  const toast = useToast()
+  
+  // Handle error state at the context level
+  useEffect(() => {
+    if (contextValue.error && contextValue.error !== '') {
+      toast.error(contextValue.error)
+    }
+  }, [contextValue.error, toast])
+  
+  return (
+    <Context.Provider value={contextValue}>
+      {children}
+    </Context.Provider>
+  )
 }
 
 // Factory function to create context with useReducer support
@@ -52,9 +79,9 @@ export function createContextProvider<T extends BaseContextState>(
     } as T
 
     return (
-      <Context.Provider value={contextValue}>
+      <CommonProvider Context={Context} contextValue={contextValue}>
         {children}
-      </Context.Provider>
+      </CommonProvider>
     )
   }
 
@@ -85,9 +112,9 @@ export function createContextProvider<T extends BaseContextState>(
     } as T
 
     return (
-      <Context.Provider value={contextValue}>
+      <CommonProvider Context={Context} contextValue={contextValue}>
         {children}
-      </Context.Provider>
+      </CommonProvider>
     )
   }
 

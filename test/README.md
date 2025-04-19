@@ -1,15 +1,17 @@
 # CloudBoi Testing Guide
 
-This document provides information on how to set up and run tests for the CloudBoi project, both locally and using Docker.
+This document provides information on how to set up and run tests for the CloudBoi project, both locally and using Docker. We recommend running tests in Docker for the most consistent experience across environments.
 
 ## Table of Contents
 
 - [Prerequisites](#prerequisites)
+- [Running Tests with Docker](#running-tests-with-docker) (Recommended)
 - [Local Test Setup](#local-test-setup)
 - [Running Tests Locally](#running-tests-locally)
-- [Running Tests with Docker](#running-tests-with-docker)
 - [Test Types](#test-types)
   - [E2E Tests](#e2e-tests)
+- [Architecture](#architecture)
+  - [Proxy Setup](#proxy-setup)
 - [Writing Tests](#writing-tests)
   - [E2E Tests with Playwright](#e2e-tests-with-playwright)
   - [Using Markers](#using-markers)
@@ -18,22 +20,47 @@ This document provides information on how to set up and run tests for the CloudB
   - [Directory Structure](#directory-structure)
   - [Writing Page Objects](#writing-page-objects)
   - [Writing Scenarios](#writing-scenarios)
-  - [Navigation with Type Safety](#navigation-with-type-safety)
-  - [Global Fixtures in conftest.py](#global-fixtures-in-conftest.py)
-  - [Data Models](#data-models)
+  - [URL Resolution with base_url](#url-resolution-with-base_url)
 - [CI/CD Integration](#cicd-integration)
 
 ## Prerequisites
+
+### Docker Testing (Recommended)
+- Docker
+- Docker Compose
 
 ### Local Testing
 - Python 3.12+
 - Make
 
-### Docker Testing
-- Docker
-- Docker Compose
+## Running Tests with Docker
+
+From the project root, you can use Docker to run tests without setting up a local environment. This is the recommended approach for the most consistent experience.
+
+### Docker Integration
+The testing setup follows the same pattern as other services in the project:
+- The `Dockerfile` uses Make commands for setup and running tests
+- `docker-compose.yaml` is consistent with other services' configurations
+- Environment variable `DOCKER=true` identifies when running in Docker context
+
+### Build and Run Tests
+```
+# First, make sure you're in the project root directory (not in the test directory)
+make test-build    # Build the test container
+make test-e2e      # Run all E2E tests in the container
+```
+
+### Other Docker Test Commands
+```
+# Run these from the project root directory
+make test-e2e-report               # Generate HTML test report
+make test-file FILE=e2e/scenarios/test_example.py    # Run a specific test file
+make test-marked MARKER=smoke      # Run tests with a specific marker
+```
 
 ## Local Test Setup
+
+For development purposes, you can also run tests locally:
 
 1. Navigate to the test directory:
    ```
@@ -87,40 +114,36 @@ Run tests in slow motion (useful for debugging):
 make test-e2e-slow
 ```
 
-## Running Tests with Docker
-
-From the project root, you can use Docker to run tests without setting up a local environment.
-
-### Docker Integration
-The testing setup follows the same pattern as other services in the project:
-- The `Dockerfile` uses Make commands for setup and running tests
-- `docker-compose.yaml` is consistent with other services' configurations
-- Environment variable `DOCKER=true` identifies when running in Docker context
-
-### Build and Run Tests
-```
-# First, navigate to the project root directory (if you're in the test directory)
-cd ..
-
-# Then run the Docker test commands
-make test-build    # Build the test container
-make test-e2e      # Run all E2E tests in the container
-```
-
-### Other Docker Test Commands
-```
-# Run these from the project root directory
-make test-e2e-report               # Generate HTML test report
-make test-file FILE=e2e/scenarios/test_example.py    # Run a specific test file
-make test-marked MARKER=smoke      # Run tests with a specific marker
-```
-
 ## Test Types
 
 ### E2E Tests
 End-to-end tests use Playwright to automate browser testing. These tests interact with the application as a user would.
 
 Located in the `test/e2e` directory.
+
+## Architecture
+
+### Proxy Setup
+
+The testing environment uses an Nginx proxy to unify the frontend and backend services under a single domain, which solves cross-domain cookie issues:
+
+- In Docker, tests communicate with the application through the proxy service at:
+  - Frontend: `http://proxy/`
+  - Backend API: `http://proxy/api/`
+
+- These URLs are configured in `docker/test/docker-compose.yaml` with environment variables:
+  ```yaml
+  environment:
+    - FRONTEND_URL=${FRONTEND_URL:-http://proxy}
+    - BACKEND_URL=${BACKEND_URL:-http://proxy/api}
+  ```
+
+- The proxy setup ensures that cookies set by the backend (with `SameSite=strict`) are properly shared with frontend requests, as they appear to come from the same origin.
+
+When running tests locally against a local development environment, you can override these URLs:
+```bash
+pytest --frontend-url=http://localhost --backend-url=http://localhost/api
+```
 
 ## Writing Tests
 
@@ -161,13 +184,12 @@ make test-marked MARKER=smoke
 
 ### Overview
 
-The E2E testing architecture follows the Page Object Model (POM) pattern with some enhancements to make tests more maintainable and reusable. The key components are:
+The E2E testing architecture follows the Page Object Model (POM) pattern with enhancements to make tests more maintainable and reusable. The key components are:
 
 1. **Page Objects** - Represent pages in the application and provide methods for interacting with them
-2. **Page Navigator** - Helps scenarios navigate between pages and manage page objects
-3. **Data Models** - Provide type-safe and validated test data with consistent structure
-4. **Scenarios** - High-level test cases that use page objects to test user flows
-5. **Global Fixtures** - Provide common test data and setup/teardown operations via conftest.py
+2. **Data Models** - Provide type-safe and validated test data with consistent structure
+3. **Scenarios** - High-level test cases that use page objects to test user flows
+4. **Global Fixtures** - Provide common test data and setup/teardown operations via conftest.py
 
 ### Directory Structure
 
@@ -181,7 +203,6 @@ test/
 └── e2e/                 # End-to-end tests directory
     ├── pages/           # Page objects
     │   ├── base_class.py   # Base page class
-    │   ├── page_navigator.py # Navigation helper
     │   ├── landing_page.py  # Landing page used as a template for other pages
     │   ├── auth/           # Authentication pages
     │   ├── instance/       # Instance management pages
@@ -247,7 +268,7 @@ class LoginPage(BasePage):
 
 Scenarios should be high-level and focus on the user flow, not the implementation details:
 
-1. **Use Page Navigator** - Use the navigator to get page objects and handle navigation
+1. **Use Page Objects Directly** - Create and use page objects directly, calling navigate() when needed
 2. **Use Global Fixtures** - Leverage fixtures from conftest.py for common test data and setup
 3. **Type Annotations** - Use type hints for clear interfaces and IDE support
 4. **Clear Assertions** - Each test should have clear assertions about the expected outcome
@@ -256,9 +277,10 @@ Example:
 
 ```python
 class TestUserAuth:
-    def test_user_registration(self, navigator, test_user: UserData) -> None:
+    def test_user_registration(self, page: Page, test_user: UserData) -> None:
         # Register a new user
-        register_page = navigator.register_page()
+        register_page = RegisterPage(page)
+        register_page.navigate()
         register_page.register(
             username=test_user.username,
             email=test_user.email, 
@@ -269,44 +291,32 @@ class TestUserAuth:
         register_page.expect_successful_redirect()
         
         # Continue with login
-        login_page = navigator.login_page()
+        login_page = LoginPage(page)
+        login_page.navigate()
         # ...
 ```
 
-### Navigation with Type Safety
+### URL Resolution with base_url
 
-The PageNavigator dynamically discovers all page objects in the project and provides several ways to access them with proper type hints:
+The project uses Playwright's `base_url` feature to simplify URL management:
 
-#### Method 1: Using Convenience Methods
+1. The `base_url` is configured in the browser context (in conftest.py)
+2. All page navigation uses relative paths (e.g., `/login` instead of `http://localhost:3000/login`)
+3. This lets you easily run tests against different environments by changing only the base_url
 
-```python
-# This will navigate to the login page if not already there
-# The type will be properly inferred as LoginPage by your IDE
-login_page = navigator.login_page()
+Benefits:
+- Simpler URL management - no need to construct full URLs in tests
+- Easy to switch between environments (local, staging, etc.)
+- Improved test readability with shorter, clearer URLs
 
-# This will navigate to a user's instance list page
-# The type will be properly inferred as InstanceListPage
-instance_page = navigator.instance_list_page(username="testuser")
-```
-
-#### Method 2: Using Dynamic Access
+The `BasePage` class handles navigation by using these relative paths:
 
 ```python
-# Access any page by its name
-# You'll need to help your IDE with the type
-from ..pages.auth.login_page import LoginPage
-login_page: LoginPage = navigator.get_page("login")
-
-# With parameters
-from ..pages.instance.instance_list_page import InstanceListPage
-instance_page: InstanceListPage = navigator.get_page("instance_list", username="testuser")
+def navigate(self) -> None:
+    """Navigate to this page only if not already on it."""
+    if not self.is_current():
+        self.page.goto(self.path)  # Uses base_url automatically
 ```
-
-The navigator automatically handles:
-- Caching page objects to avoid recreation
-- Only navigating when needed (if not already on the page)
-- Finding page objects dynamically without manual updates
-- Providing proper type hints for IDE autocompletion
 
 ### Global Fixtures in conftest.py
 
@@ -320,8 +330,11 @@ def playwright():
 def browser(playwright):
     """Returns a browser instance for the test session"""
     
-def page(browser):
-    """Returns a fresh page for each test"""
+def browser_context_args(frontend_url):
+    """Configure browser context with base_url and other settings"""
+    
+def page(browser, browser_context_args):
+    """Returns a fresh page for each test using the configured browser context"""
 
 # Data fixtures
 def test_user():
@@ -329,48 +342,9 @@ def test_user():
     
 def test_instance():
     """Returns an InstanceData model with random valid test data"""
-    
-def test_billing():
-    """Returns a BillingData model with valid test card data"""
-    
-# Navigation helper
-def navigator(page):
-    """Returns a PageNavigator instance"""
-    
-# Higher-level workflow fixtures
-def authenticated_user(navigator, test_user):
-    """
-    Creates and logs in a user, returns UserData.
-    Use this when your test requires an authenticated user.
-    """
 ```
 
 These fixtures greatly simplify your tests by handling common setup steps. By using pytest's fixture system, you get automatic teardown for resources like browser sessions, and you can compose fixtures together to create more complex test scenarios.
-
-### Data Models
-
-Test data is structured using data models for type safety, validation, and consistency:
-
-```python
-@dataclass
-class UserData:
-    username: str
-    email: str
-    password: str
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    
-    # Validation happens automatically
-    # Factory methods for test data
-    @classmethod
-    def generate_test_user(cls) -> 'UserData':
-        # Generate random valid user
-```
-
-Available models:
-- `UserData` - For user authentication data
-- `InstanceData` - For instance creation/management
-- `BillingData` - For payment information
 
 ## CI/CD Integration
 
@@ -380,4 +354,4 @@ The test container is designed to work in CI/CD pipelines. The test commands exi
 
 For more information, refer to:
 - [Playwright Documentation](https://playwright.dev/python/docs/intro)
-- [Pytest Documentation](https://docs.pytest.org/) 
+- [Pytest Documentation](https://docs.pytest.org/)

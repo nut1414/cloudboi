@@ -1,5 +1,6 @@
 // components/Common/TabNavigation.tsx
 import React from "react"
+import { useTestId } from "../../../utils/testUtils"
 
 export interface TabItem {
   id: string
@@ -16,10 +17,16 @@ interface TabNavigationProps {
 const TabNavigation: React.FC<TabNavigationProps> = ({ 
   tabs, 
   activeTab, 
-  setActiveTab 
+  setActiveTab,
+  ...restProps
 }) => {
+  const { dataTestId, cleanProps } = useTestId(restProps)
+
   return (
-    <div className="border-b border-blue-900/30 mb-6">
+    <div className="border-b border-blue-900/30 mb-6"
+      data-testid={dataTestId ? `${dataTestId}-tab-navigation` : undefined}
+      {...cleanProps}
+    >
       <nav className="flex -mb-px">
         {tabs.map((tab) => (
           <button
@@ -32,6 +39,7 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
                 ? "border-purple-600 text-purple-600"
                 : "border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-700"}
             `}
+            data-testid={dataTestId ? `${dataTestId}-tab-button-${tab.id}` : undefined}
           >
             {tab.icon && <span className="mr-2">{tab.icon}</span>}
             {tab.label}

@@ -57,6 +57,7 @@ const NavItem: React.FC<NavItemProps> = ({
           transition-all duration-200 w-full
           ${isActive ? "text-white" : "text-gray-300 hover:text-white"}
         `}
+        data-testid={`side-navbar-item-${path}`}
       >
         {icon && <span className="mr-3">{icon}</span>}
         {label}
@@ -200,6 +201,7 @@ const SideNavbar: React.FC<SideNavbarProps> = ({
           fullWidth={true}
           className="p-0"
           customMenuItems={userMenuItems}
+          data-testid="side-navbar-user-menu"
         />
       </div>
     </nav>

@@ -4,7 +4,8 @@ import { AdminService } from "../../client/services.gen"
 import { BILLING_ACTIONS } from "../../contexts/billingContext"
 import { useNavigate } from "react-router-dom"
 import { useForm } from "react-hook-form"
-import { formatStandardDate, getFirstDayOfMonth, getLastDayOfMonth } from "../../utils/dateTime"
+import { formatStandardDate } from "../../utils/dateTime"
+import useToast from "../useToast"
 
 // Define form type for date range
 type DateRangeFormType = {
@@ -23,6 +24,7 @@ export const useAdminBilling = () => {
     } = useBilling()
     
     const [searchQuery, setSearchQuery] = useState("")
+    const toast = useToast()
     
     // Initialize form using react-hook-form
     const { 
@@ -73,11 +75,11 @@ export const useAdminBilling = () => {
                 payload: transactionsData 
             })
             dispatch({ type: BILLING_ACTIONS.FETCH_SUCCESS})
+            toast.success("Transactions fetched successfully")
             
             return transactionsData
         } catch (err) {
             dispatch({ type: BILLING_ACTIONS.FETCH_ERROR, payload: err })
-            console.error("Error fetching transactions:", err)
             return null
         }
     }, [dispatch])
@@ -121,11 +123,11 @@ export const useAdminBilling = () => {
 
             dispatch({ type: BILLING_ACTIONS.SET_ADMIN_BILLING_STATS, payload: response.data })
             dispatch({ type: BILLING_ACTIONS.FETCH_SUCCESS })
+            toast.success("Billing stats fetched successfully")
 
             return response.data
         } catch (err) {
             dispatch({ type: BILLING_ACTIONS.FETCH_ERROR, payload: err })
-            console.error("Error fetching billing stats:", err)
             return null
         }
     }, [dispatch, isAllTime, dateRange.startDate, dateRange.endDate])

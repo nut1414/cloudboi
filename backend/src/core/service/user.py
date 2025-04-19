@@ -25,11 +25,11 @@ class UserService:
         # Check if user already exists
         existing_user = await self.user_opr.get_user_by_username(user_create.username)
         if existing_user:
-            raise HTTPException(status_code=400, detail="Username already existed")
+            raise HTTPException(status_code=409, detail="Username already exists")
         
         existing_email = await self.user_opr.get_user_by_email(user_create.email)
         if existing_email:
-            raise HTTPException(status_code=400, detail="Email already existed")
+            raise HTTPException(status_code=409, detail="Email already exists")
         
         # Create user with hashed password and store in database
         user_create_in_db = UserInDB(
@@ -94,13 +94,13 @@ class UserService:
         # Validate token
         payload = TokenUtils.validate_token(access_token)
         if not payload:
-            return unauthenticated_response
+            raise HTTPException(status_code=401, detail="Invalid access token: Validation failed")
         
         # Get user details
         username = payload.get("sub")
         user = await self.user_opr.get_user_by_username(username)
         if not user:
-            return unauthenticated_response
+            raise HTTPException(status_code=401, detail="Invalid access token: User not found")
         
         # Get user role
         user_role = await self.user_opr.get_user_role(user.username)

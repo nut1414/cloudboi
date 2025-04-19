@@ -1,6 +1,7 @@
 // components/Common/Button.tsx
 import React from "react"
 import { Link } from "react-router-dom"
+import { useTestId } from "../../../utils/testUtils"
 
 // Unified Button Props
 export interface ButtonProps {
@@ -26,7 +27,7 @@ export const Button: React.FC<ButtonProps> = ({
   hasBorder = false,
   disabled = false,
   size = 'default',
-  'data-testid': dataTestId
+  ...restProps
 }) => {
   // Define variant styles
   const variantStyles = {
@@ -79,13 +80,15 @@ export const Button: React.FC<ButtonProps> = ({
     `
   }
 
+  const { dataTestId } = useTestId(restProps)
+
   // The actual button element
   const ButtonElement = (
     <button
       onClick={onClick}
       disabled={disabled}
       className={buttonStyles}
-      data-testid={dataTestId}
+      data-testid={dataTestId ? `${dataTestId}-button` : undefined}
     >
       {icon && <span>{icon}</span>}
       <span className="flex-grow">{label}</span>
@@ -95,7 +98,7 @@ export const Button: React.FC<ButtonProps> = ({
   // If "to" prop is provided, wrap in Link component
   if (href) {
     return (
-      <Link to={href} className="inline-block" data-testid={dataTestId ? `${dataTestId}-link` : undefined}>
+      <Link to={href} className="inline-block" data-testid={dataTestId ? `${dataTestId}-button-link` : undefined}>
         {ButtonElement}
       </Link>
     )

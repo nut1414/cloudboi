@@ -52,6 +52,19 @@ test-e2e-slow:
 	@echo "Running E2E tests in slow motion..."
 	$(PYTHON) -m pytest e2e/scenarios -v --headless=false --slow-mo=100
 
+# Debug tests
+test-e2e-debug:
+	@echo "Running E2E tests with Playwright Inspector..."
+	PWDEBUG=1 $(PYTHON) -m pytest e2e/scenarios -v -s
+
+test-file-debug:
+	@echo "Running test file with Playwright Inspector..."
+	PWDEBUG=1 $(PYTHON) -m pytest $(FILE) -v -s
+
+test-marked-debug:
+	@echo "Running marked tests with Playwright Inspector..."
+	PWDEBUG=1 $(PYTHON) -m pytest -m $(MARKER) -v -s
+
 # Run tests with HTML report
 test-e2e-report:
 	$(PYTHON) -m pytest e2e/ -v --html=reports/e2e-report.html --self-contained-html

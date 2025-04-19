@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from "react"
-import { useWebSocketBase } from "../useWebsocket"
+import { useWebSocketBase } from "../useWebSocketBase"
 import { InstanceService } from "../../client"
 import { Terminal } from "xterm";
+import useToast from "../useToast";
 
 // Hook for managing WebSocket connection for console
 export const useConsoleWebSocket = (
@@ -13,6 +14,7 @@ export const useConsoleWebSocket = (
     xtermRef: React.RefObject<Terminal>
 ) => {
     const [consoleBuffer, setConsoleBuffer] = useState<string>("")
+    const toast = useToast()
 
     const fetchConsoleBuffer = useCallback(async () => {
         try {
@@ -23,7 +25,7 @@ export const useConsoleWebSocket = (
                 setConsoleBuffer(response.data)
             }
         } catch (error) {
-            console.error("Failed to fetch console buffer:", error)
+            toast.error("Failed to fetch console buffer")
         }
     }, [instanceName])
 

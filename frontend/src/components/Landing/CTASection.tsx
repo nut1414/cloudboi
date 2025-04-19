@@ -25,7 +25,7 @@ const CTASection: React.FC<CTASectionProps> = ({ title, description, buttonProps
         href={buttonProps.href}
         variant={buttonProps.variant}
         className={buttonProps.className}
-        data-testid="cta-button"
+        data-testid="cta"
       />
     </section>
   )

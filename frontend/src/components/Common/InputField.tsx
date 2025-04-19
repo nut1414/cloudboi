@@ -1,5 +1,6 @@
 import React, { InputHTMLAttributes, ReactNode, useCallback } from 'react'
 import { XCircleIcon } from "@heroicons/react/24/outline"
+import { useTestId } from '../../utils/testUtils'
 
 interface InputFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
     // Core props
@@ -43,6 +44,9 @@ const InputField: React.FC<InputFieldProps> = React.memo(({
         onChange(processedValue)
     }, [onChange, sanitizeValue])
 
+    // Use the test ID hook
+    const { dataTestId, cleanProps } = useTestId(restProps)
+    
     return (
         <div className={`w-full ${className}`}>
             {label && (
@@ -74,7 +78,8 @@ const InputField: React.FC<InputFieldProps> = React.memo(({
                         ${endIcon ? 'pr-10' : ''}
                         ${disabled ? 'opacity-60 cursor-not-allowed' : ''}
                     `}
-                    {...restProps}
+                    data-testid={dataTestId ? `${dataTestId}-input-field` : undefined}
+                    {...cleanProps}
                 />
 
                 {endIcon && (
@@ -88,6 +93,7 @@ const InputField: React.FC<InputFieldProps> = React.memo(({
                         ${!onEndIconClick ? 'pointer-events-none' : ''}
                         ${disabled ? 'opacity-60 cursor-not-allowed' : ''}
                         `}
+                        data-testid={dataTestId ? `${dataTestId}-input-field-end-icon` : undefined}
                     >
                         {endIcon}
                     </button>
@@ -95,7 +101,8 @@ const InputField: React.FC<InputFieldProps> = React.memo(({
             </div>
 
             {(error || helperText) && (
-                <div className={`mt-1 text-sm ${error ? 'text-red-400' : 'text-gray-400'} flex items-start gap-1`}>
+                <div className={`mt-1 text-sm ${error ? 'text-red-400' : 'text-gray-400'} flex items-start gap-1`} 
+                    data-testid={dataTestId ? `${dataTestId}-input-field-error` : undefined}>
                     {error && <XCircleIcon className="w-4 h-4 mt-0.5 flex-shrink-0" />}
                     <p>{error || helperText}</p>
                 </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { Link, useLocation } from "react-router-dom"
+import { useTestId } from "../../../utils/testUtils"
 
 // TopNavItem types
 export interface TopNavItemProps {
@@ -17,8 +18,11 @@ export const TopNavItem: React.FC<TopNavItemProps & { variant?: 'default' | 'lig
   icon,
   isActive = false,
   onClick,
-  variant = 'default'
+  variant = 'default',
+  ...restProps
 }) => {
+  const { dataTestId } = useTestId(restProps)
+
   // Variant styles
   const variantStyles = {
     default: `text-gray-300 hover:text-white hover:bg-blue-800 ${isActive ? "text-white bg-blue-800" : ""}`,
@@ -35,6 +39,7 @@ export const TopNavItem: React.FC<TopNavItemProps & { variant?: 'default' | 'lig
       <div
         className={commonClasses}
         onClick={onClick}
+        data-testid={dataTestId ? `${dataTestId}-top-nav-item` : undefined}
       >
         {icon && <span className="mr-3">{icon}</span>}
         {label}
@@ -48,6 +53,7 @@ export const TopNavItem: React.FC<TopNavItemProps & { variant?: 'default' | 'lig
       to={href}
       className={commonClasses}
       onClick={onClick}
+      data-testid={dataTestId ? `${dataTestId}-top-nav-item-link` : undefined}
     >
       {icon && <span className="mr-3">{icon}</span>}
       {label}
@@ -73,11 +79,13 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
   variant = 'default',
   stickyTop = true,
   navAlignment = 'center',
-  className = ""
+  className = "",
+  ...restProps
 }) => {
   const location = useLocation()
   const [scrolled, setScrolled] = useState(false)
-
+  const { dataTestId } = useTestId(restProps)
+  
   // Effect to handle scroll and update state
   useEffect(() => {
     if (!stickyTop) return // Only add scroll listener if sticky is enabled
@@ -134,7 +142,10 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
   const shadowClass = stickyTop && scrolled ? 'shadow-xl' : ''
 
   return (
-    <nav className={`${styles.bg} py-4 px-6 md:px-8 ${shadowClass} border-b ${styles.border} ${stickyTop ? 'sticky top-0 z-50' : ''} ${className} transition-shadow duration-300`}>
+    <nav
+      className={`${styles.bg} py-4 px-6 md:px-8 ${shadowClass} border-b ${styles.border} ${stickyTop ? 'sticky top-0 z-50' : ''} ${className} transition-shadow duration-300`}
+      data-testid={dataTestId ? `${dataTestId}-top-navbar` : undefined}
+    >
       <div className="container mx-auto">
         <div className="flex items-center justify-between">
           {/* Left Section */}

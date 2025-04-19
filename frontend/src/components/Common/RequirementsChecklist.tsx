@@ -1,20 +1,21 @@
-import React from 'react';
-import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
+import React from 'react'
+import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline'
+import { useTestId } from '../../utils/testUtils'
 
 export interface Requirement {
-  key: string;
-  label: string;
-  passed: boolean;
+  key: string
+  label: string
+  passed: boolean
 }
 
 export interface RequirementsChecklistProps {
-  requirements: Requirement[];
-  title?: string;
-  icon?: React.ReactNode;
-  columns?: 1 | 2 | 3 | 4;
-  iconSize?: 'sm' | 'md' | 'lg';
-  className?: string;
-  titleClassName?: string;
+  requirements: Requirement[]
+  title?: string
+  icon?: React.ReactNode
+  columns?: 1 | 2 | 3 | 4
+  iconSize?: 'sm' | 'md' | 'lg'
+  className?: string
+  titleClassName?: string
 }
 
 /**
@@ -36,30 +37,35 @@ const RequirementsChecklist: React.FC<RequirementsChecklistProps> = ({
   iconSize = 'md',
   className = '',
   titleClassName = '',
+  ...restProps
 }) => {
+  const { dataTestId } = useTestId(restProps)
+
   // Determine the icon size class
   const getIconSizeClass = () => {
     switch (iconSize) {
-      case 'sm': return 'w-4 h-4';
-      case 'lg': return 'w-6 h-6';
+      case 'sm': return 'w-4 h-4'
+      case 'lg': return 'w-6 h-6'
       case 'md':
-      default: return 'w-5 h-5';
+      default: return 'w-5 h-5'
     }
-  };
+  }
 
   // Determine grid columns class
   const getColumnsClass = () => {
     switch (columns) {
-      case 1: return 'grid-cols-1';
-      case 3: return 'grid-cols-3';
-      case 4: return 'grid-cols-4';
+      case 1: return 'grid-cols-1'
+      case 3: return 'grid-cols-3'
+      case 4: return 'grid-cols-4'
       case 2:
-      default: return 'grid-cols-2';
+      default: return 'grid-cols-2'
     }
-  };
+  }
 
   return (
-    <div className={`w-full ${className}`}>
+    <div className={`w-full ${className}`}
+      data-testid={dataTestId ? `${dataTestId}-requirements-checklist` : undefined}
+    >
       {title && (
         <p className={`text-md text-white font-medium mb-2 flex items-center gap-2 ${titleClassName}`}>
           {icon && <span className="text-purple-400">{icon}</span>}
@@ -72,6 +78,7 @@ const RequirementsChecklist: React.FC<RequirementsChecklistProps> = ({
             key={key} 
             className={`flex items-center py-1 transition-colors duration-200
               ${passed ? 'text-green-400' : 'text-gray-400'}`}
+            data-testid={dataTestId ? `${dataTestId}-requirement-${key}` : undefined}
           >
             <div className="flex-shrink-0">
               {passed ? (
@@ -85,7 +92,7 @@ const RequirementsChecklist: React.FC<RequirementsChecklistProps> = ({
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default RequirementsChecklist; 
+export default RequirementsChecklist 

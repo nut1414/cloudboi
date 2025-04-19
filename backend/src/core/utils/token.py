@@ -45,7 +45,7 @@ class TokenUtils:
             value=token,
             httponly=True,
             secure=TokenConfig.SECURE_COOKIES,
-            samesite="strict",
+            samesite=TokenConfig.SAMESITE,
             max_age=max_age
         )
 

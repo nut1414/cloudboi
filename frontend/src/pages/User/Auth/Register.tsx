@@ -14,7 +14,6 @@ const Register: React.FC = () => {
     const {
         registerForm,
         isSubmitting,
-        error,
         handleRegisterSubmit
     } = useAuth()
     
@@ -25,7 +24,6 @@ const Register: React.FC = () => {
             title="Create your account"
             subtitle="Start your cloud journey with CloudBoi"
             onSubmit={handleSubmit(handleRegisterSubmit)}
-            error={error}
             footerText="Already have an account?"
             footerLinkText="Sign in"
             footerLinkPath="/login"
@@ -51,6 +49,7 @@ const Register: React.FC = () => {
                         icon={<EnvelopeIcon className="h-5 w-5" />}
                         error={errors.email?.message}
                         className="mb-4"
+                        data-testid="register-email"
                     />
                 )}
             />
@@ -77,6 +76,7 @@ const Register: React.FC = () => {
                         icon={<UserIcon className="h-5 w-5" />}
                         error={errors.username?.message}
                         className="mb-4"
+                        data-testid="register-username"
                     />
                 )}
             />
@@ -107,6 +107,7 @@ const Register: React.FC = () => {
                         helperText="At least 8 characters with uppercase, lowercase, and a number"
                         error={errors.password?.message}
                         className="mb-4"
+                        data-testid="register-password"
                     />
                 )}
             />
@@ -118,6 +119,7 @@ const Register: React.FC = () => {
                     onClick={handleSubmit(handleRegisterSubmit)}
                     disabled={isSubmitting}
                     className="w-full"
+                    data-testid="register"
                 />
             </div>
         </AuthForm>

@@ -1,13 +1,11 @@
 // src/components/Auth/AuthForm.tsx
-import React, { ReactNode } from 'react'
+import React, { ReactNode, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { InformationCircleIcon } from '@heroicons/react/24/outline'
 
 type AuthFormProps = {
   title: string
   subtitle: string
   onSubmit: (e: React.FormEvent) => void
-  error?: string | null
   children: ReactNode
   footerText: string
   footerLinkText: string
@@ -18,7 +16,6 @@ const AuthForm: React.FC<AuthFormProps> = ({
   title,
   subtitle,
   onSubmit,
-  error,
   children,
   footerText,
   footerLinkText,
@@ -32,15 +29,6 @@ const AuthForm: React.FC<AuthFormProps> = ({
             <h2 className="text-3xl font-bold text-white">{title}</h2>
             <p className="text-gray-300 mt-2">{subtitle}</p>
           </div>
-
-          {error && (
-            <div className="mb-6 p-3 bg-red-900/30 border-l-4 border-red-500 text-red-300 rounded">
-              <div className="flex items-center">
-                <InformationCircleIcon className="h-5 w-5 mr-2" />
-                <p>{error}</p>
-              </div>
-            </div>
-          )}
 
           <form onSubmit={onSubmit}>{children}</form>
 

@@ -1,4 +1,5 @@
 import React from "react"
+import { useTestId } from "../../../utils/testUtils"
 
 // OptionButton Props
 export interface OptionButtonProps {
@@ -20,7 +21,8 @@ export const OptionButton: React.FC<OptionButtonProps> = ({
   variant = 'standard',  // Renamed default value
   unit,
   className = "",
-  disabled = false
+  disabled = false,
+  ...restProps
 }) => {
   // Define variant styles
   const variantStyles = {
@@ -46,11 +48,14 @@ export const OptionButton: React.FC<OptionButtonProps> = ({
     ? label.toLocaleString()
     : label
 
+  const { dataTestId } = useTestId(restProps)
+
   return (
     <button
       onClick={onClick}
       disabled={disabled}
       className={buttonStyles}
+      data-testid={dataTestId ? `${dataTestId}-option-button` : undefined}
     >
       {icon && (
         <span className={`${isSelected ? 'text-white' : 'text-purple-400'} mr-2`}>

@@ -20,7 +20,6 @@ const InstanceCreatePage: React.FC = () => {
         instanceDetails,
         formValues,
         isLoading,
-        error,
         isSubmitting,
         isFormValid,
         handleInstancePlanSelect,
@@ -34,13 +33,6 @@ const InstanceCreatePage: React.FC = () => {
         handleImageNameSelect,
         handleVersionSelect
     } = useInstanceCreate()
-
-    // Show error alert when error state changes
-    React.useEffect(() => {
-        if (error) {
-            alert(`Error: ${error}`)
-        }
-    }, [error])
 
     const handleSubmit = async () => {
         const result = await createInstance()

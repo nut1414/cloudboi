@@ -5,6 +5,7 @@ import { TransactionType } from "../../constant/TransactionConstant"
 import { useParams } from "react-router-dom"
 import { useUser } from "../../contexts/userContext"
 import { CURRENCY } from '../../constant/CurrencyConstant'
+import useToast from "../useToast"
 
 export const useUserBilling = () => {
     const {
@@ -18,6 +19,7 @@ export const useUserBilling = () => {
 
     const { userName } = useParams<{ userName: string }>()
     const { isAuthenticated } = useUser()
+    const toast = useToast()
     
     // Get the current user's wallet from the wallets map
     const userWallet = userName ? userWallets[userName] || null : null
@@ -47,7 +49,6 @@ export const useUserBilling = () => {
                 type: BILLING_ACTIONS.FETCH_ERROR,
                 payload: 'Failed to fetch wallet data'
             })
-            console.error('Error fetching wallet data', error)
             return null
         }
     }, [dispatch])
@@ -96,7 +97,6 @@ export const useUserBilling = () => {
                 type: BILLING_ACTIONS.FETCH_ERROR,
                 payload: 'Failed to fetch transaction history'
             })
-            alert('Error fetching transactions')
         }
     }, [dispatch, userName])
 
@@ -124,11 +124,6 @@ export const useUserBilling = () => {
             dispatch({ type: BILLING_ACTIONS.FETCH_SUCCESS })
             return response.data
         } catch (err) {
-            dispatch({
-                type: BILLING_ACTIONS.FETCH_ERROR,
-                payload: 'Failed to process top-up request'
-            })
-            alert('Error topping up wallet')
             throw err
         }
     }, [dispatch, fetchTransactions, userName, fetchUserWallet])
@@ -136,17 +131,23 @@ export const useUserBilling = () => {
     // Handler for component top up with success messaging
     const handleTopUp = useCallback(async (amount: number | string) => {
         if (!amount || Number(amount) <= 0) {
-            alert("Please enter a valid amount")
+            dispatch?.({
+                type: BILLING_ACTIONS.SET_ERROR,
+                payload: "Please enter a valid amount"
+            })
             return false
         }
 
         try {
             const numericAmount = Number(amount)
             await topUpWallet(numericAmount)
-            alert(`Successfully added ${numericAmount} ${CURRENCY.SYMBOL} to your wallet`)
+            toast.success(`Successfully added ${numericAmount} ${CURRENCY.SYMBOL} to your wallet`)
             return true
         } catch (err) {
-            alert("Failed to add credit. Please try again.")
+            dispatch?.({
+                type: BILLING_ACTIONS.SET_ERROR,
+                payload: "Failed to add credit. Please try again."
+            })
             return false
         }
     }, [topUpWallet])
@@ -173,7 +174,6 @@ export const useUserBilling = () => {
                 type: BILLING_ACTIONS.FETCH_ERROR,
                 payload: 'Failed to fetch billing overview'
             })
-            alert('Error fetching billing overview')
             throw err
         }
     }, [dispatch, userName])

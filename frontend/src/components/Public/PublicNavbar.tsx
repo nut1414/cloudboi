@@ -84,6 +84,7 @@ const PublicNavbar = () => {
             username={user.username ?? undefined}
             logout={logout}
             userRole={user.role ?? undefined}
+            data-testid="public-navbar-user-menu"
           />
         </div>
       )
@@ -95,6 +96,7 @@ const PublicNavbar = () => {
             href="/login"
             variant="purple"
             icon={<UserIcon className="w-5 h-5" />}
+            data-testid="public-navbar-sign-in"
           />
         </div>
       )

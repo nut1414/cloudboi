@@ -10,7 +10,6 @@ const Login: React.FC = () => {
   const {
     loginForm,
     isSubmitting,
-    error,
     handleLoginSubmit
   } = useAuth()
   
@@ -21,7 +20,6 @@ const Login: React.FC = () => {
       title="Sign in to your account"
       subtitle="Enter your credentials to access your cloud resources"
       onSubmit={handleSubmit(handleLoginSubmit)}
-      error={error}
       footerText="Don't have an account?"
       footerLinkText="Sign up"
       footerLinkPath="/register"
@@ -42,6 +40,7 @@ const Login: React.FC = () => {
             icon={<UserIcon className="h-5 w-5" />}
             error={errors.username?.message}
             className="mb-4"
+            data-testid="login-username"
           />
         )}
       />
@@ -60,6 +59,7 @@ const Login: React.FC = () => {
             icon={<LockClosedIcon className="h-5 w-5" />}
             error={errors.password?.message}
             className="mb-4"
+            data-testid="login-password"
           />
         )}
       />
@@ -71,6 +71,7 @@ const Login: React.FC = () => {
           onClick={handleSubmit(handleLoginSubmit)}
           disabled={isSubmitting}
           className="w-full"
+          data-testid="login"
         />
       </div>
     </AuthForm>

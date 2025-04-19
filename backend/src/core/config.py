@@ -1,7 +1,11 @@
 import os
 import secrets
 
+APP_ENV = os.environ.get("APP_ENV", "dev")
+
 class DatabaseConfig:
+    DB_NAME = "cloudboidb_test" if APP_ENV == "test" else os.environ.get("DB_NAME", "cloudboidb")
+    
     DB_URL = os.environ.get(
         "SQLALCHEMY_DATABASE_URL",
         "postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}".format(
@@ -9,7 +13,7 @@ class DatabaseConfig:
             DB_PASSWORD=os.environ.get("DB_PASSWORD", "cloudboi"),
             DB_HOST=os.environ.get("DB_HOST", "localhost"),
             DB_PORT=os.environ.get("DB_PORT", "5432"),
-            DB_NAME=os.environ.get("DB_NAME", "cloudboidb"),
+            DB_NAME=DB_NAME,
         )
     )
     DB_CONFIG = {
@@ -17,7 +21,6 @@ class DatabaseConfig:
     }
 
 class TokenConfig:
-    ENV = os.environ.get("ENV", "development")
     SECRET_KEY = os.environ.get("SECRET_KEY", secrets.token_hex(32))
     ALGORITHM = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES = 30
@@ -26,7 +29,8 @@ class TokenConfig:
     AUDIENCE = os.environ.get("TOKEN_AUDIENCE", "cloudboi-users")
 
     # HTTPS only in production
-    SECURE_COOKIES = ENV == "production"
+    SECURE_COOKIES = APP_ENV == "production"
+    SAMESITE = "strict"  # Using strict now that we have a proxy
 
 class BillingConfig:
     # Check for overdue subscriptions every x minutes

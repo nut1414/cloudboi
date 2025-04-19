@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo } from "react"
 import { ClusterService } from "../../client"
 import { useAdmin, ADMIN_ACTIONS } from "../../contexts/adminContext"
 import { groupClusterMemberStateInfo } from "../../utils/systemState"
+import useToast from "../useToast"
 /**
  * Hook for managing users in the admin section
  * Uses AdminContext to store and manage user data
@@ -13,6 +14,7 @@ export const useClusterState = () => {
     isLoading,
     error
   } = useAdmin()
+  const toast = useToast()
 
   const getClusterStateResponse = useCallback(async () => {
     try {
@@ -21,6 +23,7 @@ export const useClusterState = () => {
       if (response.data) {
         dispatch?.({ type: ADMIN_ACTIONS.SET_LOADING, payload: false })
         dispatch?.({ type: ADMIN_ACTIONS.SET_CLUSTER_STATES, payload: response.data })
+        toast.success("Cluster state updated successfully")
       }
     } catch (error) {
       dispatch?.({ type: ADMIN_ACTIONS.SET_LOADING, payload: false })

@@ -12,7 +12,6 @@ const TopUpMenu: React.FC = () => {
   const {
     userWallet,
     isLoading,
-    error,
     handleTopUp,
     sanitizeNumericInput
   } = useUserBilling()
@@ -109,20 +108,12 @@ const TopUpMenu: React.FC = () => {
             <p className="font-bold text-white">{creditValue ? `${Number(creditValue).toLocaleString()} ${CURRENCY.SYMBOL}` : '-'}</p>
           </div>
         </div>
-
-        {/* Display error if present */}
-        {error && (
-          <div className="bg-red-900/20 border border-red-800/30 p-4 rounded-lg text-red-400">
-            {error}
-          </div>
-        )}
       </div>
     )
   }, [
     creditValue,
     userWallet,
     isLoading,
-    error,
     predefinedAmounts,
     processTopUp,
     handleInputChange,

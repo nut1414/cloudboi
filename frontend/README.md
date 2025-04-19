@@ -1,6 +1,27 @@
 # cloudboi-frontend
 
+## Getting Started
+
 Getting started by running `pnpm i` then running `pnpm dev`
+
+## Proxy Configuration
+
+The application is configured to work with an Nginx proxy in the Docker setup that combines frontend and backend services under a single domain. This solves cross-domain cookie issues and simplifies the development experience.
+
+### How it Works
+
+1. In Docker, the application is accessed via:
+   - Frontend: http://localhost/
+   - Backend API: http://localhost/api/
+
+### API Client Generation
+
+The API client is generated from the backend's OpenAPI schema. When running with the proxy:
+
+```bash
+# Then generate the client
+pnpm gen-client
+```
 
 # React + TypeScript + Vite
 

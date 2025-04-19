@@ -60,7 +60,7 @@ async def exception_middleware(request: Request, call_next):
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://proxy", "http://localhost", "http://localhost:80", "http://frontend:3000", "http://backend:8000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

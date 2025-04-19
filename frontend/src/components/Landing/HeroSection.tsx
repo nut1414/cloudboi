@@ -42,13 +42,13 @@ const HeroSection: React.FC<HeroSectionProps> = ({
             label={primaryButton.label}
             href={primaryButton.href}
             variant={primaryButton.variant}
-            data-testid="hero-primary-button"
+            data-testid="hero-primary"
           />
           <Button 
             label={secondaryButton.label}
             href={secondaryButton.href}
             variant={secondaryButton.variant}
-            data-testid="hero-secondary-button"
+            data-testid="hero-secondary"
           />
         </div>
       </div>

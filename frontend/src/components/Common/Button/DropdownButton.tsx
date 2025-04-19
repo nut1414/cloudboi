@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react"
 import { Link } from "react-router-dom"
 import { ChevronDownIcon } from "@heroicons/react/24/outline"
+import { useTestId } from "../../../utils/testUtils"
 
 // DropdownItem type
 export interface DropdownItemProps {
@@ -42,9 +43,11 @@ export const DropdownButton: React.FC<DropdownButtonProps> = ({
     size = 'md',
     buttonType = 'default',
     fullWidth = false,
+    ...restProps
 }) => {
     const [isOpen, setIsOpen] = useState(false)
     const dropdownRef = useRef<HTMLDivElement>(null)
+    const { dataTestId } = useTestId(restProps)
 
     // Define variant styles
     const variantStyles = {
@@ -120,6 +123,7 @@ export const DropdownButton: React.FC<DropdownButtonProps> = ({
                     onClick={handleToggleDropdown}
                     disabled={disabled}
                     className={buttonStyles}
+                    data-testid={dataTestId ? `${dataTestId}-dropdown-button` : undefined}
                 >
                     <div className="flex-grow flex items-center">
                         {content}
@@ -141,6 +145,7 @@ export const DropdownButton: React.FC<DropdownButtonProps> = ({
                                             setIsOpen(false)
                                             if (item.onClick) item.onClick()
                                         }}
+                                        data-testid={dataTestId ? `${dataTestId}-dropdown-item-link-${index}` : undefined}
                                     >
                                         {item.content}
                                     </Link>
@@ -151,6 +156,7 @@ export const DropdownButton: React.FC<DropdownButtonProps> = ({
                                             setIsOpen(false)
                                             if (item.onClick) item.onClick()
                                         }}
+                                        data-testid={dataTestId ? `${dataTestId}-dropdown-item-button-${index}` : undefined}
                                     >
                                         {item.content}
                                     </button>
