@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useReducer, ReactNode, Reducer, useEffect } from 'react'
 import useToast from '../hooks/useToast'
+import React from 'react'
 
 // Generic type for context state
 export interface BaseContextState {
@@ -24,11 +25,26 @@ const CommonProvider = <T extends BaseContextState>({
   Context: React.Context<T | undefined> 
 }) => {
   const toast = useToast()
+  const prevErrorRef = React.useRef<string | null>(null)
   
   // Handle error state at the context level
   useEffect(() => {
-    if (contextValue.error && contextValue.error !== '') {
+    // Only process if there's an actual error
+    if (!contextValue.error || contextValue.error === '') {
+      // Reset prevError when error is cleared
+      if (prevErrorRef.current !== null) {
+        prevErrorRef.current = null
+      }
+      return
+    }
+    
+    // If this is a new error or an error that changed
+    if (contextValue.error !== prevErrorRef.current) {
+      // Show the error toast
       toast.error(contextValue.error)
+      
+      // Update the previous error reference
+      prevErrorRef.current = contextValue.error
     }
   }, [contextValue.error, toast])
   
