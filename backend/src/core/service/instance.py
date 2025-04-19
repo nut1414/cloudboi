@@ -90,12 +90,18 @@ class InstanceService:
         # Create instance in DB
         created_instance = await self.instance_opr.upsert_user_instance(instance)
 
+        user_wallet = await self.subscription_service.get_user_wallet(user_id=user_session_ctx.get().user_id)
+        if user_wallet.balance < self.subscription_service._calculate_payment_amount(instance_plan_create.cost_hour):
+            raise HTTPException(status_code=400, detail="Insufficient balance")
+
         # Create subscription
-        await self.subscription_service.create_subscription(
+        first_payment_transaction = await self.subscription_service.create_subscription(
             user_id=user_session_ctx.get().user_id,
             instance_id=created_instance.instance_id,
             instance_plan=instance_plan_create
         )
+
+        await self.subscription_service.process_transaction(first_payment_transaction)
 
         return InstanceCreateResponse(
             instance_name=created_instance.hostname,
