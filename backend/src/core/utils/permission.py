@@ -231,19 +231,6 @@ async def check_account_ownership(self: Any, args: list, kwargs: dict,
         detail="You do not have permission to access this user account",
     )
 
-async def check_test_environment(self: Any, args: list, kwargs: dict, 
-                                exception_cls=HTTPException, **factory_kwargs) -> Tuple[list, dict]:
-    """
-    Check if the current user is in test environment.
-    """
-    if APP_ENV == "test":
-        return args, kwargs
-    
-    raise exception_cls(
-        status_code=status.HTTP_403_FORBIDDEN,
-        detail="Only allowed in test environment",
-    )
-
 
 # Create the permission decorators
 require_roles = create_decorator(
@@ -259,10 +246,5 @@ require_instance_ownership = create_decorator(
 # Decorator to check if current user owns the account or is admin
 require_account_ownership = create_decorator(
     precondition_check=check_account_ownership,
-    skip_if_check_fails=False
-)
-
-require_test_environment = create_decorator(
-    precondition_check=check_test_environment,
     skip_if_check_fails=False
 )

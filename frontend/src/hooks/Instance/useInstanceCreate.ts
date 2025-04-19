@@ -11,6 +11,7 @@ import { useInstance } from "../../contexts/instanceContext"
 import { INSTANCE_ACTIONS } from "../../contexts/instanceContext"
 import { useInstanceList } from "./useInstanceList"
 import useToast from "../useToast"
+import { useNavigate, useParams } from "react-router-dom"
 
 export const useInstanceCreate = () => {
     const {
@@ -108,6 +109,8 @@ export const useInstanceCreate = () => {
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
     const [selectedImageName, setSelectedImageName] = useState<string>("")
     const [selectedVersion, setSelectedVersion] = useState<string>("")
+    const { userName } = useParams<{ userName: string }>()
+    const navigate = useNavigate()
     const toast = useToast()
 
     // Fetch instance details on component mount
@@ -226,6 +229,14 @@ export const useInstanceCreate = () => {
         return result
     }, [formSubmit, dispatch, refreshInstances])
 
+    const handleSubmitCreateInstance = useCallback(async () => {
+        const result = await createInstance()
+
+        if (result && result.success) {
+            toast.success('Instance created successfully')
+            navigate(`/user/${userName}/instance`)
+        }
+    }, [createInstance, navigate, userName])
 
     return {
         instanceDetails,
@@ -247,6 +258,7 @@ export const useInstanceCreate = () => {
         createInstance,
         handleImageNameSelect,
         handleVersionSelect,
-        fetchInstanceDetails
+        fetchInstanceDetails,
+        handleSubmitCreateInstance
     }
 }

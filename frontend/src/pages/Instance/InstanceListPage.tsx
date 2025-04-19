@@ -111,6 +111,7 @@ const InstanceListPage: React.FC = () => {
                 label="Create Instance"
                 variant="secondary"
                 icon={<PlusIcon className="w-4 h-4" />}
+                data-testid="top-navbar-create-instance"
             />
             <NotificationBadge
                 count={notificationCount}

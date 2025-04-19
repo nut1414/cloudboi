@@ -6,7 +6,7 @@ from ..sql.operations import UserOperation
 from .validators.user_validator import UserValidator
 from ..utils.token import TokenUtils
 from .helpers.user_helper import UserHelper
-from ..utils.permission import require_test_environment
+from ..utils.guard import require_test_environment
 
 class UserService:
     def __init__(

@@ -25,7 +25,7 @@ const InstanceCreatePage: React.FC = () => {
         handleInstancePlanSelect,
         handleRootPasswordChange,
         handleInstanceNameChange,
-        createInstance,
+        handleSubmitCreateInstance,
         selectedImageName,
         selectedVersion,
         uniqueImageNames,
@@ -33,16 +33,6 @@ const InstanceCreatePage: React.FC = () => {
         handleImageNameSelect,
         handleVersionSelect
     } = useInstanceCreate()
-
-    const handleSubmit = async () => {
-        const result = await createInstance()
-        
-        if (result && result.success) {
-            alert("Instance created successfully!")
-            // Redirect to instances list page after successful creation
-            navigate(`/user/${userName}/instance`)
-        }
-    }
 
     // Loading state UI
     if (isLoading) {
@@ -77,7 +67,7 @@ const InstanceCreatePage: React.FC = () => {
         <div className="py-4">
             <Button 
                 label={isSubmitting ? "Creating Instance..." : "Launch Instance"}
-                onClick={handleSubmit}
+                onClick={handleSubmitCreateInstance}
                 variant="purple"
                 className={`py-3 ${!isFormValid || isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                 icon={isSubmitting ? 
@@ -85,6 +75,7 @@ const InstanceCreatePage: React.FC = () => {
                     <RocketLaunchIcon className="w-5 h-5" />
                 }
                 disabled={!isFormValid || isSubmitting}
+                data-testid="instance-create-page-submit"
             />
         </div>
     )

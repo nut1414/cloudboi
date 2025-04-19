@@ -3,16 +3,14 @@ Global pytest fixtures for E2E tests.
 This file contains fixtures that are automatically available to all test files.
 """
 import pytest
-from typing import Dict, Any, Generator, Optional, Callable, List, Union, cast, TypeVar
+from typing import Dict, Any, Generator, Optional, List
 from playwright.sync_api import sync_playwright, Browser, Page, Playwright, Response, APIResponse
 import os
 import json
 
-from .data.models import UserData
-
-# Type variables for complex type annotations
-APIRequestCallable = TypeVar('APIRequestCallable', bound=Callable[[Optional[Page], str, Dict[str, Any], str], Optional[APIResponse]])
-UserActionCallable = TypeVar('UserActionCallable', bound=Callable[[Optional[Page], Optional[UserData]], Optional[APIResponse]])
+from .data.models import UserData, UserInstanceData
+from .api.client import ApiClient
+from .registry.actions import TestActionRegistry, TestData
 
 def pytest_configure(config: pytest.Config) -> None:
     """Register custom markers."""
@@ -89,6 +87,7 @@ def set_frontend_url(pytestconfig: pytest.Config) -> None:
     if frontend_url:
         os.environ["FRONTEND_URL"] = frontend_url
 
+
 @pytest.fixture(scope="session", autouse=True)
 def set_backend_url(pytestconfig: pytest.Config) -> None:
     """
@@ -97,6 +96,7 @@ def set_backend_url(pytestconfig: pytest.Config) -> None:
     backend_url = pytestconfig.getoption("--backend-url")
     if backend_url:
         os.environ["BACKEND_URL"] = backend_url
+
 
 @pytest.fixture(scope="session")
 def frontend_url() -> str:
@@ -133,137 +133,20 @@ def browser(playwright: Playwright, browser_type_launch_args: Dict[str, Any]) ->
     browser.close()
 
 
-@pytest.fixture(scope="session")
-def api_request() -> APIRequestCallable:
+@pytest.fixture
+def api_client(page: Page, backend_url: str) -> ApiClient:
     """
-    Fixture that provides a helper function for making API requests.
-    Handles common error scenarios and logging.
+    Create an API client for the current page.
+    This provides a convenient way to make API calls with consistent error handling.
     """
-    def _api_request(page: Optional[Page], url: str, data: Dict[str, Any], action_name: str = "API request") -> Optional[APIResponse]:
-        """Make an API request and handle common error scenarios."""
-        if page is None:
-            return None
-            
-        try:
-            response = page.context.request.post(
-                url,
-                headers={"Content-Type": "application/json"},
-                data=json.dumps(data)
-            )
-            
-            if response.status >= 400:
-                print(f"{action_name} warning - Status: {response.status}")
-                try:
-                    error_details = response.json()
-                    print(f"{action_name} details: {error_details}")
-                except Exception:
-                    print(f"Could not parse error response: {response.text()[:100]}...")
-                
-                if response.status >= 500:
-                    print(f"Server error detected, skipping {action_name}")
-                    return None
-                elif response.status != 409:  # 409 = User already exists (acceptable for registration)
-                    if "login" in action_name.lower() and response.status == 401:
-                        raise Exception(f"Authentication failed: Invalid credentials")
-                    else:
-                        raise Exception(f"{action_name} failed with status {response.status}")
-            
-            return response
-        except json.JSONDecodeError as e:
-            print(f"{action_name} response is not valid JSON: {str(e)}")
-            return None
-        except Exception as e:
-            print(f"{action_name} exception: {str(e)}")
-            if "502 Bad Gateway" in str(e):
-                print(f"502 Bad Gateway detected, skipping {action_name}")
-                return None
-            raise
-            
-    return _api_request
-
-
-@pytest.fixture(scope="session")
-def register_user(
-    backend_url: str,
-    api_request: APIRequestCallable
-) -> UserActionCallable:
-    """
-    Fixture that registers a test user.
-    Returns a function that will register the user when called with a page object.
-    
-    The page parameter is optional - if not provided, registration will be skipped.
-    """
-    def _register_user(page: Optional[Page] = None, user: Optional[UserData] = None) -> Optional[APIResponse]:
-        """Register a test user using the provided page."""
-        if page is None:
-            return None
-            
-        register_data = {
-            "username": user.username,
-            "email": user.email,
-            "password": user.password
-        }
-        return api_request(page, f"{backend_url}/user/register", register_data, "Registration")
-            
-    return _register_user
-
-
-@pytest.fixture(scope="session")
-def create_admin_user(
-    backend_url: str,
-    api_request: APIRequestCallable
-) -> UserActionCallable:
-    """
-    Fixture that creates an admin user.
-    Returns a function that will create the admin user when called with a page object.
-    
-    The page parameter is optional - if not provided, creation will be skipped.
-    """
-    def _create_admin_user(page: Optional[Page] = None, user: Optional[UserData] = None) -> Optional[APIResponse]:
-        """Create an admin user using the provided page."""
-        if page is None:
-            return None
-            
-        create_admin_data = {
-            "username": user.username,
-            "email": user.email,
-            "password": user.password
-        }
-        return api_request(page, f"{backend_url}/user/admin/create", create_admin_data, "Admin creation")
-            
-    return _create_admin_user
-
-
-@pytest.fixture(scope="session")
-def login_user(
-    backend_url: str,
-    api_request: APIRequestCallable
-) -> UserActionCallable:
-    """
-    Fixture that logs in a test user.
-    Returns a function that will log in the user when called with a page object.
-    
-    The page parameter is optional - if not provided, login will be skipped.
-    """
-    def _login_user(page: Optional[Page] = None, user: Optional[UserData] = None) -> Optional[APIResponse]:
-        """Login a test user using the provided page."""
-        if page is None:
-            return None
-            
-        login_data = {
-            "username": user.username,
-            "password": user.password
-        }
-        return api_request(page, f"{backend_url}/user/login", login_data, "Login")
-            
-    return _login_user
+    return ApiClient(page, backend_url)
 
 
 @pytest.fixture
 def page(
     browser: Browser,
     browser_context_args: Dict[str, Any],
-    login_user: UserActionCallable,
+    backend_url: str,
     test_user: UserData,
     request: pytest.FixtureRequest
 ) -> Generator[Page, None, None]:
@@ -280,19 +163,12 @@ def page(
     context = browser.new_context(**browser_context_args)
     page = context.new_page()
     
+    # Create an API client for this page
+    api_client = ApiClient(page, backend_url)
+    
     if not skip_auth:
-        try:
-            # Login to get auth cookies
-            login_response = login_user(page, test_user)
-            
-            # Report authentication status
-            if login_response and login_response.status == 200:
-                print("Authentication successful")
-            else:
-                print("Authentication skipped or failed - continuing with unauthenticated page")
-                
-        except Exception as e:
-            print(f"Auth process exception: {str(e)} - continuing with unauthenticated page")
+        # Login to get auth cookies
+        api_client.login_user(test_user)
     
     # Navigate to the frontend page
     page.goto("/")
@@ -315,7 +191,7 @@ def test_user() -> UserData:
         username="testuser",
         email="testuser@example.com",
         password="Password123!",
-        role="user"
+        role="admin"
     )
 
 
@@ -323,20 +199,78 @@ def test_user() -> UserData:
 def app_startup(
     browser: Browser,
     browser_context_args: Dict[str, Any],
-    create_admin_user: UserActionCallable,
+    backend_url: str,
     test_user: UserData,
 ) -> None:
     """
     Startup function that runs once at the beginning of the test session.
     This is automatically executed before any tests run.
+    
+    Note: This fixture requires its own ApiClient instance because:
+    1. It runs before any tests and before the api_client fixture is available
+    2. It has session scope while api_client has function scope (tied to each page)
+    3. The api_client fixture depends on the page fixture, which isn't available here
     """
     context = browser.new_context(**browser_context_args)
     page = context.new_page()
 
     try:
-        create_admin_user(page, test_user)
+        # Create a dedicated ApiClient instance for startup tasks
+        # Cannot use the api_client fixture due to dependency and scope differences
+        api_client = ApiClient(page, backend_url)
+        api_client.create_admin_user(test_user)
     except Exception as e:
         print(f"Error during app startup: {str(e)}")
     finally:
         page.close()
         context.close()
+
+
+@pytest.fixture(scope="module")
+def action_registry() -> TestActionRegistry:
+    """
+    Fixture that provides the test action registry.
+    This can be used to register custom before/after actions.
+    Will be be reset for each module/file.
+    """
+    return TestActionRegistry()
+
+
+@pytest.fixture(scope="function")
+def test_lifecycle(action_registry: TestActionRegistry, page: Page, backend_url: str, api_client: ApiClient, request: pytest.FixtureRequest) -> Generator[TestData, None, None]:
+    """
+    Fixture that runs registered before/after actions for each test.
+    Provides a flexible way to set up and tear down test state.
+    
+    Usage in test:
+    def test_something(self, test_lifecycle: TestData):
+        # Test code that will have all registered actions run
+        pass
+    
+    Usage for registering actions:
+    def register_actions(action_registry: TestActionRegistry):
+        @action_registry.register_before
+        def create_test_data(page: Page, backend_url: str, api_client: ApiClient) -> Dict[str, Any]:
+            # Create test data using api_client
+            api_client.login_user(some_user)
+            return {"some_key": "some_value"}  # Optional return value available in test_data
+            
+        @action_registry.register_after
+        def cleanup_test_data(page: Page, backend_url: str, api_client: ApiClient) -> None:
+            # Clean up test data using api_client
+            api_client.delete_instance("test-instance")
+    """
+    # Run before actions
+    action_context = {
+        "page": page,
+        "backend_url": backend_url,
+        "request": request,
+        "api_client": api_client
+    }
+    test_data = action_registry.run_before_actions(**action_context)
+    
+    # Return the test data (results from before actions)
+    yield test_data
+    
+    # Run after actions
+    action_registry.run_after_actions(**action_context)

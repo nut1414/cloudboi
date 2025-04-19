@@ -85,6 +85,7 @@ const ChooseOsImageSection: React.FC<ChooseOsImageSectionProps> = React.memo(({
                         isSelected={imageName === selectedImageName}
                         onClick={() => onImageNameSelect(imageName)}
                         className="font-medium"
+                        data-testid={`os-image-${imageName.toLowerCase()}`}
                     />
                 ))}
             </div>
@@ -105,6 +106,7 @@ const ChooseOsImageSection: React.FC<ChooseOsImageSectionProps> = React.memo(({
                             position="bottom-left"
                             buttonType="default"
                             hasBorder={false}
+                            data-testid={`os-version-dropdown`}
                         />
                         
                         {selectedOsType && (
