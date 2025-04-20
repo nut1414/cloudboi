@@ -6,7 +6,7 @@ import json
 from typing import Dict, Any, Optional
 from playwright.sync_api import Page, APIResponse
 
-from ..data.models import UserData
+from ..data.models import UserData, UserInstanceData
 
 class ApiClient:
     """
@@ -124,4 +124,33 @@ class ApiClient:
     # Instance Management API Methods
     def delete_instance(self, hostname: str) -> Optional[APIResponse]:
         """Delete an instance by hostname"""
-        return self.make_request(f"instance/{hostname}/delete", method="post", action_name="Delete Instance") 
+        return self.make_request(f"instance/{hostname}/delete", method="post", action_name="Delete Instance")
+    
+    def create_instance(self, instance_data: UserInstanceData) -> Optional[APIResponse]:
+        """
+        Create a new instance
+        
+        Args:
+            instance_data: Instance configuration data
+            
+        Returns:
+            API response if successful, None otherwise
+        """
+        data = {
+            "instance_name": instance_data.hostname,
+            "root_password": instance_data.root_password,
+            "os_type": {
+                "os_type_id": instance_data.os_type.os_type_id,
+                "os_image_name": instance_data.os_type.os_image_name,
+                "os_image_version": instance_data.os_type.os_image_version
+            },
+            "instance_plan": {
+                "instance_plan_id": instance_data.instance_plan.instance_plan_id,
+                "instance_package_name": instance_data.instance_plan.instance_package_name,
+                "vcpu_amount": instance_data.instance_plan.vcpu_amount,
+                "ram_amount": instance_data.instance_plan.ram_amount,
+                "storage_amount": instance_data.instance_plan.storage_amount,
+                "cost_hour": instance_data.instance_plan.cost_hour
+            }
+        }
+        return self.make_request("instance/create", data, action_name="Create Instance") 

@@ -10,7 +10,7 @@ import json
 
 from .data.models import UserData, UserInstanceData
 from .api.client import ApiClient
-from .registry.actions import TestActionRegistry, TestData
+from .registry.actions import ActionRegistry, TestData
 
 def pytest_configure(config: pytest.Config) -> None:
     """Register custom markers."""
@@ -227,39 +227,17 @@ def app_startup(
 
 
 @pytest.fixture(scope="module")
-def action_registry() -> TestActionRegistry:
+def action_registry() -> ActionRegistry:
     """
     Fixture that provides the test action registry.
     This can be used to register custom before/after actions.
     Will be be reset for each module/file.
     """
-    return TestActionRegistry()
+    return ActionRegistry()
 
 
 @pytest.fixture(scope="function")
-def test_lifecycle(action_registry: TestActionRegistry, page: Page, backend_url: str, api_client: ApiClient, request: pytest.FixtureRequest) -> Generator[TestData, None, None]:
-    """
-    Fixture that runs registered before/after actions for each test.
-    Provides a flexible way to set up and tear down test state.
-    
-    Usage in test:
-    def test_something(self, test_lifecycle: TestData):
-        # Test code that will have all registered actions run
-        pass
-    
-    Usage for registering actions:
-    def register_actions(action_registry: TestActionRegistry):
-        @action_registry.register_before
-        def create_test_data(page: Page, backend_url: str, api_client: ApiClient) -> Dict[str, Any]:
-            # Create test data using api_client
-            api_client.login_user(some_user)
-            return {"some_key": "some_value"}  # Optional return value available in test_data
-            
-        @action_registry.register_after
-        def cleanup_test_data(page: Page, backend_url: str, api_client: ApiClient) -> None:
-            # Clean up test data using api_client
-            api_client.delete_instance("test-instance")
-    """
+def test_lifecycle(action_registry: ActionRegistry, page: Page, backend_url: str, api_client: ApiClient, request: pytest.FixtureRequest) -> Generator[TestData, None, None]:
     # Run before actions
     action_context = {
         "page": page,
@@ -272,5 +250,6 @@ def test_lifecycle(action_registry: TestActionRegistry, page: Page, backend_url:
     # Return the test data (results from before actions)
     yield test_data
     
-    # Run after actions
+    # Run after actions - using load state instead of the discouraged networkidle
+    page.wait_for_load_state("load", timeout=10000)
     action_registry.run_after_actions(**action_context)

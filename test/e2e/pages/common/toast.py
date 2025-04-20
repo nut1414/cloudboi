@@ -4,10 +4,10 @@ class Toast:
     def __init__(self, page: Page):
         self.page = page
 
-        self.success_toast = self.page.get_by_test_id("alert-success")
-        self.error_toast = self.page.get_by_test_id("alert-error")
-        self.info_toast = self.page.get_by_test_id("alert-info")
-        self.warning_toast = self.page.get_by_test_id("alert-warning")
+        self.success_toast = self.page.get_by_test_id("alert-success").first
+        self.error_toast = self.page.get_by_test_id("alert-error").first
+        self.info_toast = self.page.get_by_test_id("alert-info").first
+        self.warning_toast = self.page.get_by_test_id("alert-warning").first
         
     def should_show_success_toast(self):
         expect(self.success_toast).to_be_visible()

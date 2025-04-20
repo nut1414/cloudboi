@@ -24,7 +24,7 @@ TestData = List[Any]
 # Define type variables for decorator
 F = TypeVar('F', bound=Callable[..., Any])
 
-class TestActionRegistry:
+class ActionRegistry:
     """
     Registry to store before/after actions for tests.
     This allows for a more flexible way to configure test setup/teardown.

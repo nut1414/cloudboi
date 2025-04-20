@@ -7,7 +7,7 @@ class InstanceCreatePage(BasePage):
     path: str = "/user/{username}/instance/create"
     
     def __init__(self, page: Page, username: str):
-        super().__init__(page, self.path.format(username=username))
+        super().__init__(page, username=username)
 
         self.side_nav = SideNavBar(page)
         self.os_image_section = {

@@ -6,7 +6,7 @@ from ..pages.auth import RegisterPage, LoginPage
 from ..pages.instance import InstanceListPage
 from ..data.models import RegisterData, UserData, LoginData
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def invalid_user_data() -> UserData:
     return UserData(
         email="email",
@@ -15,7 +15,7 @@ def invalid_user_data() -> UserData:
         role="user"
     )
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def test_user_auth() -> UserData:
     """
     Fixture that provides test user data for authenticated tests.
@@ -40,6 +40,7 @@ class TestAuthorization:
             password=test_user_auth.password
         ))
         register_page.click_register()
+        register_page.wait_for_toast("success")
         register_page.toast.should_show_success_toast()
         register_page.should_navigate_to_login_page()
         
@@ -50,6 +51,7 @@ class TestAuthorization:
             password=test_user_auth.password
         ))
         login_page.click_login()
+        login_page.wait_for_toast("success")
         login_page.toast.should_show_success_toast()
         login_page.should_navigate_to_user_dashboard(test_user_auth.username)
         
@@ -57,7 +59,7 @@ class TestAuthorization:
         instance_list_page = InstanceListPage(page, test_user_auth.username)
         instance_list_page.wait_for_page_load()
         instance_list_page.side_nav.click_user_menu_item("logout")
-        instance_list_page.toast.should_show_success_toast()
+        instance_list_page.wait_for_toast("success")
         register_page.should_navigate_to_login_page()
     
     @pytest.mark.skip_auth
@@ -84,6 +86,7 @@ class TestAuthorization:
             password=test_user_auth.password
         ))
         register_page.click_register()
+        register_page.wait_for_toast("error")
         register_page.toast.should_show_error_toast()
     
     @pytest.mark.skip_auth
@@ -95,5 +98,6 @@ class TestAuthorization:
             password=invalid_user_data.password
         ))
         login_page.click_login()
+        login_page.wait_for_toast("error")
         login_page.toast.should_show_error_toast()
         

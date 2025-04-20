@@ -3,12 +3,12 @@ from typing import Dict, Any
 from playwright.sync_api import Page, expect
 
 from ..pages.landing_page import LandingPage
-from ..conftest import TestActionRegistry, TestData
+from ..registry.actions import ActionRegistry, TestData
 from ..api.client import ApiClient
 
 # Standard actions for all tests in this module
 @pytest.fixture(scope="module", autouse=True)
-def setup_standard_actions(action_registry: TestActionRegistry) -> None:
+def setup_standard_actions(action_registry: ActionRegistry) -> None:
     """
     Register standard instance actions for all tests in this module.
     The autouse=True ensures this runs automatically.
