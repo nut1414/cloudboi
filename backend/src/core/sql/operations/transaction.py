@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Callable, List, Optional, Tuple, AsyncContextManager
-from sqlalchemy import select, update
+from sqlalchemy import select, update, delete
 from sqlalchemy.orm import selectinload
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 import uuid
@@ -82,6 +82,17 @@ class TransactionOperation(BaseOperation):
                 self.to_pydantic(UserWalletModel, result_wallet),
                 self.to_pydantic(TransactionModel, result_transaction)
             )
+    
+    async def delete_subscription_transaction(self, subscription_id: int) -> Optional[TransactionModel]:
+        async with self.session() as db:
+            reference_id = f"subscription_{subscription_id}"
+            stmt = delete(Transaction).where(
+                Transaction.reference_id == reference_id,
+                Transaction.transaction_status == TransactionStatus.SCHEDULED,
+                Transaction.transaction_type == TransactionType.SUBSCRIPTION_PAYMENT
+            ).returning(Transaction)
+            result = (await db.execute(stmt)).scalar_one_or_none()
+            return self.to_pydantic(TransactionModel, result)
     
     async def get_all_user_transactions(self, username: str) -> List[TransactionModel]:
         async with self.session() as db:
