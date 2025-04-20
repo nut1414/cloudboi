@@ -34,7 +34,7 @@ class SubscriptionOperation(BaseOperation):
         self,
         subscription_id: Optional[int] = None,
         instance_id: Optional[uuid.UUID] = None,
-    ) -> None:
+    ) -> Optional[UserSubscriptionModel]:
         if subscription_id is None and instance_id is None:
             raise ValueError("Either subscription_id or instance_id must be provided.")
         async with self.session() as db:
@@ -43,7 +43,9 @@ class SubscriptionOperation(BaseOperation):
                 stmt = stmt.where(UserSubscription.subscription_id == subscription_id)
             if instance_id is not None:
                 stmt = stmt.where(UserSubscription.instance_id == instance_id)
-            await db.execute(stmt)
+            stmt = stmt.returning(UserSubscription)
+            result = (await db.execute(stmt)).scalar_one_or_none()
+            return self.to_pydantic(UserSubscriptionModel, result)
     
     async def get_subscription_by_id(self, subscription_id: int) -> UserSubscriptionModel:
         async with self.session() as db:

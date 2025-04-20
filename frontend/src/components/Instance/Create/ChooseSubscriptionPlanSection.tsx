@@ -46,6 +46,7 @@ const ChooseSubscriptionPlanSection: React.FC<ChooseSubscriptionPlanSectionProps
                         isSelected={selectedInstanceType?.instance_plan_id === packageOption.instance_plan_id}
                         onClick={() => onSelect(packageOption)}
                         className="font-medium"
+                        data-testid={`instance-plan-${packageOption.instance_package_name}`}
                     />
                 ))}
             </div>

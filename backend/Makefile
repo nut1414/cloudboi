@@ -17,16 +17,15 @@ else
 endif
 
 create-env:
-	test -d .venv || python -m venv .venv
-
-install:
 ifeq ($(DOCKER),true)
-	pip install -r requirements.txt
+	@echo "Skipping virtual environment creation in Docker"
 else
-	$(MAKE) create-env
+	test -d .venv || python -m venv .venv
+endif
+
+install: create-env
 	$(PIP) install pip-tools
 	$(PIP) install -r requirements.txt
-endif
 
 sync:
 	$(PIP_COMPILE) --output-file=requirements.txt requirements.in --strip-extras

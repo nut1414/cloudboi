@@ -3,7 +3,8 @@ import {
   InformationCircleIcon, 
   ExclamationCircleIcon, 
   CheckCircleIcon,
-  ExclamationTriangleIcon
+  ExclamationTriangleIcon,
+  XMarkIcon
 } from '@heroicons/react/24/outline'
 
 type AlertType = 'success' | 'error' | 'info' | 'warning'
@@ -12,9 +13,10 @@ interface AlertProps {
   type: AlertType
   message: string | React.ReactNode
   className?: string
+  onClose?: () => void
 }
 
-const Alert: React.FC<AlertProps> = ({ type, message, className = '' }) => {
+const Alert: React.FC<AlertProps> = ({ type, message, className = '', onClose }) => {
   const getAlertStyles = (): string => {
     switch (type) {
       case 'success':
@@ -43,10 +45,27 @@ const Alert: React.FC<AlertProps> = ({ type, message, className = '' }) => {
     }
   }
 
+  const handleClick = (e: React.MouseEvent) => {
+    if (onClose) {
+      onClose()
+    }
+  }
+
   return (
-    <div className={`p-3 border-l-4 rounded flex items-center ${getAlertStyles()} ${className}`} data-testid={`alert-${type}`}>
-      {getIcon()}
-      <p>{message}</p>
+    <div className={`p-3 border-l-4 rounded flex items-center justify-between ${getAlertStyles()} ${className}`} data-testid={`alert-${type}`}>
+      <div className="flex items-center flex-1">
+        {getIcon()}
+        <p className="flex-1">{message}</p>
+      </div>
+      {onClose && (
+        <button 
+          onClick={handleClick}
+          className="ml-2 hover:opacity-75 focus:outline-none"
+          aria-label="Close"
+        >
+          <XMarkIcon className="h-5 w-5" />
+        </button>
+      )}
     </div>
   )
 }

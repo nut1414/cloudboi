@@ -3,7 +3,33 @@ from typing import Dict, Any
 from playwright.sync_api import Page, expect
 
 from ..pages.landing_page import LandingPage
+from ..registry.actions import ActionRegistry, TestData
+from ..api.client import ApiClient
 
+# Standard actions for all tests in this module
+@pytest.fixture(scope="module", autouse=True)
+def setup_standard_actions(action_registry: ActionRegistry) -> None:
+    """
+    Register standard instance actions for all tests in this module.
+    The autouse=True ensures this runs automatically.
+    """
+    # Example using just page parameter
+    @action_registry.before()
+    def setup_page(page: Page) -> None:
+        """Simple action that only needs the page"""
+        print("Setting up page")
+    
+    # Example using multiple parameters
+    @action_registry.before()
+    def setup_api(page: Page, api_client: ApiClient, backend_url: str) -> None:
+        """Action that needs multiple parameters"""
+        print(f"Setting up API with backend URL: {backend_url}")
+    
+    # Example after action with different parameters
+    @action_registry.after()
+    def cleanup(api_client: ApiClient) -> None:
+        """After action that only needs api_client"""
+        print("Cleaning up after tests")
 
 class TestLandingPage:
     """
@@ -13,7 +39,7 @@ class TestLandingPage:
     """
     
     @pytest.mark.skip_auth
-    def test_landing_page_elements(self, page: Page) -> None:
+    def test_landing_page_elements(self, page: Page, test_lifecycle: TestData) -> None:
         """
         Test that all the main elements of the landing page are visible.
         

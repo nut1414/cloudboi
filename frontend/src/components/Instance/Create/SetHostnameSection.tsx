@@ -35,6 +35,7 @@ const SetHostnameSection: React.FC<SetHostnameSectionProps> = React.memo(({
                     placeholder="Enter hostname (e.g. web-server)"
                     sanitizeValue={sanitizeHostname}
                     helperText="Hostname can only contain lowercase letters, numbers, and hyphens. Special characters and spaces will be automatically removed."
+                    data-testid={`hostname-input`}
                 />
             </div>
         </Section>

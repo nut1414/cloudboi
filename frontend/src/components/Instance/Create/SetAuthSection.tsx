@@ -46,6 +46,7 @@ const SetAuthSection: React.FC<SetAuthSectionProps> = React.memo(({
                     placeholder="Enter secure password..."
                     endIcon={showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
                     onEndIconClick={togglePasswordVisibility}
+                    data-testid={`root-password-input`}
                 />
             </div>
 

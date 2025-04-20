@@ -4,9 +4,9 @@ This package contains page objects for instance listing, creation, and managemen
 """
 
 from .instance_list_page import InstanceListPage
-# from .instance_create_page import InstanceCreatePage
+from .instance_create_page import InstanceCreatePage
 
 __all__ = [
     'InstanceListPage',
-    # 'InstanceCreatePage'
+    'InstanceCreatePage'
 ]

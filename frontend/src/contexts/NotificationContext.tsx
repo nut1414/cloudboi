@@ -1,49 +1,49 @@
-import React, { createContext, useContext, useState, ReactNode, useCallback, useEffect } from 'react';
-import Alert from '../components/Common/Alert';
+import React, { createContext, useContext, useState, ReactNode, useCallback, useEffect } from 'react'
+import Alert from '../components/Common/Alert'
 
-type AlertType = 'success' | 'error' | 'info' | 'warning';
+type AlertType = 'success' | 'error' | 'info' | 'warning'
 
 interface Notification {
-  id: string;
-  type: AlertType;
-  message: string;
-  autoDismiss?: boolean;
-  duration?: number;
-  timestamp: number;
+  id: string
+  type: AlertType
+  message: string
+  autoDismiss?: boolean
+  duration?: number
+  timestamp: number
 }
 
 interface NotificationContextProps {
-  notifications: Notification[];
-  addNotification: (type: AlertType, message: string, autoDismiss?: boolean, duration?: number) => void;
-  removeNotification: (id: string) => void;
-  clearNotifications: () => void;
+  notifications: Notification[]
+  addNotification: (type: AlertType, message: string, autoDismiss?: boolean, duration?: number) => void
+  removeNotification: (id: string) => void
+  clearNotifications: () => void
 }
 
-const NotificationContext = createContext<NotificationContextProps | undefined>(undefined);
+const NotificationContext = createContext<NotificationContextProps | undefined>(undefined)
 
 // Maximum number of notifications to show at one time
-const MAX_NOTIFICATIONS = 5;
+const MAX_NOTIFICATIONS = 5
 
 export const useNotification = () => {
-  const context = useContext(NotificationContext);
+  const context = useContext(NotificationContext)
   if (!context) {
-    throw new Error('useNotification must be used within a NotificationProvider');
+    throw new Error('useNotification must be used within a NotificationProvider')
   }
-  return context;
-};
+  return context
+}
 
 interface NotificationProviderProps {
-  children: ReactNode;
+  children: ReactNode
 }
 
 export const NotificationProvider: React.FC<NotificationProviderProps> = ({ children }) => {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [lastTimestamp, setLastTimestamp] = useState(0);
+  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [lastTimestamp, setLastTimestamp] = useState(0)
 
   // Use useCallback to ensure stable identity for removeNotification function
   const removeNotification = useCallback((id: string) => {
-    setNotifications(prev => prev.filter(notification => notification.id !== id));
-  }, []);
+    setNotifications(prev => prev.filter(notification => notification.id !== id))
+  }, [])
 
   const addNotification = useCallback(
     (type: AlertType, message: string, autoDismiss = true, duration = 5000) => {
@@ -53,58 +53,59 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
           notification.message === message && 
           notification.type === type &&
           Date.now() - notification.timestamp < 2000 // Consider as duplicate if added within 2 seconds
-      );
+      )
       
-      if (isDuplicate) return;
+      if (isDuplicate) return
 
       // Ensure unique timestamps even when called in rapid succession
-      const now = Date.now();
-      const timestamp = now > lastTimestamp ? now : lastTimestamp + 1;
-      setLastTimestamp(timestamp);
+      const now = Date.now()
+      const timestamp = now > lastTimestamp ? now : lastTimestamp + 1
+      setLastTimestamp(timestamp)
       
-      const id = `${timestamp}-${Math.random().toString(36).substr(2, 9)}`;
-      const newNotification = { id, type, message, autoDismiss, duration, timestamp };
+      const id = `${timestamp}-${Math.random().toString(36).substr(2, 9)}`
+      const newNotification = { id, type, message, autoDismiss, duration, timestamp }
       
       setNotifications(prev => {
         // Add the new notification
-        const updatedNotifications = [...prev, newNotification];
+        const updatedNotifications = [...prev, newNotification]
         
-        // If we exceed the maximum number of notifications, keep only the most recent ones
+        // If we exceed the maximum number of notifications, remove the oldest one
         if (updatedNotifications.length > MAX_NOTIFICATIONS) {
+          // Sort by timestamp (oldest first) and remove the first one
           return updatedNotifications
-            .sort((a, b) => b.timestamp - a.timestamp)
-            .slice(0, MAX_NOTIFICATIONS);
+            .sort((a, b) => a.timestamp - b.timestamp)
+            .slice(1)
         }
         
-        return updatedNotifications;
-      });
+        return updatedNotifications
+      })
     },
     [notifications, lastTimestamp]
-  );
+  )
 
   // Use useEffect for auto-dismissing notifications to prevent memory leaks
   useEffect(() => {
     // Create a map to track timeout IDs
-    const timeoutIds: { [id: string]: number } = {};
+    const timeoutIds: { [id: string]: number } = {}
     
     // Set up timeouts for auto-dismissing notifications
     notifications.forEach(notification => {
       if (notification.autoDismiss && !timeoutIds[notification.id]) {
         timeoutIds[notification.id] = window.setTimeout(() => {
-          removeNotification(notification.id);
-        }, notification.duration || 5000);
+          removeNotification(notification.id)
+        }, notification.duration || 5000)
       }
-    });
+    })
     
     // Cleanup function to clear timeouts when component unmounts or notifications change
     return () => {
-      Object.values(timeoutIds).forEach(id => window.clearTimeout(id));
-    };
-  }, [notifications, removeNotification]);
+      Object.values(timeoutIds).forEach(id => window.clearTimeout(id))
+    }
+  }, [notifications, removeNotification])
 
   const clearNotifications = useCallback(() => {
-    setNotifications([]);
-  }, []);
+    setNotifications([])
+  }, [])
 
   return (
     <NotificationContext.Provider value={{ 
@@ -116,31 +117,32 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       {children}
       <NotificationContainer />
     </NotificationContext.Provider>
-  );
-};
+  )
+}
 
 // Container that displays notifications in the UI
 const NotificationContainer: React.FC = () => {
-  const { notifications, removeNotification } = useNotification();
+  const { notifications, removeNotification } = useNotification()
 
-  if (notifications.length === 0) return null;
+  if (notifications.length === 0) return null
 
-  // Sort notifications to show most recent first
-  const sortedNotifications = [...notifications].sort((a, b) => b.timestamp - a.timestamp);
+  // Sort notifications by timestamp, oldest first
+  const sortedNotifications = [...notifications].sort((a, b) => a.timestamp - b.timestamp)
 
   return (
     <div className="fixed top-5 right-5 z-50 space-y-2 w-80">
       {sortedNotifications.map(notification => (
-        <div key={notification.id} className="relative" onClick={() => removeNotification(notification.id)}>
+        <div key={notification.id} className="relative">
           <Alert 
             type={notification.type} 
             message={notification.message} 
-            className="cursor-pointer shadow-lg hover:shadow-xl transition-shadow"
+            className="shadow-lg hover:shadow-xl transition-shadow"
+            onClose={() => removeNotification(notification.id)}
           />
         </div>
       ))}
     </div>
-  );
-};
+  )
+}
 
-export default NotificationProvider; 
+export default NotificationProvider 

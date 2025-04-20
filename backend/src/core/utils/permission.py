@@ -8,6 +8,7 @@ from contextvars import ContextVar
 from .dependencies import user_session_ctx
 from .decorator import create_decorator
 from ..constants.user_const import UserRole
+from ..config import APP_ENV
 
 
 # Context variable to store worker context state

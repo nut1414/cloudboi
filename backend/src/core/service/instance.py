@@ -90,12 +90,18 @@ class InstanceService:
         # Create instance in DB
         created_instance = await self.instance_opr.upsert_user_instance(instance)
 
+        user_wallet = await self.subscription_service.get_user_wallet(user_id=user_session_ctx.get().user_id)
+        if user_wallet.balance < self.subscription_service._calculate_payment_amount(instance_plan_create.cost_hour):
+            raise HTTPException(status_code=400, detail="Insufficient balance")
+
         # Create subscription
-        await self.subscription_service.create_subscription(
+        first_payment_transaction = await self.subscription_service.create_subscription(
             user_id=user_session_ctx.get().user_id,
             instance_id=created_instance.instance_id,
             instance_plan=instance_plan_create
         )
+
+        await self.subscription_service.process_transaction(first_payment_transaction)
 
         return InstanceCreateResponse(
             instance_name=created_instance.hostname,
@@ -180,15 +186,19 @@ class InstanceService:
         instance_name: Optional[str] = None
     ) -> InstanceControlResponse:
         from ..sql.operations.subscription import SubscriptionOperation
+        from ..sql.operations.transaction import TransactionOperation
         from ..container import AppContainer
         subscription_opr: SubscriptionOperation = AppContainer.subscription_opr()
+        transaction_opr: TransactionOperation = AppContainer.transaction_opr()
 
         instance = InstanceHelper.to_instance_upsert_model(
             await self.get_instance(instance_id=instance_id, instance_name=instance_name)
         )
 
         # Delete subscription
-        await subscription_opr.delete_subscription(instance_id=instance.instance_id)
+        result = await subscription_opr.delete_subscription(instance_id=instance.instance_id)
+        if result:
+            await transaction_opr.delete_subscription_transaction(subscription_id=result.subscription_id)
         
         # Delete instance in LXD
         await self.lxd_client.delete_instance(instance.hostname)

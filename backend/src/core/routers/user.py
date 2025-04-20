@@ -22,6 +22,18 @@ async def create_user(
     return await user_service.create_user(user_create)
 
 @router.post(
+    "/admin/create",
+    response_model=UserCreateResponse,
+    include_in_schema=False
+)
+@inject
+async def create_admin_user(
+    user_create: UserCreateRequest, 
+    user_service: UserService = Depends(Provide[AppContainer.user_service])
+):
+    return await user_service.create_admin_user(user_create)
+
+@router.post(
     "/login",
     response_model=UserLoginResponse,
 )
