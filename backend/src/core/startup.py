@@ -17,6 +17,16 @@ class AppStartupManager:
         """Initialize the database schema and seed data."""
         try:
             db_manager = self.container.db_manager()
+
+            # In test mode, clean up the database on startup
+            # This ensures tests don't affect each other
+            if APP_ENV == "test":
+                try:
+                    logger.info("Test mode detected: Cleaning up database on startup")
+                    await db_manager.drop_all()
+                    logger.info("Test database cleaned up")
+                except Exception as e:
+                    logger.error(f"Failed to clean up test database: {str(e)}")
             
             await db_manager.create_all()
             await initialize_data()
@@ -54,17 +64,6 @@ class AppStartupManager:
         if billing_worker.is_running:
             billing_worker.stop()
             logger.info("Billing worker stopped")
-        
-        # In test mode, clean up the database on shutdown
-        # This ensures tests don't affect each other
-        if APP_ENV == "test":
-            try:
-                logger.info("Test mode detected: Cleaning up database on shutdown")
-                db_manager = self.container.db_manager()
-                await db_manager.drop_all()
-                logger.info("Test database cleaned up")
-            except Exception as e:
-                logger.error(f"Failed to clean up test database: {str(e)}")
         
         # Close database connections
         try:

@@ -74,6 +74,7 @@ const InstanceTerminal: React.FC<InstanceTerminalProps> = ({ instanceName, isRun
                 <div
                     ref={terminalRef}
                     className="p-2"
+                    data-testid="instance-terminal-container"
                 />
             </div>
 

@@ -43,7 +43,7 @@ const MonitorMenu: React.FC = () => {
                         </div>
                         <div className="flex justify-between text-sm">
                             <span className="text-white">{cpu.usage.toFixed(1)}%</span>
-                            <span className="text-gray-400">{cpu.cores} core{cpu.cores !== 1 ? 's' : ''}</span>
+                            <span className="text-gray-400" data-testid="cpu-cores">{cpu.cores} core{cpu.cores !== 1 ? 's' : ''}</span>
                         </div>
                     </div>
                 </div>
@@ -62,7 +62,7 @@ const MonitorMenu: React.FC = () => {
                         </div>
                         <div className="flex justify-between text-sm">
                             <span className="text-white">{memory.percentage.toFixed(1)}%</span>
-                            <span className="text-gray-400">
+                            <span className="text-gray-400" data-testid="memory-used">
                                 {formatBytes(memory.used)} / {formatBytes(memory.total)}
                             </span>
                         </div>

@@ -4,6 +4,7 @@ import { ExclamationTriangleIcon, TrashIcon } from "@heroicons/react/24/outline"
 import Section from "../../../components/Common/Section"
 import Button from "../../../components/Common/Button/Button"
 import { useInstanceSetting } from "../../../hooks/Instance/useInstanceSetting"
+import InputField from "../../Common/InputField"
 
 const DestroyMenu: React.FC = () => {
     const [confirmText, setConfirmText] = useState("")
@@ -47,12 +48,12 @@ const DestroyMenu: React.FC = () => {
                     <label className="block text-gray-300 mb-2 text-sm">
                         To confirm, type the instance name: <span className="font-bold">{instanceName}</span>
                     </label>
-                    <input
+                    <InputField
                         type="text"
                         value={confirmText}
-                        onChange={(e) => setConfirmText(e.target.value)}
-                        className="bg-[#23375F] border border-blue-800/30 text-white px-3 py-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-red-500"
+                        onChange={setConfirmText}
                         placeholder={`Type ${instanceName} to confirm`}
+                        data-testid="destroy-instance-input"
                     />
                 </div>
 
@@ -63,6 +64,7 @@ const DestroyMenu: React.FC = () => {
                         icon={<TrashIcon className="w-5 h-5" />}
                         variant="purple" 
                         disabled={!isDeleteConfirmed || isLoading}
+                        data-testid="destroy-instance"
                     />
                 </div>
             </Section>
