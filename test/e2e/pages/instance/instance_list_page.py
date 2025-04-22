@@ -19,7 +19,7 @@ class InstanceListPage(BasePage):
         expect(self.page).to_have_url(f"/user/{self.username}/instance/create")
     
     def click_row_view_button(self, hostname: str):
-        self.page.get_by_test_id(f"view-instance-button-{hostname}-button").click()
+        self.page.get_by_test_id(f"view-instance-{hostname}-button").click()
         
     def should_navigate_to_instance_setting_page(self, hostname: str):
         expect(self.page).to_have_url(f"/user/{self.username}/instance/{hostname}")

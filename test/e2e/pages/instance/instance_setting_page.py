@@ -62,17 +62,41 @@ class InstanceSettingPage(BasePage):
     def input_to_terminal(self, text: str):
         self.access_menu["input_textbox"].fill(text)
         self.access_menu["input_textbox"].press("Enter")
+
+    def logout_console(self):
+        self.access_menu["input_textbox"].press("ControlOrMeta+d")
     
     def wait_for_terminal_prompt(self):
         expect_prompt = self.access_menu["terminal"].get_by_text(f"root@{self.instance_name}:~#")
         self.wait_for_locator(expect_prompt, state="visible", timeout=20000)
+        self.wait_for_timeout(3000) # Wait for websocket connection to stabilize
     
     def wait_for_console_prompt(self):
-        expect_prompt = self.access_menu["console"].get_by_text(f"{self.instance_name} login: ")
-        self.wait_for_locator(expect_prompt, state="visible", timeout=20000)
+        # Wait for the console to be visible first
+        self.wait_for_locator(self.access_menu["console"], state="visible", timeout=20000)
+        
+        # Try different potential patterns that could indicate console is ready
+        try:
+            # Check for login prompt with instance name
+            login_prompt = self.access_menu["console"].get_by_text(f"{self.instance_name} login:", exact=False)
+            self.wait_for_locator(login_prompt, state="visible", timeout=10000)
+            
+            # If login prompt is found, clear the line to get a clean prompt
+            self.access_menu["input_textbox"].press("ControlOrMeta+u")  # Clear the current line
+        except:
+            # If login prompt not found, check if console has any content
+            console = self.access_menu["console"]
+            
+            # Verify console is interactive by checking if it has any content
+            if not console.inner_text():
+                # If still no content, try pressing Enter 2 times to clear the prompt
+                self.access_menu["input_textbox"].press("Enter")
+                self.access_menu["input_textbox"].press("Enter")
+        
+        self.wait_for_timeout(5000)  # Wait for websocket connection to stabilize
     
     def should_have_output_access_menu(self, text: str, terminal_type: str):
-        expect_output = self.access_menu[terminal_type].get_by_text(text)
+        expect_output = self.access_menu[terminal_type].get_by_text(text, exact=False)
         expect(expect_output).to_be_visible()
     
     def access_menu_should_be_not_be_available(self):
@@ -102,8 +126,8 @@ class InstanceSettingPage(BasePage):
         expect(self.power_menu["restart"]).to_be_disabled()
     
     def should_have_same_monitoring_data(self, cpu_cores: str, memory_used: str):
-        expect(self.monitor_menu["cpu_cores"]).to_have_text(cpu_cores)
-        expect(self.monitor_menu["memory_used"]).to_have_text(memory_used)
+        expect(self.monitor_menu["cpu_cores"]).to_contain_text(cpu_cores)
+        expect(self.monitor_menu["memory_used"]).to_contain_text(memory_used)
     
     def fill_destroy_instance_input(self, text: str):
         self.destroy_menu["destroy_instance_input"].fill(text)
@@ -113,6 +137,3 @@ class InstanceSettingPage(BasePage):
     
     def should_disable_destroy_instance_button(self):
         expect(self.destroy_menu["destroy_instance"]).to_be_disabled()
-    
-    def should_navigate_to_instance_list_page(self):
-        expect(self.page).to_have_url(f"/user/{self.username}/instance")

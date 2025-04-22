@@ -197,23 +197,17 @@ export const useInstanceSetting = () => {
   
     // Start polling when instance is running
     useEffect(() => {
-        if (!statePollingInterval && isInstanceRunning) {
+        // Start new polling interval
+        if (!statePollingInterval) {
             getInstanceStateAndUpdate() // Initial fetch
             const interval = window.setInterval(getInstanceStateAndUpdate, STATUS_POLLING_INTERVAL)
             dispatch?.({
                 type: INSTANCE_ACTIONS.SET_STATE_POLLING_INTERVAL,
                 payload: interval
             })
-        } else if (statePollingInterval) {
-            // Clear the interval if instance is not running
-            clearInterval(statePollingInterval)
-            dispatch?.({
-                type: INSTANCE_ACTIONS.SET_STATE_POLLING_INTERVAL,
-                payload: null
-            })
         }
 
-        // Cleanup function for unmounting
+        // Cleanup function
         return () => {
             if (statePollingInterval) {
                 clearInterval(statePollingInterval)
@@ -223,7 +217,7 @@ export const useInstanceSetting = () => {
                 })
             }
         }
-    }, [isInstanceRunning, statePollingInterval, getInstanceStateAndUpdate, dispatch])
+    }, [])
 
   
     const parsedInstanceState = useMemo(() => {

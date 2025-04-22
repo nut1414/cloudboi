@@ -122,6 +122,14 @@ class ApiClient:
         return self.make_request("user/login", data, action_name="Login")
         
     # Instance Management API Methods
+    def start_instance(self, hostname: str) -> Optional[APIResponse]:
+        """Start an instance by hostname"""
+        return self.make_request(f"instance/{hostname}/start", method="post", action_name="Start Instance")
+    
+    def stop_instance(self, hostname: str) -> Optional[APIResponse]:
+        """Stop an instance by hostname"""
+        return self.make_request(f"instance/{hostname}/stop", method="post", action_name="Stop Instance")
+
     def delete_instance(self, hostname: str) -> Optional[APIResponse]:
         """Delete an instance by hostname"""
         return self.make_request(f"instance/{hostname}/delete", method="post", action_name="Delete Instance")
@@ -153,4 +161,4 @@ class ApiClient:
                 "cost_hour": instance_data.instance_plan.cost_hour
             }
         }
-        return self.make_request("instance/create", data, action_name="Create Instance") 
+        return self.make_request("instance/create", data, action_name="Create Instance")
