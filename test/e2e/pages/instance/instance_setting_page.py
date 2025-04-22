@@ -60,6 +60,8 @@ class InstanceSettingPage(BasePage):
         self.access_menu_tab[tab].click()
         
     def input_to_terminal(self, text: str):
+        # Add debounce to prevent spamming the input
+        self.wait_for_timeout(500)
         self.access_menu["input_textbox"].fill(text)
         self.access_menu["input_textbox"].press("Enter")
 
@@ -80,20 +82,12 @@ class InstanceSettingPage(BasePage):
             # Check for login prompt with instance name
             login_prompt = self.access_menu["console"].get_by_text(f"{self.instance_name} login:", exact=False)
             self.wait_for_locator(login_prompt, state="visible", timeout=10000)
-            
-            # If login prompt is found, clear the line to get a clean prompt
-            self.access_menu["input_textbox"].press("ControlOrMeta+u")  # Clear the current line
         except:
-            # If login prompt not found, check if console has any content
-            console = self.access_menu["console"]
-            
-            # Verify console is interactive by checking if it has any content
-            if not console.inner_text():
-                # If still no content, try pressing Enter 2 times to clear the prompt
-                self.access_menu["input_textbox"].press("Enter")
-                self.access_menu["input_textbox"].press("Enter")
+            self.access_menu["input_textbox"].press("Enter")
+            self.access_menu["input_textbox"].press("Enter")
         
         self.wait_for_timeout(5000)  # Wait for websocket connection to stabilize
+        self.access_menu["input_textbox"].press("ControlOrMeta+u")  # Clear the current line
     
     def should_have_output_access_menu(self, text: str, terminal_type: str):
         expect_output = self.access_menu[terminal_type].get_by_text(text, exact=False)
