@@ -79,6 +79,7 @@ const InstanceListPage: React.FC = () => {
                             handleViewInstance(instance)
                         }}
                         variant="secondary"
+                        data-testid={`view-instance-button-${instance.instance_name}`}
                     />
                     <Button
                         icon={<EllipsisVerticalIcon className="w-5 h-5" />}

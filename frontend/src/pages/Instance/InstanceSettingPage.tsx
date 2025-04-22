@@ -69,6 +69,7 @@ const InstanceSettingPage: React.FC = () => {
               tabs={tabs}
               activeTab={activeTab}
               setActiveTab={setActiveTab}
+              data-testid="instance-setting"
             />
             <InstanceSettingContent active={activeTab} />
           </>

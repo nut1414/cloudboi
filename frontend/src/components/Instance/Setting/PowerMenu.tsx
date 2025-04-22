@@ -38,6 +38,7 @@ const PowerMenu: React.FC = () => {
                             onClick={startInstance}
                             variant="primary"
                             icon={<PowerIcon className="w-5 h-5" />}
+                            data-testid="start-instance"
                         />
                     ) : (
                         <Button
@@ -45,6 +46,7 @@ const PowerMenu: React.FC = () => {
                             onClick={stopInstance}
                             variant="primary"
                             icon={<PowerIcon className="w-5 h-5" />}
+                            data-testid="stop-instance"
                         />
                     )}
 
@@ -54,6 +56,7 @@ const PowerMenu: React.FC = () => {
                         variant="outline"
                         icon={<ArrowPathIcon className="w-5 h-5" />}
                         disabled={!isInstanceRunning}
+                        data-testid="restart-instance"
                     />
                 </div>
             </Section>

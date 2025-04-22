@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import { useConsoleWebSocket } from '../../../hooks/Instance/useConsoleConnection'
 import { useXTerm } from '../../../hooks/useXTerm'
-import { ArrowPathIcon } from '@heroicons/react/24/outline'
 import { WS_URL } from '../../../config/api'
 import 'xterm/css/xterm.css'
 import { StatusHeader, StatusMessage, StatusFooter } from './InstanceStatus'
@@ -79,6 +78,7 @@ const InstanceConsole: React.FC<InstanceConsoleProps> = ({ instanceName, isRunni
                 <div
                     ref={terminalRef}
                     className="p-2"
+                    data-testid="instance-console-container"
                 />
             </div>
 

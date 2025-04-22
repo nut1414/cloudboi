@@ -61,6 +61,12 @@ class BasePage:
         # This method is kept for backward compatibility
         # Use wait_for_locator or wait_for_event instead
         self.page.wait_for_load_state("load")
+    
+    def wait_for_document_ready(self) -> None:
+        """
+        Wait for the document to be ready.
+        """
+        self.page.wait_for_load_state("domcontentloaded")
         
     def wait_for_locator(self, locator: Locator, state: str = "visible", timeout: int = 30000) -> Locator:
         """
@@ -120,6 +126,12 @@ class BasePage:
             self.page.wait_for_url(url_pattern, timeout=timeout)
         else:
             self.page.wait_for_load_state("load", timeout=timeout)
+    
+    def wait_for_timeout(self, timeout: int = 10000) -> None:
+        """
+        Wait for a timeout.
+        """
+        self.page.wait_for_timeout(timeout)
             
     def wait_for_toast(self, toast_type: str = "success", timeout: int = 10000) -> Locator:
         """

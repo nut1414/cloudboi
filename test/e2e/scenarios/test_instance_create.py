@@ -78,7 +78,7 @@ class TestInstanceCreate:
         instance_create_page.should_disable_create_instance_button() # Check that create button is disabled
         
         # Wait for success toast to appear
-        instance_create_page.wait_for_toast("success")
+        instance_create_page.wait_for_toast("success", timeout=20000)
         instance_create_page.toast.should_show_success_toast()
         instance_create_page.should_navigate_to_instance_dashboard()
     

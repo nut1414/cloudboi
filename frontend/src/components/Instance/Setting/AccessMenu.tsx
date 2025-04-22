@@ -78,6 +78,7 @@ const AccessMenu: React.FC = () => {
             endIcon={showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
             onEndIconClick={togglePasswordVisibility}
             disabled={!isInstanceRunning}
+            data-testid="reset-root-password"
           />
         </div>
 
@@ -97,6 +98,7 @@ const AccessMenu: React.FC = () => {
           variant="outline"
           icon={<KeyIcon className="w-5 h-5" />}
           disabled={!isInstanceRunning || !isPasswordValid(password)}
+          data-testid="reset-root-password"
         />
       </Section>
     )
@@ -119,6 +121,7 @@ const AccessMenu: React.FC = () => {
         tabs={accessTabs}
         activeTab={accessType}
         setActiveTab={(id) => setAccessType(id as 'terminal' | 'console')}
+        data-testid="instance-access"
       />
       
       <div className="bg-[#12203c] rounded-lg overflow-hidden shadow-lg border border-blue-900/20">

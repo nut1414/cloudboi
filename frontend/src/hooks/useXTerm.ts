@@ -62,11 +62,9 @@ export const useXTerm = () => {
     }, [])
 
     const setTerminalDataHandlerV2 = useCallback((handler: (data: string) => void) => {
-        if (xtermRef.current) {
-            xtermRef.current.onData((data) => {
-                handler(data)
-            })
-        }
+        xtermRef.current?.onData((data) => {
+            handler(data)
+        })
     }, [])
 
     // Get current terminal dimensions

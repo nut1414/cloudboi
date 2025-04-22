@@ -246,6 +246,7 @@ def test_lifecycle(action_registry: ActionRegistry, page: Page, backend_url: str
         "api_client": api_client
     }
     test_data = action_registry.run_before_actions(**action_context)
+    page.wait_for_load_state("load", timeout=10000)
     
     # Return the test data (results from before actions)
     yield test_data
@@ -253,3 +254,33 @@ def test_lifecycle(action_registry: ActionRegistry, page: Page, backend_url: str
     # Run after actions - using load state instead of the discouraged networkidle
     page.wait_for_load_state("load", timeout=10000)
     action_registry.run_after_actions(**action_context)
+
+
+@pytest.fixture(scope="class")
+def test_class_lifecycle(browser: Browser, browser_context_args: Dict[str, Any], action_registry: ActionRegistry, backend_url: str, request: pytest.FixtureRequest) -> Generator[TestData, None, None]:
+    """
+    Fixture that runs before_all actions once at the beginning of a test class 
+    and after_all actions once at the end of a test class.
+    
+    This fixture must be explicitly included in test classes that need class-level setup/teardown.
+    """
+    context = browser.new_context(**browser_context_args)
+    page = context.new_page()
+    
+    # Create API client
+    api_client = ApiClient(page, backend_url)
+
+    # Run before_all actions once at the beginning of the class
+    action_context = {
+        "page": page,
+        "backend_url": backend_url,
+        "request": request,
+        "api_client": api_client
+    }
+    test_data = action_registry.run_before_all_actions(**action_context)
+    
+    # Return the test data (results from before_all actions)
+    yield test_data
+    
+    # Run after_all actions once at the end of the class
+    action_registry.run_after_all_actions(**action_context)
