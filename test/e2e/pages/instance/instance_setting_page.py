@@ -93,7 +93,7 @@ class InstanceSettingPage(BasePage):
         expect_output = self.access_menu[terminal_type].get_by_text(text, exact=False)
         expect(expect_output).to_be_visible()
     
-    def access_menu_should_be_not_be_available(self):
+    def access_menu_should_not_be_available(self):
         self.navigate_to_menu("access")
         terminal_text = "Terminal unavailable - Instance not running"
         console_text = "Console unavailable - Instance not running"

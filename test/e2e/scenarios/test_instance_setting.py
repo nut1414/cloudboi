@@ -137,7 +137,7 @@ class TestInstanceSetting:
         instance_setting_page.wait_for_toast("success")
         instance_setting_page.should_have_instance_status("stopped")
         instance_setting_page.should_disable_restart_instance()
-        instance_setting_page.access_menu_should_be_not_be_available()
+        instance_setting_page.access_menu_should_not_be_available()
         
     def test_power_menu_start_instance(self, page: Page, test_user_instance: UserInstanceData, test_user: UserData, api_client: ApiClient) -> None:
         # Make sure the instance is stopped
