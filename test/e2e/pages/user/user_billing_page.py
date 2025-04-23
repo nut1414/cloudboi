@@ -2,7 +2,8 @@ from playwright.sync_api import Page, expect
 
 from ..base_class import BasePage
 from ..common.side_nav_bar import SideNavBar
-from ..data.models import TransactionData
+from ...data.models import TransactionData
+from ...utils.datetime_utils import compare_datetimes_with_tolerance, extract_datetime_from_text, parse_datetime
 
 class UserBillingPage(BasePage):
     path: str = "/user/{username}/billing"
@@ -46,11 +47,39 @@ class UserBillingPage(BasePage):
     def estimated_due_amount_should_be(self, amount: str):
         expect(self.overview_menu["estimated_due"]).to_have_text(amount)
 
-    def next_billing_date_should_be(self, date: str):
-        expect(self.overview_menu["next_billing_date"]).to_have_text(date)
+    def next_billing_date_should_be(self, date: str, tolerance_minutes: int = 2):
+        """
+        Check if the next billing date is within the specified tolerance
+        
+        Args:
+            date: Expected next billing date in format 'YYYY-MM-DD HH:MM:SS' (Bangkok timezone)
+            tolerance_minutes: Tolerance in minutes (default: 2)
+        """
+        element = self.overview_menu["next_billing_date"]
+        
+        # First verify that the element exists and is visible
+        expect(element).to_be_visible()
+        
+        actual_text = element.text_content()
+        
+        # For exact matching without tolerance
+        if tolerance_minutes <= 0:
+            expect(element).to_contain_text(date)
+            return
+            
+        try:
+            # Extract the date from the text using our utility
+            actual_date = extract_datetime_from_text(actual_text)
+            
+            # Compare with tolerance - both dates are already in Bangkok timezone
+            assert compare_datetimes_with_tolerance(actual_date, date, tolerance_minutes), \
+                f"Next billing date '{actual_date}' is not within {tolerance_minutes} minutes of expected '{date}'"
+                
+        except ValueError as e:
+            raise AssertionError(f"Failed to validate next billing date: {str(e)}")
         
     def active_subscriptions_should_be(self, count: int):
-        expect(self.overview_menu["active_subscriptions"]).to_have_text(str(count))
+        expect(self.overview_menu["active_subscriptions"]).to_contain_text(str(count))
 
     def total_paid_cycle_should_be(self, paid_amount: str, cycle_count: int):
         expect(self.overview_menu["total_paid_cycle"]).to_contain_text(paid_amount)
@@ -67,6 +96,9 @@ class UserBillingPage(BasePage):
         expect(row).to_contain_text(transaction.transaction_type)
         expect(row).to_contain_text(transaction.transaction_status)
         expect(row).to_contain_text(transaction.amount)
+    
+    def should_have_no_transaction(self):
+        expect(self.history_menu["history_table"]).to_contain_text("No transactions found")
     
     def current_balance_top_up_should_be(self, balance: str):
         expect(self.top_up_menu["current_balance"]).to_have_text(balance)

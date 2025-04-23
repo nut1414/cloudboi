@@ -157,6 +157,7 @@ def page(
         skip_auth: Skip authentication entirely
         user(user_data): Set a custom user for authentication
             Example: @pytest.mark.user(UserData(username="custom", email="custom@example.com", password="pass", role="admin"))
+            Or: @pytest.mark.user("fixture_name") to use a fixture by name
     """
     # Check for markers
     skip_auth = request.node.get_closest_marker("skip_auth") is not None
@@ -165,9 +166,18 @@ def page(
     user_marker = request.node.get_closest_marker("user")
     login_user = test_user  # Default to test_user
     
-    # If user marker has args and the first arg is a UserData instance, use it
-    if user_marker and user_marker.args and isinstance(user_marker.args[0], UserData):
-        login_user = user_marker.args[0]
+    # If user marker has args and the first arg exists
+    if user_marker and user_marker.args:
+        user_arg = user_marker.args[0]
+        
+        # If it's a UserData instance, use it directly
+        if isinstance(user_arg, UserData):
+            login_user = user_arg
+        # If it's a string, try to get it as a fixture
+        elif isinstance(user_arg, str):
+            if hasattr(request, "getfixturevalue"):
+                # pytest 3.0+
+                login_user = request.getfixturevalue(user_arg)
     
     # Create browser context with default args
     context = browser.new_context(**browser_context_args)
