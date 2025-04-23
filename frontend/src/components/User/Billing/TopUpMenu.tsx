@@ -41,7 +41,7 @@ const TopUpMenu: React.FC = () => {
         <div className="bg-[#23375F] rounded-lg shadow border border-blue-800/30 p-4 flex items-center justify-between">
           <div>
             <p className="text-gray-400 text-sm">Current Balance</p>
-            <p className="text-2xl font-bold text-white mt-1">
+            <p className="text-2xl font-bold text-white mt-1" data-testid="top-up-menu-current-balance">
               {userWallet ? `${userWallet.balance} ${CURRENCY.SYMBOL}` : "Loading..."}
             </p>
           </div>
@@ -59,6 +59,7 @@ const TopUpMenu: React.FC = () => {
                 placeholder="Enter custom amount"
                 endIcon={<span className="text-gray-400">{CURRENCY.SYMBOL}</span>}
                 sanitizeValue={sanitizeNumericInput}
+                data-testid="top-up-menu-input-amount"
               />
             </div>
 
@@ -68,6 +69,7 @@ const TopUpMenu: React.FC = () => {
               className="py-3 px-6 self-end" // aligned to bottom to match input field position
               onClick={processTopUp}
               disabled={isLoading || creditValue === "" || Number(creditValue) <= 0}
+              data-testid="top-up-menu-add-credit"
             />
           </div>
         </div>
@@ -88,6 +90,7 @@ const TopUpMenu: React.FC = () => {
                 variant="prominent"
                 isSelected={creditValue === amount}
                 onClick={() => setCreditValue(amount)}
+                data-testid={`top-up-menu-quick-selection-${amount}`}
               />
             ))}
           </div>

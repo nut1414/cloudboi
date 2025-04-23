@@ -7,6 +7,8 @@ from datetime import datetime
 from typing import List, Optional
 import uuid
 
+from .constant import TransactionType, TransactionStatus
+
 @dataclass
 class RegisterData:
     """
@@ -72,3 +74,16 @@ class UserInstanceData:
     instance_id: Optional[uuid.UUID] = None
     user_id: Optional[uuid.UUID] = None
     created_at: Optional[datetime] = None
+
+@dataclass
+class TransactionData:
+    """
+    Data model for transaction fixture data used in transaction tests.
+    """
+    transaction_id: Optional[uuid.UUID] = None
+    user_id: Optional[uuid.UUID] = None
+    transaction_type: TransactionType
+    transaction_status: TransactionStatus
+    amount: float
+    created_at: Optional[str] = None
+    last_updated_at: Optional[str] = None

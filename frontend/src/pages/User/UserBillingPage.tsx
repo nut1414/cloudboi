@@ -37,6 +37,7 @@ const UserBillingPage: React.FC = () => {
                         tabs={tabs}
                         activeTab={activeTab}
                         setActiveTab={setActiveTab}
+                        data-testid="user-billing"
                     />
                     <UserBillingContent active={activeTab} />
                 </>

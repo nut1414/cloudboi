@@ -315,7 +315,7 @@ function Table<T>({
         className="bg-[#192A51] rounded-xl shadow-lg overflow-hidden border border-blue-900/50"
         ref={tableRef}
       >
-        <table className="w-full table-auto">
+        <table className="w-full table-auto" data-testid={dataTestId ? `${dataTestId}-table` : undefined}>
           {/* Header Row - always visible but with skeleton content when loading */}
           <TableHeader columns={columns} isLoading={isLoading} />
 
