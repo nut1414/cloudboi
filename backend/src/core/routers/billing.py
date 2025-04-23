@@ -67,3 +67,27 @@ async def get_user_wallet(
     billing_service: BillingService = Depends(Provide[AppContainer.billing_service])
 ):
     return await billing_service.get_user_wallet(username=username)
+
+@router.post(
+    "/trigger/overdue/{instance_name}",
+    dependencies=[Depends(get_current_user)],
+    include_in_schema=False,
+)
+@inject
+async def trigger_overdue_subscription_action(
+    instance_name: str,
+    billing_service: BillingService = Depends(Provide[AppContainer.billing_service])
+):
+    return await billing_service.trigger_overdue_subscription_action(instance_name=instance_name)
+
+@router.post(
+    "/trigger/expired/{instance_name}",
+    dependencies=[Depends(get_current_user)],
+    include_in_schema=False,
+)
+@inject
+async def trigger_expired_subscription_action(
+    instance_name: str,
+    billing_service: BillingService = Depends(Provide[AppContainer.billing_service])
+):
+    return await billing_service.trigger_expired_subscription_action(instance_name=instance_name)

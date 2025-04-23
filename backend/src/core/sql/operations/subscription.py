@@ -6,7 +6,7 @@ from sqlalchemy.dialects.postgresql import insert as pg_insert
 import uuid
 
 from .base import BaseOperation
-from ..tables.user import User
+from ..tables.user_instance import UserInstance
 from ..tables.user_wallet import UserWallet
 from ..tables.user_subscription import UserSubscription
 from ...models.user import UserInDB as UserModel, UserWallet as UserWalletModel
@@ -51,6 +51,22 @@ class SubscriptionOperation(BaseOperation):
         async with self.session() as db:
             stmt = select(UserSubscription).where(UserSubscription.subscription_id == subscription_id)
             result = (await db.execute(stmt)).scalar()
+            return self.to_pydantic(UserSubscriptionModel, result)
+    
+    async def get_subscription_by_instance(
+        self,
+        instance_id: Optional[uuid.UUID] = None,
+        instance_name: Optional[str] = None,
+    ) -> UserSubscriptionModel:
+        async with self.session() as db:
+            if instance_id is None and instance_name is None:
+                raise ValueError("Either instance_id or instance_name must be provided.")
+            stmt = select(UserSubscription)
+            if instance_id is not None:
+                stmt = stmt.where(UserSubscription.instance_id == instance_id)
+            elif instance_name is not None:
+                stmt = stmt.join(UserSubscription.user_instance).where(UserInstance.hostname == instance_name)
+            result = (await db.execute(stmt)).scalar_one()
             return self.to_pydantic(UserSubscriptionModel, result)
     
     async def get_overdue_subscriptions(self, given_date: datetime) -> List[UserSubscriptionModel]:

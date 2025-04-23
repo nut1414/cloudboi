@@ -162,3 +162,13 @@ class ApiClient:
             }
         }
         return self.make_request("instance/create", data, action_name="Create Instance")
+    
+    # Billing API Methods
+    def trigger_overdue_subscription_action(self, instance_name: str) -> Optional[APIResponse]:
+        """Trigger overdue subscription action"""
+        return self.make_request(f"billing/trigger/overdue/{instance_name}", method="post", action_name="Trigger Overdue Subscription Action")
+    
+    def trigger_expired_subscription_action(self, instance_name: str) -> Optional[APIResponse]:
+        """Trigger expired subscription action"""
+        return self.make_request(f"billing/trigger/expired/{instance_name}", method="post", action_name="Trigger Expired Subscription Action")
+
