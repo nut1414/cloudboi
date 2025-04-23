@@ -6,7 +6,6 @@ import pytest
 from typing import Dict, Any, Generator, Optional, List
 from playwright.sync_api import sync_playwright, Browser, Page, Playwright, Response, APIResponse
 import os
-import json
 
 from .data.models import UserData, UserInstanceData
 from .api.client import ApiClient
@@ -15,6 +14,7 @@ from .registry.actions import ActionRegistry, TestData
 def pytest_configure(config: pytest.Config) -> None:
     """Register custom markers."""
     config.addinivalue_line("markers", "skip_auth: Skip authentication for this test")
+    config.addinivalue_line("markers", "user(user_data): Set a custom user for authentication")
 
 def pytest_addoption(parser: pytest.Parser) -> None:
     """Add command-line options for the tests."""
@@ -155,9 +155,19 @@ def page(
     
     Markers:
         skip_auth: Skip authentication entirely
+        user(user_data): Set a custom user for authentication
+            Example: @pytest.mark.user(UserData(username="custom", email="custom@example.com", password="pass", role="admin"))
     """
     # Check for markers
     skip_auth = request.node.get_closest_marker("skip_auth") is not None
+    
+    # Get custom user if specified, otherwise use test_user
+    user_marker = request.node.get_closest_marker("user")
+    login_user = test_user  # Default to test_user
+    
+    # If user marker has args and the first arg is a UserData instance, use it
+    if user_marker and user_marker.args and isinstance(user_marker.args[0], UserData):
+        login_user = user_marker.args[0]
     
     # Create browser context with default args
     context = browser.new_context(**browser_context_args)
@@ -168,7 +178,7 @@ def page(
     
     if not skip_auth:
         # Login to get auth cookies
-        api_client.login_user(test_user)
+        api_client.login_user(login_user)
     
     # Navigate to the frontend page
     page.goto("/")

@@ -96,12 +96,12 @@ class BillingService:
             last_updated_at=DateTimeUtils.to_bkk_string(result.last_updated_at),
         )
 
-    @require_test_environment()
+    @require_test_environment
     async def trigger_overdue_subscription_action(self, instance_name: str):
         subscription_transactions = await self.get_subscription_transactions(instance_name=instance_name)
         await self.subscription_service.process_overdue_subscriptions(subscription_transactions)
 
-    @require_test_environment()
+    @require_test_environment
     async def trigger_expired_subscription_action(self, instance_name: str):
         subscription_transactions = await self.get_subscription_transactions(instance_name=instance_name)
         await self.subscription_service.process_expired_subscriptions(subscription_transactions)
