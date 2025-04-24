@@ -56,8 +56,8 @@ class SubscriptionService:
             return
         
         # Update subscription dates
-        subscription.next_payment_date += PAYMENT_INTERVAL
-        subscription.next_expire_date += PAYMENT_INTERVAL
+        subscription.next_payment_date = DateTimeUtils.now_dt() + PAYMENT_INTERVAL
+        subscription.next_expire_date = subscription.next_payment_date + EXPIRE_INTERVAL
 
         updated_subscription = await self.subscription_opr.upsert_subscription(
             instance_id=subscription.instance_id,
