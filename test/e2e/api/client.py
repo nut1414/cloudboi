@@ -162,3 +162,28 @@ class ApiClient:
             }
         }
         return self.make_request("instance/create", data, action_name="Create Instance")
+    
+    # Billing API Methods
+    def trigger_overdue_subscription_action(self, instance_name: str) -> Optional[APIResponse]:
+        """Trigger overdue subscription action"""
+        return self.make_request(f"billing/trigger/overdue/{instance_name}", method="post", action_name="Trigger Overdue Subscription Action")
+    
+    def trigger_expired_subscription_action(self, instance_name: str) -> Optional[APIResponse]:
+        """Trigger expired subscription action"""
+        return self.make_request(f"billing/trigger/expired/{instance_name}", method="post", action_name="Trigger Expired Subscription Action")
+    
+    def user_topup(self, username: str, amount: float) -> Optional[APIResponse]:
+        """User topup"""
+        data = {
+            "amount": amount
+        }
+        return self.make_request(f"billing/topup/{username}", data, method="post", action_name="User Topup")
+
+    # Admin API Methods
+    def admin_topup(self, username: str, amount: float) -> Optional[APIResponse]:
+        """Admin topup"""
+        data = {
+            "username": username,
+            "amount": amount
+        }
+        return self.make_request("admin/topup", data, action_name="Admin Topup")

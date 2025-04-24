@@ -143,6 +143,7 @@ const InstanceListPage: React.FC = () => {
                     onCreateNew={handleCreateInstance}
                     keyExtractor={(instance) => instance.instance_id}
                     unit="instance"
+                    data-testid="instance-list"
                 />
             </PageContainer>
         </>

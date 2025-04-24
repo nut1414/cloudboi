@@ -67,6 +67,7 @@ const HistoryMenu: React.FC = () => {
                 data={userTransactions || []}
                 emptyStateMessage="No transactions found"
                 unit="transaction"
+                data-testid="history-menu"
             />
         </>
     )

@@ -68,26 +68,31 @@ class BillingOperation(BaseOperation):
         )
         total_subscription = (await db.execute(subscription_count_stmt)).scalar() or 0
         
-        # Get sum of scheduled/pending payments and earliest due date
+        # Get sum of scheduled/pending payments
         upcoming_payment_stmt = select(
             # Sum of all pending amounts
             func.sum(Transaction.amount).label("sum_amount"),
-            # Earliest payment date
-            func.min(Transaction.created_at).label("earliest_due_date")
         ).where(
             Transaction.user_id == user_id,
             Transaction.transaction_type == TransactionType.SUBSCRIPTION_PAYMENT,
-            Transaction.transaction_status == TransactionStatus.SCHEDULED
+            Transaction.transaction_status.in_([TransactionStatus.SCHEDULED, TransactionStatus.OVERDUE])
         )
         
-        upcoming_result = (await db.execute(upcoming_payment_stmt)).one_or_none()
+        sum_amount = (await db.execute(upcoming_payment_stmt)).scalar_one_or_none() or 0.0
         
-        # Handle case where there are no upcoming payments
-        sum_amount = upcoming_result[0] or 0.0
-        earliest_due_date = upcoming_result[1] or None
+        # Get earliest payment date from user subscriptions
+        earliest_payment_date_stmt = select(
+            func.min(UserSubscription.next_payment_date).label("earliest_due_date")
+        ).join(
+            UserInstance, UserSubscription.instance_id == UserInstance.instance_id
+        ).where(
+            UserInstance.user_id == user_id
+        )
+        
+        earliest_payment_date = (await db.execute(earliest_payment_date_stmt)).scalar_one_or_none()
         
         # Format the date if it exists
-        earliest_due_date_str = DateTimeUtils.to_bkk_string(earliest_due_date) if earliest_due_date else ""
+        earliest_due_date_str = DateTimeUtils.to_bkk_string(earliest_payment_date) if earliest_payment_date else ""
         
         return UpcomingPayment(
             sum_amount=sum_amount,

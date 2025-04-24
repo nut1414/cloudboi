@@ -1,7 +1,7 @@
 import { useBilling, BILLING_ACTIONS } from "../../contexts/billingContext"
 import { BillingService, UserTopUpRequest, UserWalletResponse } from "../../client"
 import { useState, useCallback, useEffect } from "react"
-import { TransactionType } from "../../constant/TransactionConstant"
+import { TransactionStatus, TransactionType } from "../../constant/TransactionConstant"
 import { useParams } from "react-router-dom"
 import { useUser } from "../../contexts/userContext"
 import { CURRENCY } from '../../constant/CurrencyConstant'
@@ -86,9 +86,11 @@ export const useUserBilling = () => {
                 path: { username: userName }
             })
 
+            const filteredResponse = response.data?.filter((transaction) => transaction.transaction_status !== TransactionStatus.SCHEDULED)
+
             dispatch({
                 type: BILLING_ACTIONS.SET_USER_TRANSACTIONS,
-                payload: response.data ?? null
+                payload: filteredResponse ?? null
             })
 
             dispatch({ type: BILLING_ACTIONS.FETCH_SUCCESS })

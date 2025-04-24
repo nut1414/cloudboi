@@ -55,7 +55,10 @@ class AppStartupManager:
         """Initialize all required components."""
         await self.initialize_database()
         self.initialize_lxd_manager()
-        await self.start_billing_worker()
+        
+        # In test mode, we will trigger the subscription action manually
+        if APP_ENV != "test":
+            await self.start_billing_worker()
     
     async def shutdown(self):
         """Clean up resources and stop services."""

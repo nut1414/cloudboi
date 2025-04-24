@@ -6,10 +6,12 @@ from ..sql.operations.billing import BillingOperation
 from .subscription import SubscriptionService
 from ..utils.datetime import DateTimeUtils
 from ..utils.permission import require_roles, require_account_ownership
+from ..utils.guard import require_test_environment
 from ..models.billing import UserBillingOverviewResponse, UserTopUpRequest, UserTopUpResponse
 from ..models.transaction import UserTransactionResponse, Transaction
 from ..models.user import UserWalletResponse
 from ..constants.user_const import UserRole
+from ..constants.transaction_const import TransactionStatus
 
 
 class BillingService:
@@ -93,3 +95,31 @@ class BillingService:
             balance=result.balance,
             last_updated_at=DateTimeUtils.to_bkk_string(result.last_updated_at),
         )
+
+    @require_test_environment
+    async def trigger_overdue_subscription_action(self, instance_name: str):
+        subscription_transactions = await self.get_subscription_transactions(instance_name=instance_name)
+        await self.subscription_service.process_overdue_subscriptions(subscription_transactions)
+
+    @require_test_environment
+    async def trigger_expired_subscription_action(self, instance_name: str):
+        subscription_transactions = await self.get_subscription_transactions(instance_name=instance_name)
+        await self.subscription_service.process_expired_subscriptions(subscription_transactions)
+
+    async def get_subscription_transactions(self, instance_name: str) -> List[Transaction]:
+        subscription = await self.subscription_service.subscription_opr.get_subscription_by_instance(instance_name=instance_name)
+        if not subscription:
+            raise HTTPException(
+                status_code=404,
+                detail="Subscription not found",
+            )
+        subscription_transactions = await self.subscription_service._get_subscription_transactions(
+            subscriptions=[subscription],
+            transaction_statuses=[TransactionStatus.SCHEDULED, TransactionStatus.OVERDUE]
+        )
+        if not subscription_transactions:
+            raise HTTPException(
+                status_code=404,
+                detail="No transactions found",
+            )
+        return subscription_transactions

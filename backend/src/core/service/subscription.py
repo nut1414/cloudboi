@@ -26,7 +26,7 @@ class SubscriptionService:
 
     async def create_subscription(self, user_id: uuid.UUID, instance_id: uuid.UUID, instance_plan: InstancePlan) -> Transaction:
         """Create a new subscription and schedule the first payment transaction."""
-        next_payment_date = DateTimeUtils.now_dt() + PAYMENT_INTERVAL
+        next_payment_date = DateTimeUtils.now_dt()
         next_expire_date = next_payment_date + EXPIRE_INTERVAL
 
         created_subscription = await self.subscription_opr.upsert_subscription(
@@ -56,8 +56,8 @@ class SubscriptionService:
             return
         
         # Update subscription dates
-        subscription.next_payment_date += PAYMENT_INTERVAL
-        subscription.next_expire_date += PAYMENT_INTERVAL
+        subscription.next_payment_date = DateTimeUtils.now_dt() + PAYMENT_INTERVAL
+        subscription.next_expire_date = subscription.next_payment_date + EXPIRE_INTERVAL
 
         updated_subscription = await self.subscription_opr.upsert_subscription(
             instance_id=subscription.instance_id,

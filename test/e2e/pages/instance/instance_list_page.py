@@ -11,6 +11,7 @@ class InstanceListPage(BasePage):
         
         self.side_nav = SideNavBar(page)
         self.create_instance_button = page.get_by_test_id("top-navbar-create-instance-button")
+        self.instance_table = page.get_by_test_id("instance-list-table")
     
     def click_create_instance_button(self):
         self.create_instance_button.click()
@@ -23,3 +24,6 @@ class InstanceListPage(BasePage):
         
     def should_navigate_to_instance_setting_page(self, hostname: str):
         expect(self.page).to_have_url(f"/user/{self.username}/instance/{hostname}")
+    
+    def should_have_no_instance(self):
+        expect(self.instance_table).to_contain_text("No instances found")

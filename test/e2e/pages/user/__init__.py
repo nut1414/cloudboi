@@ -4,9 +4,9 @@ This package contains page objects for user-specific pages like profiles, settin
 """
 
 # Import any user page classes here
-# from .profile_page import ProfilePage
+from .user_billing_page import UserBillingPage
 
 __all__ = [
     # List exported classes here
-    # 'ProfilePage',
+    'UserBillingPage',
 ]
