@@ -140,7 +140,7 @@ export function createContextProvider<T extends BaseContextState>(
     if (context === undefined) {
       throw new Error(`use${displayName} must be used within a ${displayName}Provider`)
     }
-    return context
+    return context as T 
   }
 
   return { Provider, useContextHook }
