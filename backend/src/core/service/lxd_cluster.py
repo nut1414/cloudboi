@@ -2,7 +2,7 @@ from .clients.lxd import LXDClient
 from ..models.lxd_cluster import (
     ClusterMember, CreateJoinTokenRequest, CreateJoinTokenResponse, 
     AddMemberResponse, AddMemberRequest, 
-    GetClusterMembersStateInfoResponse
+    GetClusterMembersStateInfoResponse, SysInfo
 )
 from ..utils.permission import require_roles
 from ..constants.user_const import UserRole
@@ -33,21 +33,46 @@ class LXDClusterService:
         member_roles = set()
         leader = ""
         for member in members:
-            member_state = self.lxd_client.get_lxd_cluster_member_state(member.server_name)
-            cluster_members.append(ClusterMember(
-                server_name=member.server_name, 
-                status=member.status, 
-                message=member.message, 
-                url=member.url, 
-                roles=member.roles,
-                groups=member.groups,
-                storage_pools=member_state.storage_pools,
-                sysinfo=member_state.sysinfo
-            ))
-            member_groups.update(member.groups)
-            member_roles.update(member.roles)
-            if "database-leader" in member.roles:
-                leader = member.server_name
+            try:
+              member_state = self.lxd_client.get_lxd_cluster_member_state(member.server_name)
+              cluster_members.append(ClusterMember(
+                  server_name=member.server_name, 
+                  status=member.status, 
+                  message=member.message, 
+                  url=member.url, 
+                  roles=member.roles,
+                  groups=member.groups,
+                  storage_pools=member_state.storage_pools,
+                  sysinfo=member_state.sysinfo
+              ))
+              member_groups.update(member.groups)
+              member_roles.update(member.roles)
+              if "database-leader" in member.roles:
+                  leader = member.server_name
+            except Exception as e:
+              cluster_members.append(
+                ClusterMember(
+                  server_name=member.server_name, 
+                  status="Offline", 
+                  message="", 
+                  url=member.url, 
+                  roles=[],
+                  groups=[],
+                  storage_pools={},
+                  sysinfo=SysInfo(
+                    buffered_ram=0,
+                    free_ram=0,
+                    free_swap=0,
+                    load_averages=[0,0,0],
+                    logical_cpus=0,
+                    processes=0,
+                    shared_ram=0,
+                    total_ram=0,
+                    total_swap=0,
+                    uptime=0
+                  )
+              ))
+
         return GetClusterMembersStateInfoResponse(
             members=cluster_members,
             members_groups=list(member_groups), 
