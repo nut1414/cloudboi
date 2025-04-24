@@ -8,13 +8,10 @@ class SideNavBar:
         self.side_navbar_items = {
             "instance": self.page.get_by_test_id("side-navbar-item-instance"),
             "billing": self.page.get_by_test_id("side-navbar-item-billing"),
-            "support": self.page.get_by_test_id("side-navbar-item-support"),
             "setting": self.page.get_by_test_id("side-navbar-item-setting"),
         }
         self.user_menu_items = {
-            "view_profile": self.page.get_by_test_id("side-navbar-user-menu-dropdown-item-link-0"),
-            "preferences": self.page.get_by_test_id("side-navbar-user-menu-dropdown-item-link-1"),
-            "logout": self.page.get_by_test_id("side-navbar-user-menu-dropdown-item-button-3"),
+            "logout": self.page.get_by_test_id("side-navbar-user-menu-dropdown-item-button-0"),
         }
         
     def click_user_menu_item(self, item_name: str):

@@ -58,6 +58,8 @@ export const NavUser: React.FC<NavUserProps> = ({
             </div>
         </div>
     )
+  
+    // TODO: Implement the information page
 
     // Default dropdown items
     const defaultDropdownItems: DropdownItemProps[] = [
@@ -65,14 +67,14 @@ export const NavUser: React.FC<NavUserProps> = ({
             href: `/user/${username}/instance`,
             content: "Dashboard"
         },
-        {
-            href: `/user/${username}/profile`,
-            content: "Profile"
-        },
-        {
-            href: `/user/${username}/setting`,
-            content: "Settings"
-        },
+        // {
+        //     href: `/user/${username}/profile`,
+        //     content: "Profile"
+        // },
+        // {
+        //     href: `/user/${username}/setting`,
+        //     content: "Settings"
+        // },
         {
             divider: true
         },

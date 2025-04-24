@@ -20,7 +20,6 @@ const InstanceListPage = lazy(() => import("./pages/Instance/InstanceListPage"))
 const InstanceCreatePage = lazy(() => import("./pages/Instance/InstanceCreatePage"))
 const InstanceSettingPage = lazy(() => import("./pages/Instance/InstanceSettingPage"))
 const UserBillingPage = lazy(() => import("./pages/User/UserBillingPage"))
-const SupportPage = lazy(() => import("./pages/User/SupportPage"))
 
 // Admin pages
 const UserManagePage = lazy(() => import("./pages/Admin/UserManagePage"))
@@ -64,10 +63,6 @@ const routes: RouteObject[] = [
       {
         path: "billing",
         element: <UserBillingPage />,
-      },
-      {
-        path: "support",
-        element: <SupportPage />, // This is temporary, will be replaced with a real support page
       },
       {
         path: "setting",

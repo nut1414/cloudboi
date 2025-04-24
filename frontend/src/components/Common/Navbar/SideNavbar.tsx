@@ -111,7 +111,6 @@ const SideNavbar: React.FC<SideNavbarProps> = ({
   const defaultNavItems: NavItemProps[] = [
     { path: "instance", label: "Manage", icon: <Bars3BottomLeftIcon className="h-5 w-5" /> },
     { path: "billing", label: "Billing", icon: <CreditCardIcon className="h-5 w-5" /> },
-    { path: "support", label: "Support", icon: <UserGroupIcon className="h-5 w-5" /> },
     { path: "setting", label: "Setting", icon: <Cog6ToothIcon className="h-5 w-5" /> },
   ]
 
@@ -120,15 +119,6 @@ const SideNavbar: React.FC<SideNavbarProps> = ({
 
   // User menu dropdown items for sidebar specifically
   const userMenuItems: DropdownItemProps[] = [
-    {
-      content: "View Profile",
-      href: `/user/${username}/profile`
-    },
-    {
-      content: "Preferences",
-      href: `/user/${username}/preferences`
-    },
-    { divider: true },
     {
       content: (
         <div className="flex items-center text-red-400">

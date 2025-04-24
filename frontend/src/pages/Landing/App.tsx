@@ -15,7 +15,7 @@ const App: React.FC = () => {
     {
       icon: <ServerIcon className="h-12 w-12" />,
       title: "Flexible Deployments",
-      description: "Launch and configure virtual machines, containers, or bare metal servers through our intuitive interface."
+      description: "Launch and configure virtual servers through our intuitive interface."
     },
     {
       icon: <CpuChipIcon className="h-12 w-12" />,
@@ -24,15 +24,15 @@ const App: React.FC = () => {
     },
     {
       icon: <ShieldCheckIcon className="h-12 w-12" />,
-      title: "Secure by Design",
-      description: "Built with security in mind, our platform implements industry best practices to protect your workloads."
-    }
+      title: "Secured Networking",
+      description: "Your virtual servers are isolated in a private network."
+    } 
   ]
 
   const platformFeatures = [
     {
       icon: <ServerIcon className="h-6 w-6" />,
-      label: "Virtual machine management"
+      label: "Virtual servers management"
     },
     {
       icon: <CpuChipIcon className="h-6 w-6" />,
@@ -49,11 +49,11 @@ const App: React.FC = () => {
       <div className="container mx-auto px-4 py-10">
         {/* Hero Section */}
         <HeroSection
-          title="Your Cloud, Your Way"
-          subtitle="Deploy Bare Metal and Virtual Machines with Ease."
+          title="CloudBoi"
+          subtitle="Deploy Virtual Servers with Ease."
           description="Our cloud platform simplifies infrastructure management
-          for virtual machines, containers, and networking resources.
-          Built with Metal as a Service (MAAS) technology, our solution
+          for virtual servers, networking and resources.
+          Built with Metal as a Service (MAAS) and Linux Containers (LXD) technology, our solution
           provides the tools you need to deploy and scale effectively."
           primaryButton={{
             label: "Join the waitlist",
