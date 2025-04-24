@@ -17,25 +17,34 @@ services:
       - LXD_CERT_PATH=/app/certs/lxd.crt
       - LXD_KEY_PATH=/app/certs/lxd.key
       - APP_ENV=${APP_ENV:-dev}
+      - LXD_HOST=${LXD_HOST}
       - DOCKER=true
     networks:
       - cloudboi-network
+    restart: unless-stopped
   frontend:
     build:
       context: ../../frontend
-      dockerfile: Dockerfile
+      dockerfile: ${FRONTEND_DOCKERFILE:-Dockerfile}
+      args:
+        - VITE_API_URL=${API_URL:-localhost:80}
+        - VITE_APP_ENV=${APP_ENV:-dev}
+        - NODE_ENV=${APP_ENV:-dev}
     expose:
       - "3000"
     volumes:
       - ../../frontend:/app
       - cloudboi_fe-node_modules:/app/node_modules
+      - cloudboi_fe-dist:/app/dist
     environment:
-      - VITE_API_URL=${API_URL}
+      - VITE_API_URL=${API_URL:-localhost:80}
       - VITE_APP_ENV=${APP_ENV:-dev}
+      - NODE_ENV=${APP_ENV:-dev}
     depends_on:
       - backend
     networks:
       - cloudboi-network
+    restart: unless-stopped
   proxy:
     image: nginx:alpine
     ports:
@@ -47,9 +56,10 @@ services:
       - backend
     networks:
       - cloudboi-network
-
+    restart: unless-stopped
 volumes:
   cloudboi_fe-node_modules:
+  cloudboi_fe-dist:
 
 networks:
   cloudboi-network:

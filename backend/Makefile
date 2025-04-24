@@ -39,5 +39,8 @@ dev:
 test:
 	$(MAKE) dev
 
+prod:
+	$(PYTHON) -m uvicorn src.core.main:app $(UVICORN_PARAMS)
+
 debug:
 	$(PYTHON) -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m uvicorn src.core.main:app $(UVICORN_PARAMS)

@@ -49,7 +49,7 @@ const App: React.FC = () => {
       <div className="container mx-auto px-4 py-10">
         {/* Hero Section */}
         <HeroSection
-          title="Your Cloud, Your Way"
+          title="aksdjlaksjdlajsldjalksy"
           subtitle="Deploy Bare Metal and Virtual Machines with Ease."
           description="Our cloud platform simplifies infrastructure management
           for virtual machines, containers, and networking resources.

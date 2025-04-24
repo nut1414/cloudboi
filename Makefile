@@ -20,6 +20,20 @@ docker-clean:
 
 docker-up: db-up backend-up frontend-up proxy-up
 
+# PRODUCTION 
+prod-up: db-up
+	# Clean up old containers and volumes
+	${DC_APP} down -v
+	# Build with production settings
+	LXD_HOST=10.10.10.2:8443 APP_ENV=prod API_URL=cloudboi.pnnp.cc NODE_ENV=production FRONTEND_DOCKERFILE=Dockerfile.prod ${DC_APP} build --no-cache frontend
+	# Start services
+	LXD_HOST=10.10.10.2:8443 APP_ENV=prod API_URL=cloudboi.pnnp.cc NODE_ENV=production FRONTEND_DOCKERFILE=Dockerfile.prod ${DC_APP} up -d --force-recreate
+
+prod-down:
+	${DC_APP} down -v
+
+prod-rebuild: prod-down prod-up
+
 docker-down: proxy-down frontend-down backend-down db-down
 
 # Test environment setup

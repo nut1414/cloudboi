@@ -16,5 +16,6 @@ RUN pnpm install
 # Expose port for Vite dev server
 EXPOSE 3000
 
-# Start development server
-CMD ["pnpm", "dev", "--host", "0.0.0.0"]
+
+# Start the development server
+CMD ["pnpm", "dev"]
