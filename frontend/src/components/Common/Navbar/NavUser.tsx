@@ -76,9 +76,6 @@ export const NavUser: React.FC<NavUserProps> = ({
         //     content: "Settings"
         // },
         {
-            divider: true
-        },
-        {
             content: (
                 <div className="flex items-center text-red-400">
                     <ArrowLeftStartOnRectangleIcon className="h-5 w-5 mr-2" />
