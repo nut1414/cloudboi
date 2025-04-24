@@ -44,7 +44,6 @@ const InstanceListPage: React.FC = () => {
 
     const { userName } = useParams<{ userName: string }>()
     const navigate = useNavigate()
-    const [notificationCount] = useState(3) // Example notification count
 
     // Define table columns with rendering functions
     const columns: TableColumn<UserInstanceResponse>[] = [
@@ -113,10 +112,6 @@ const InstanceListPage: React.FC = () => {
                 variant="secondary"
                 icon={<PlusIcon className="w-4 h-4" />}
                 data-testid="top-navbar-create-instance"
-            />
-            <NotificationBadge
-                count={notificationCount}
-                onClick={() => navigate(`/user/${userName}/notifications`)}
             />
         </div>
     )

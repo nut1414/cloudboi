@@ -25,11 +25,13 @@ const PublicNavbar = () => {
     <CloudIconSolid className="h-9 w-9 bg-purple-500 p-1.5 rounded-md text-white" />
   )
 
+  // TODO: Implement the information page
+
   // About dropdown items
   const aboutDropdownItems: DropdownItemProps[] = [
-    { href: "/about-company", content: "About Company" },
-    { href: "/about-team", content: "Our Team" },
-    { href: "/about-mission", content: "Our Mission" }
+    // { href: "/about-company", content: "About Company" },
+    // { href: "/about-team", content: "Our Team" },
+    // { href: "/about-mission", content: "Our Mission" }
   ]
 
   const navItems: TopNavItemProps[] = [
@@ -38,33 +40,33 @@ const PublicNavbar = () => {
       label: "Home",
       icon: <CloudIconSolid className="w-5 h-5" />
     },
-    {
-      label: (
-        <DropdownButton
-          content={
-            <>
-              <InformationCircleIcon className="w-5 h-5 mr-3" />
-              <span>About Us</span>
-            </>
-          }
-          variant="none"
-          buttonType="none"
-          dropdownClassName="mt-3"
-          items={aboutDropdownItems}
-        />
-      ),
-      isActive: window.location.pathname.includes("/about")
-    },
-    {
-      href: "/pricing",
-      label: "Pricing",
-      icon: <CurrencyDollarIcon className="w-5 h-5" />
-    },
-    {
-      href: "/use-cases",
-      label: "Use Cases",
-      icon: <PuzzlePieceIcon className="w-5 h-5" />
-    }
+    // {
+    //   label: (
+    //     <DropdownButton
+    //       content={
+    //         <>
+    //           <InformationCircleIcon className="w-5 h-5 mr-3" />
+    //           <span>About Us</span>
+    //         </>
+    //       }
+    //       variant="none"
+    //       buttonType="none"
+    //       dropdownClassName="mt-3"
+    //       items={aboutDropdownItems}
+    //     />
+    //   ),
+    //   isActive: window.location.pathname.includes("/about")
+    // },
+    // {
+    //   href: "/pricing",
+    //   label: "Pricing",
+    //   icon: <CurrencyDollarIcon className="w-5 h-5" />
+    // },
+    // {
+    //   href: "/use-cases",
+    //   label: "Use Cases",
+    //   icon: <PuzzlePieceIcon className="w-5 h-5" />
+    // }
   ]
 
   // Right section with auth controls

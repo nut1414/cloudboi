@@ -113,10 +113,10 @@ const SessionInitializer = ({ children }: { children: ReactNode }) => {
         })
       } catch (error) {
         // // Hide error on session check, we don't want to show the user an error message
-        // dispatch({ 
-        //   type: USER_ACTIONS.SESSION_CHECK_FAILURE, 
-        //   payload: 'Session check failed' 
-        // })
+        dispatch({ 
+          type: USER_ACTIONS.SESSION_CHECK_FAILURE, 
+          payload: 'Unauthorized. Please sign in or register.' 
+        })
       }
     }
 
