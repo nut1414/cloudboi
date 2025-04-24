@@ -75,7 +75,7 @@ class BillingOperation(BaseOperation):
         ).where(
             Transaction.user_id == user_id,
             Transaction.transaction_type == TransactionType.SUBSCRIPTION_PAYMENT,
-            Transaction.transaction_status == TransactionStatus.SCHEDULED
+            Transaction.transaction_status.in_([TransactionStatus.SCHEDULED, TransactionStatus.OVERDUE])
         )
         
         sum_amount = (await db.execute(upcoming_payment_stmt)).scalar_one_or_none() or 0.0

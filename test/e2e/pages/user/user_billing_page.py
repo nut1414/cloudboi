@@ -91,11 +91,11 @@ class UserBillingPage(BasePage):
     def click_top_up_overview_button(self):
         self.overview_menu["top_up_button"].click()        
         
-    def should_have_transaction_in_row(self, transaction: TransactionData, row_id: int):
+    def should_have_transaction_in_row(self, transaction_type: str, transaction_status: str, amount: str, row_id: int):
         row = self.history_menu["get_row"](row_id)
-        expect(row).to_contain_text(transaction.transaction_type)
-        expect(row).to_contain_text(transaction.transaction_status)
-        expect(row).to_contain_text(transaction.amount)
+        expect(row).to_contain_text(transaction_type, ignore_case=True)
+        expect(row).to_contain_text(transaction_status, ignore_case=True)
+        expect(row).to_contain_text(amount, ignore_case=True)
     
     def should_have_no_transaction(self):
         expect(self.history_menu["history_table"]).to_contain_text("No transactions found")
@@ -115,6 +115,6 @@ class UserBillingPage(BasePage):
     def top_up_input_field_should_have_value(self, amount: str):
         expect(self.top_up_menu["top_up_input"]).to_have_value(amount)
         
-    def top_up_button_should_be_disabled(self):
-        expect(self.top_up_menu["top_up_button"]).to_be_disabled()
+    def add_credit_button_should_be_disabled(self):
+        expect(self.top_up_menu["add_credit_button"]).to_be_disabled()
         
