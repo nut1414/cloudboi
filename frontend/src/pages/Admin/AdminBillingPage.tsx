@@ -45,7 +45,9 @@ const AdminBillingPage: React.FC = () => {
         {
             key: 'instance_name',
             label: 'Instance Name',
-            render: (transaction) => transaction.instance_name ?? '-'
+            render: (transaction) => transaction.instance_name === "Deleted Instance" ? 
+                <span className="text-red-500 font-medium">{transaction.instance_name}</span> : 
+                (transaction.instance_name ?? '-')
         },
         {
             key: 'transaction_type',
@@ -71,7 +73,10 @@ const AdminBillingPage: React.FC = () => {
             key: 'actions',
             label: '',
             render: (transaction) => (
-                transaction.transaction_type === TransactionType.SUBSCRIPTION_PAYMENT ?
+                (
+                    transaction.transaction_type === TransactionType.SUBSCRIPTION_PAYMENT
+                    && transaction.instance_name !== "Deleted Instance"
+                ) ?
                     <Button
                         label="View Instance"
                         variant="secondary"
@@ -139,6 +144,7 @@ const AdminBillingPage: React.FC = () => {
                         emptyStateMessage="No transactions found"
                         keyExtractor={(transaction) => transaction.transaction_id}
                         unit="transaction"
+                        data-testid="transactions-table"
                     />
                 </Section>
             </PageContainer>

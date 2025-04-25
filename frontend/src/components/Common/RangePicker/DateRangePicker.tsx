@@ -168,6 +168,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = React.memo(({
           onClick={handleToggleAllTime}
           size="small"
           className={uiProps.buttonClasses.allTime}
+          data-testid="date-range-picker-all-time"
         />
         <Button
           label="Custom Date Range"
@@ -175,6 +176,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = React.memo(({
           onClick={handleToggleCustomRange}
           size="small"
           className={uiProps.buttonClasses.customRange}
+          data-testid="date-range-picker-custom-range"
         />
         <Button
           label="Monthly"
@@ -182,6 +184,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = React.memo(({
           onClick={handleToggleMonthRange}
           size="small"
           className={uiProps.buttonClasses.monthRange}
+          data-testid="date-range-picker-monthly"
         />
       </div>
 
@@ -199,6 +202,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = React.memo(({
             onChange={handleStartDateChange}
             icon={<CalendarIcon className="w-5 h-5" />}
             disabled={filterType !== 'customDate'}
+            data-testid="date-range-picker-start-date"
           />
           <InputField
             className="p-2"
@@ -209,6 +213,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = React.memo(({
             icon={<CalendarIcon className="w-5 h-5" />}
             disabled={filterType !== 'customDate'}
             error={dateError}
+            data-testid="date-range-picker-end-date"
           />
         </div>
       </div>

@@ -92,18 +92,29 @@ const BillingStatsVisualizer: React.FC<BillingStatsVisualizerProps> = React.memo
   ), [])
 
   // Memoize the rendered items when loading
-  const renderSkeletonItems = useMemo(() => 
-    placeholderItems.map((item, index) => (
+  const renderSkeletonItems = useMemo(() => {
+    // Find the maximum number of detail items across all transaction types
+    const maxDetailItemCount = Math.max(
+      ...placeholderItems.map(item => item.detailItems.length)
+    );
+    
+    // Create a simple placeholder with no details
+    const emptyDetailItems = Array(maxDetailItemCount).fill(0).map(() => ({
+      label: "",
+      value: ""
+    }));
+    
+    return placeholderItems.map((item, index) => (
       <ItemCard
         key={`skeleton-${index}`}
         title={item.title}
         rightHeader={item.rightHeader}
-        detailItems={item.detailItems}
+        detailItems={emptyDetailItems}
         className="h-full"
         isLoading={true}
       />
-    ))
-  , [placeholderItems])
+    ));
+  }, [placeholderItems]);
 
   // Memoize the rendered items when loaded
   const renderDetailItems = useMemo(() => 

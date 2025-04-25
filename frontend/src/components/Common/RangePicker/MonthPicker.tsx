@@ -155,6 +155,7 @@ const MonthPicker: React.FC<MonthPickerProps> = ({
               onClick={() => handleYearChange(-1)}
               className="p-1 rounded-full hover:bg-[#192A51] transition-colors"
               aria-label="Previous year"
+              data-testid="month-picker-previous-year"
             >
               <ChevronLeftIcon className="h-5 w-5 text-gray-300" />
             </button>
@@ -163,6 +164,7 @@ const MonthPicker: React.FC<MonthPickerProps> = ({
               onClick={() => handleYearChange(1)}
               className="p-1 rounded-full hover:bg-[#192A51] transition-colors"
               aria-label="Next year"
+              data-testid="month-picker-next-year"
             >
               <ChevronRightIcon className="h-5 w-5 text-gray-300" />
             </button>
@@ -181,6 +183,7 @@ const MonthPicker: React.FC<MonthPickerProps> = ({
                 py-2 px-3 rounded-md text-center transition-colors
                 ${uiProps.monthStyles[index] ? uiProps.monthStyles[index] : 'hover:bg-[#192A51] text-gray-300'}
               `}
+              data-testid={`month-picker-month-${month}`}
             >
               {month}
             </button>

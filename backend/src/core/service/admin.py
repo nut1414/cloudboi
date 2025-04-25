@@ -102,8 +102,11 @@ class AdminService:
         for transaction, user, instance in transactions_with_details:
             # Get instance name if instance exists
             instance_name = None
-            if instance:
-                instance_name = instance.hostname
+            if transaction.transaction_type == TransactionType.SUBSCRIPTION_PAYMENT:
+                if instance:
+                    instance_name = instance.hostname
+                else:
+                    instance_name = "Deleted Instance"
                 
             response.append(AdminTransactionResponse(
                 transaction_id=transaction.transaction_id,
