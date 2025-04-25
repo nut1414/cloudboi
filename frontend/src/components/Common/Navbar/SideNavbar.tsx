@@ -120,6 +120,13 @@ const SideNavbar: React.FC<SideNavbarProps> = ({
   // User menu dropdown items for sidebar specifically
   const userMenuItems: DropdownItemProps[] = [
     {
+      href: user?.role === "admin" ? `/admin/system` : `/user/${username}/instance`,
+      content: "Dashboard"
+    },
+    {
+        divider: true
+    },
+    {
       content: (
         <div className="flex items-center text-red-400">
           <ArrowLeftStartOnRectangleIcon className="h-5 w-5 mr-2" />

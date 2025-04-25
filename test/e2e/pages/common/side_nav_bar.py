@@ -11,7 +11,8 @@ class SideNavBar:
             "setting": self.page.get_by_test_id("side-navbar-item-setting"),
         }
         self.user_menu_items = {
-            "logout": self.page.get_by_test_id("side-navbar-user-menu-dropdown-item-button-0"),
+            "dashboard": self.page.get_by_test_id("side-navbar-user-menu-dropdown-item-button-0"),
+            "logout": self.page.get_by_test_id("side-navbar-user-menu-dropdown-item-button-1"),
         }
         
     def click_user_menu_item(self, item_name: str):
