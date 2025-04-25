@@ -18,8 +18,8 @@ class SideNavBar:
             "credits": self.page.get_by_test_id("side-navbar-item-credits"),
         }
         self.user_menu_items = {
-            "dashboard": self.page.get_by_test_id("side-navbar-user-menu-dropdown-item-button-0"),
-            "logout": self.page.get_by_test_id("side-navbar-user-menu-dropdown-item-button-1"),
+            "dashboard": self.page.get_by_test_id("side-navbar-user-menu-dropdown-item-link-0"),
+            "logout": self.page.get_by_test_id("side-navbar-user-menu-dropdown-item-button-2"),
         }
         
     def click_user_menu_item(self, item_name: str):
