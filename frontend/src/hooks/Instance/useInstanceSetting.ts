@@ -70,10 +70,12 @@ export const useInstanceSetting = () => {
                 payload: response.data
             })
         } catch (err) {
+          if (selectedInstance?.instance_status === InstanceStatus.RUNNING) {
             dispatch?.({
                 type: INSTANCE_ACTIONS.FETCH_ERROR,
                 payload: "Failed to fetch instance state"
             })
+          }
         }
     }, [instanceName, dispatch])
 

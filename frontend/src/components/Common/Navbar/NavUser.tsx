@@ -29,7 +29,7 @@ export const NavUser: React.FC<NavUserProps> = ({
     fullWidth = false,
     customMenuItems,
     ...restProps
-}) => {
+}: NavUserProps) => {
     const navigate = useNavigate()
     const { dataTestId, cleanProps } = useTestId(restProps)
 
@@ -64,7 +64,7 @@ export const NavUser: React.FC<NavUserProps> = ({
     // Default dropdown items
     const defaultDropdownItems: DropdownItemProps[] = [
         {
-            href: `/user/${username}/instance`,
+            href: userRole === "admin" ? `/admin/system` : `/user/${username}/instance`,
             content: "Dashboard"
         },
         // {
@@ -75,9 +75,6 @@ export const NavUser: React.FC<NavUserProps> = ({
         //     href: `/user/${username}/setting`,
         //     content: "Settings"
         // },
-        {
-            divider: true
-        },
         {
             content: (
                 <div className="flex items-center text-red-400">
