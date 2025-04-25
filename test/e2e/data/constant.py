@@ -4,7 +4,7 @@ from enum import Enum, auto
 class Currency:
     NAME = "CloudBoi Digital Currency"
     SYMBOL = "CBC"
-    PRECISION = 2
+    PRECISION = 4
 
 class TransactionType(str, Enum):
     TOP_UP = "TOP_UP"

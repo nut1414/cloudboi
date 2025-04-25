@@ -4,9 +4,9 @@ This package contains page objects for administration and settings pages.
 """
 
 # Import any admin page classes here
-# from .admin_dashboard_page import AdminDashboardPage
+from .admin_instance_plan_page import AdminInstancePlanPage
 
 __all__ = [
     # List exported classes here
-    # 'AdminDashboardPage',
+    'AdminInstancePlanPage',
 ]
