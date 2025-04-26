@@ -68,12 +68,14 @@ const InstancePlanManagePage: React.FC = () => {
                                 variant="secondary"
                                 label="Edit"
                                 onClick={() => openUpdateModal(plan)}
+                                data-testid={`instance-plan-edit-${plan.instance_package_name}`}
                             />
                             <Button
                                 icon={<TrashIcon className="w-4 h-4" />}
                                 variant="danger"
                                 label="Delete"
                                 onClick={() => openDeleteModal(plan)}
+                                data-testid={`instance-plan-delete-${plan.instance_package_name}`}
                             />
                         </>
                     ) : (
@@ -82,6 +84,7 @@ const InstancePlanManagePage: React.FC = () => {
                             variant="info"
                             label="View"
                             onClick={() => openViewModal(plan)}
+                            data-testid={`instance-plan-view-${plan.instance_package_name}`}
                         />
                     )}
                 </div>
@@ -109,6 +112,7 @@ const InstancePlanManagePage: React.FC = () => {
                             placeholder="Enter package name"
                             error={errors.instance_package_name?.message}
                             disabled={isViewOnly}
+                            data-testid="instance-plan-package-name-modal"
                         />
                     )}
                 />
@@ -124,6 +128,7 @@ const InstancePlanManagePage: React.FC = () => {
                                 onChange={field.onChange}
                                 disabled={true}
                                 className="opacity-70"
+                                data-testid="instance-plan-id-modal"
                             />
                         )}
                     />
@@ -146,6 +151,7 @@ const InstancePlanManagePage: React.FC = () => {
                                 placeholder="Enter vCPU amount"
                                 error={errors.vcpu_amount?.message}
                                 disabled={isViewOnly}
+                                data-testid="instance-plan-vcpu-amount-modal"
                             />
                         )}
                     />
@@ -166,6 +172,7 @@ const InstancePlanManagePage: React.FC = () => {
                                 placeholder="Enter RAM amount"
                                 error={errors.ram_amount?.message}
                                 disabled={isViewOnly}
+                                data-testid="instance-plan-ram-amount-modal"
                             />
                         )}
                     />
@@ -188,6 +195,7 @@ const InstancePlanManagePage: React.FC = () => {
                                 placeholder="Enter storage amount"
                                 error={errors.storage_amount?.message}
                                 disabled={isViewOnly}
+                                data-testid="instance-plan-storage-amount-modal"
                             />
                         )}
                     />
@@ -209,6 +217,7 @@ const InstancePlanManagePage: React.FC = () => {
                                 placeholder="Enter hourly cost"
                                 error={errors.cost_hour?.message}
                                 disabled={isViewOnly}
+                                data-testid="instance-plan-cost-hour-modal"
                             />
                         )}
                     />
@@ -229,12 +238,14 @@ const InstancePlanManagePage: React.FC = () => {
                         label="Cancel"
                         variant="outline"
                         onClick={closeModal}
+                        data-testid="instance-plan-cancel-create-modal"
                     />
                     <Button
                         label={isSubmitting ? "Creating..." : "Create Plan"}
                         variant="purple"
                         onClick={createForm.handleSubmit(handleCreatePlan)}
                         disabled={isSubmitting}
+                        data-testid="instance-plan-create-modal"
                     />
                 </>
             }
@@ -255,12 +266,14 @@ const InstancePlanManagePage: React.FC = () => {
                         label="Cancel"
                         variant="outline"
                         onClick={closeModal}
+                        data-testid="instance-plan-cancel-update-modal"
                     />
                     <Button
                         label={isSubmitting ? "Updating..." : "Update Plan"}
                         variant="purple"
                         onClick={updateForm.handleSubmit(handleUpdatePlan)}
                         disabled={isSubmitting}
+                        data-testid="instance-plan-update-modal"
                     />
                 </>
             }
@@ -280,6 +293,7 @@ const InstancePlanManagePage: React.FC = () => {
                     label="Close"
                     variant="outline"
                     onClick={closeModal}
+                    data-testid="instance-plan-close-view-modal"
                 />
             }
         >
@@ -300,12 +314,14 @@ const InstancePlanManagePage: React.FC = () => {
                         label="Cancel"
                         variant="outline"
                         onClick={closeModal}
+                        data-testid="instance-plan-cancel-delete-modal"
                     />
                     <Button
                         label={isSubmitting ? "Deleting..." : "Delete Plan"}
                         variant="danger"
                         onClick={deleteForm.handleSubmit(handleDeletePlan)}
                         disabled={isSubmitting}
+                        data-testid="instance-plan-delete-modal"
                     />
                 </>
             }
@@ -322,7 +338,7 @@ const InstancePlanManagePage: React.FC = () => {
     ), [modalType, closeModal, isSubmitting, deleteForm, handleDeletePlan, selectedPlan])
 
     const headerContent = useMemo(() => (
-        <Button label="Create Instance Plan" variant="purple" onClick={openCreateModal} />
+        <Button label="Create Instance Plan" variant="purple" data-testid="create-instance-plan" onClick={openCreateModal} />
     ), [openCreateModal])
 
     return (
@@ -341,6 +357,7 @@ const InstancePlanManagePage: React.FC = () => {
                     onCreateNew={openCreateModal}
                     keyExtractor={(plan) => plan.instance_plan_id.toString()}
                     unit="plan"
+                    data-testid="instance-plan"
                 />
             </PageContainer>
 
