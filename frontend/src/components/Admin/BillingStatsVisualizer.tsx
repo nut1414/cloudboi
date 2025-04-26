@@ -31,7 +31,7 @@ const BillingStatsVisualizer: React.FC<BillingStatsVisualizerProps> = React.memo
   const createStatusItem = useCallback((status: string, amount: number) => ({
     label: status,
     value: (
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between" data-testid={`billing-stats-visualizer-status-item-${status}`}>
         <StatusBadge status={status} />
         <span className="font-semibold">{CURRENCY.FORMAT(amount)}</span>
       </div>
@@ -123,13 +123,14 @@ const BillingStatsVisualizer: React.FC<BillingStatsVisualizerProps> = React.memo
         key={index}
         title={statItem.title}
         rightHeader={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2" data-testid={`billing-stats-visualizer-right-header-${statItem.type}`}>
             {statItem.icon}
             <span className="font-bold text-white">{CURRENCY.FORMAT(statItem.totalAmount)}</span>
           </div>
         }
         detailItems={statItem.detailItems}
         className="h-full"
+        data-testid={`billing-stats-visualizer-item-${statItem.type}`}
       />
     ))
   , [getDetailItems, CURRENCY.FORMAT])
