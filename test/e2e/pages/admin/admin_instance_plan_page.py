@@ -74,6 +74,9 @@ class AdminInstancePlanPage(BasePage):
     
     def click_table_button(self, button_name: str, plan_name: str):
         self.table_buttons[f"get_{button_name}_button"](plan_name).click()
+    
+    def table_button_should_not_be_visible(self, button_name: str, plan_name: str):
+        expect(self.table_buttons[f"get_{button_name}_button"](plan_name)).not_to_be_visible()
         
     def table_row_should_have_info(self, data: InstancePlanData):
         row = self.get_table_row(data.instance_package_name)

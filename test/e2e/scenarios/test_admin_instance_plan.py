@@ -105,6 +105,8 @@ class TestAdminInstancePlan:
         admin_instance_plan_page = AdminInstancePlanPage(page)
         admin_instance_plan_page.navigate()
 
+        admin_instance_plan_page.table_button_should_not_be_visible("edit", test_user_instance.instance_plan.instance_package_name)
+        admin_instance_plan_page.table_button_should_not_be_visible("delete", test_user_instance.instance_plan.instance_package_name)
         admin_instance_plan_page.click_table_button("view", test_user_instance.instance_plan.instance_package_name)
         admin_instance_plan_page.modal_should_have_info(test_user_instance.instance_plan)
         admin_instance_plan_page.modal_all_fields_should_be_disabled()
