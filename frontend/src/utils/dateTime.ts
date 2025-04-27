@@ -89,6 +89,15 @@ export const formatUptime = (startDate: Date | string | null | undefined, isRunn
 }
 
 /**
+ * Converts a local date to UTC by applying the timezone offset
+ * @param date The local date to convert to UTC
+ * @returns A new Date object representing the UTC time
+ */
+export const convertToUTC = (date: Date): Date => {
+    return new Date(date.getTime() + (date.getTimezoneOffset() * 60000))
+}
+
+/**
  * Gets the first day of a given month and year
  */
 export const getFirstDayOfMonth = (year: number, month: number): Date => {

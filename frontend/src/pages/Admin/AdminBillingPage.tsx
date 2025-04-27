@@ -35,7 +35,7 @@ const AdminBillingPage: React.FC = () => {
         {
             key: 'date',
             label: 'Date',
-            render: (transaction) => formatStandardDate(transaction.last_updated_at, "N/A")
+            render: (transaction) => (transaction.last_updated_at || "N/A")
         },
         {
             key: 'username',
@@ -82,6 +82,7 @@ const AdminBillingPage: React.FC = () => {
                         variant="secondary"
                         onClick={() => handleViewInstance(transaction.username, transaction.instance_name || '')}
                         size="small"
+                        data-testid={`view-instance-${transaction.username}-${transaction.instance_name}`}
                     /> : <></>
             )
         }

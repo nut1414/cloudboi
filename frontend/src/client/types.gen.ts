@@ -104,8 +104,8 @@ export type AdminTransactionResponse = {
     transaction_type: TransactionType;
     transaction_status: TransactionStatus;
     amount: number;
-    created_at: Date;
-    last_updated_at: Date;
+    created_at: string;
+    last_updated_at: string;
 };
 
 export type AdminUser = {
@@ -659,27 +659,6 @@ export const AdminUsersResponseModelResponseTransformer: AdminUsersResponseModel
 
 export const AdminGetAllUsersResponseTransformer: AdminGetAllUsersResponseTransformer = async (data) => {
     AdminUsersResponseModelResponseTransformer(data);
-    return data;
-};
-
-export type AdminGetAllTransactionsResponseTransformer = (data: any) => Promise<AdminGetAllTransactionsResponse>;
-
-export type AdminTransactionResponseModelResponseTransformer = (data: any) => AdminTransactionResponse;
-
-export const AdminTransactionResponseModelResponseTransformer: AdminTransactionResponseModelResponseTransformer = data => {
-    if (data?.created_at) {
-        data.created_at = new Date(data.created_at);
-    }
-    if (data?.last_updated_at) {
-        data.last_updated_at = new Date(data.last_updated_at);
-    }
-    return data;
-};
-
-export const AdminGetAllTransactionsResponseTransformer: AdminGetAllTransactionsResponseTransformer = async (data) => {
-    if (Array.isArray(data)) {
-        data.forEach(AdminTransactionResponseModelResponseTransformer);
-    }
     return data;
 };
 
