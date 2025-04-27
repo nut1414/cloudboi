@@ -27,7 +27,7 @@ services:
       context: ../../frontend
       dockerfile: ${FRONTEND_DOCKERFILE:-Dockerfile}
       args:
-        - VITE_API_URL=${API_URL:-localhost:80}
+        - VITE_API_URL=${API_URL}
         - VITE_APP_ENV=${APP_ENV:-dev}
         - NODE_ENV=${APP_ENV:-dev}
     expose:
@@ -37,7 +37,7 @@ services:
       - cloudboi_fe-node_modules:/app/node_modules
       - cloudboi_fe-dist:/app/dist
     environment:
-      - VITE_API_URL=${API_URL:-localhost:80}
+      - VITE_API_URL=${API_URL}
       - VITE_APP_ENV=${APP_ENV:-dev}
       - NODE_ENV=${APP_ENV:-dev}
     depends_on:

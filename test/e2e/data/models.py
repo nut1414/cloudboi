@@ -43,12 +43,12 @@ class InstancePlanData:
     """
     Data model for instance plan fixture data used in instance management tests.
     """
-    instance_plan_id: int
     instance_package_name: str
     vcpu_amount: int
     ram_amount: int
     storage_amount: int
     cost_hour: float
+    instance_plan_id: Optional[int] = None
 
 @dataclass
 class OsTypeData:
