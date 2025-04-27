@@ -45,6 +45,14 @@ def format_datetime(dt: datetime, use_bangkok_tz: bool = True) -> str:
         dt = to_bangkok_timezone(dt)
     return dt.strftime("%Y-%m-%d %H:%M:%S")
 
+def format_date(dt: datetime, use_bangkok_tz: bool = True) -> str:
+    """
+    Format datetime to the specified format: 'YYYY-MM-DD'
+    """
+    if use_bangkok_tz:
+        dt = to_bangkok_timezone(dt)
+    return dt.strftime("%Y-%m-%d")
+
 def format_datetime_for_billing(dt: datetime, use_bangkok_tz: bool = True) -> str:
     """
     Format datetime specifically for billing date format expected by the application
@@ -60,30 +68,37 @@ def format_datetime_for_billing(dt: datetime, use_bangkok_tz: bool = True) -> st
         dt = to_bangkok_timezone(dt)
     return dt.strftime("%Y-%m-%d %H:%M:%S")
 
-def now_formatted(use_bangkok_tz: bool = True) -> str:
+def now_formatted(use_bangkok_tz: bool = True, date_only: bool = False) -> str:
     """
-    Get current datetime formatted as 'YYYY-MM-DD HH:MM:SS'
+    Get current datetime formatted as 'YYYY-MM-DD HH:MM:SS' or 'YYYY-MM-DD'
     
     Args:
         use_bangkok_tz: Whether to convert to Bangkok timezone (default: True)
+        date_only: Whether to return date only format (default: False)
         
     Returns:
         Current datetime formatted as string
     """
+    if date_only:
+        return format_date(datetime.now(), use_bangkok_tz)
     return format_datetime(datetime.now(), use_bangkok_tz)
 
-def future_date_formatted(days_from_now: int = 30, use_bangkok_tz: bool = True) -> str:
+def future_date_formatted(days_from_now: int = 30, use_bangkok_tz: bool = True, date_only: bool = False) -> str:
     """
-    Get a future date formatted as 'YYYY-MM-DD HH:MM:SS'
+    Get a future date formatted as 'YYYY-MM-DD HH:MM:SS' or 'YYYY-MM-DD'
     
     Args:
         days_from_now: Number of days in the future (default: 30)
         use_bangkok_tz: Whether to convert to Bangkok timezone (default: True)
+        date_only: Whether to return date only format (default: False)
         
     Returns:
         Future date formatted as string
     """
-    return format_datetime(datetime.now() + timedelta(days=days_from_now), use_bangkok_tz)
+    future_date = datetime.now() + timedelta(days=days_from_now)
+    if date_only:
+        return format_date(future_date, use_bangkok_tz)
+    return format_datetime(future_date, use_bangkok_tz)
 
 def extract_datetime_from_text(text: str) -> str:
     """
@@ -145,4 +160,50 @@ def compare_datetimes_with_tolerance(dt1_str: str, dt2_str: str, tolerance_minut
     difference = abs((dt1 - dt2).total_seconds())
     tolerance_seconds = tolerance_minutes * 60
     
-    return difference <= tolerance_seconds 
+    return difference <= tolerance_seconds
+
+def format_month_short(dt: datetime, use_bangkok_tz: bool = True) -> str:
+    """
+    Format datetime to get 3-letter month abbreviation (Jan, Feb, etc.)
+    
+    Args:
+        dt: The datetime object to format
+        use_bangkok_tz: Whether to convert to Bangkok timezone first (default: True)
+        
+    Returns:
+        3-letter month abbreviation (e.g., 'Jan', 'Feb')
+    """
+    if use_bangkok_tz:
+        dt = to_bangkok_timezone(dt)
+    return dt.strftime("%b")
+
+def get_current_month_short(use_bangkok_tz: bool = True) -> str:
+    """
+    Get current month as 3-letter abbreviation (Jan, Feb, etc.)
+    
+    Args:
+        use_bangkok_tz: Whether to convert to Bangkok timezone (default: True)
+        
+    Returns:
+        Current month as 3-letter abbreviation
+    """
+    return format_month_short(datetime.now(), use_bangkok_tz)
+
+def get_month_short(months_from_now: int = 0, use_bangkok_tz: bool = True) -> str:
+    """
+    Get month abbreviation for a month relative to current month
+    
+    Args:
+        months_from_now: Number of months from current month (negative for past, positive for future)
+        use_bangkok_tz: Whether to convert to Bangkok timezone (default: True)
+        
+    Returns:
+        Month as 3-letter abbreviation (e.g., 'Jan', 'Feb')
+    """
+    current_date = datetime.now()
+    # Add years and adjust month
+    year_offset = (current_date.month + months_from_now - 1) // 12
+    month = (current_date.month + months_from_now - 1) % 12 + 1
+    
+    target_date = current_date.replace(year=current_date.year + year_offset, month=month, day=1)
+    return format_month_short(target_date, use_bangkok_tz)

@@ -95,6 +95,7 @@ class AdminTransactionData(TransactionData):
     """
     instance_name: str = None
     username: str = None
+    last_updated_at: Optional[str] = None
 
 @dataclass
 class AdminBillingStatsSubscriptionData:
