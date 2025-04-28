@@ -45,6 +45,7 @@ class AdminBillingPage(BasePage):
 
         self.transaction_table = {
             "table": page.get_by_test_id("transactions-table-table"),
+            "rows": page.locator("table[data-testid='transactions-table-table'] tbody tr"),
         }
     
     def click_billing_stats_filter_button(self, filter_type: str):
@@ -97,11 +98,8 @@ class AdminBillingPage(BasePage):
             row_index: The index of the row to check (0-based index)
             tolerance_minutes: Tolerance in minutes for datetime comparison (default: 2)
         """
-        # Get the rows in the table
-        rows = self.page.locator("table[data-testid='transactions-table-table'] tbody tr")
-        
         # Get the specific row by index
-        row = rows.nth(row_index)
+        row = self.transaction_table["rows"].nth(row_index)
         
         # Make sure the row exists
         expect(row).to_be_visible()
@@ -156,11 +154,8 @@ class AdminBillingPage(BasePage):
             transactions: The list of expected transaction data in the expected order
             tolerance_minutes: Tolerance in minutes for datetime comparison (default: 2)
         """
-        # Get the rows in the table
-        rows = self.page.locator("table[data-testid='transactions-table-table'] tbody tr")
-        
         # Check the row count
-        expect(rows).to_have_count(len(transactions))
+        expect(self.transaction_table["rows"]).to_have_count(len(transactions))
         
         # Check each row
         for i, transaction in enumerate(transactions):
@@ -173,11 +168,8 @@ class AdminBillingPage(BasePage):
         Args:
             row_index: The index of the row to click the button for (0-based index)
         """
-        # Get the rows in the table
-        rows = self.page.locator("table[data-testid='transactions-table-table'] tbody tr")
-        
         # Get the specific row by index
-        row = rows.nth(row_index)
+        row = self.transaction_table["rows"].nth(row_index)
         
         # Make sure the row exists
         expect(row).to_be_visible()

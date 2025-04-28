@@ -1,5 +1,5 @@
 // src/hooks/useInstanceList.ts
-import { useEffect, useState, useCallback, useMemo } from "react"
+import { useEffect, useState, useCallback, useMemo, useRef } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { useInstance, INSTANCE_ACTIONS } from "../../contexts/instanceContext"
 import { InstanceService, UserInstanceResponse } from "../../client"
@@ -15,6 +15,7 @@ export const useInstanceList = () => {
     const { userName } = useParams<{ userName: string }>()
     const [searchQuery, setSearchQuery] = useState("")
     const navigate = useNavigate()
+    const prevUserNameRef = useRef<string | undefined>(undefined)
 
     // Fetch instances data
     const fetchInstances = useCallback(async () => {
@@ -37,10 +38,11 @@ export const useInstanceList = () => {
 
     // Initial data load
     useEffect(() => {
-        if (!userInstances) {
+        if (!userInstances || (userName && prevUserNameRef.current !== userName)) {
             fetchInstances()
+            prevUserNameRef.current = userName
         }
-    }, [userInstances, fetchInstances])
+    }, [userInstances, fetchInstances, userName])
 
     // Filter instances based on search query
     const filteredInstances = useMemo(() => {
