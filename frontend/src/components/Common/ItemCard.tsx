@@ -177,6 +177,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
           <div
             className={`flex justify-between items-center bg-[#192A51] py-2 px-4 border-b border-blue-900/30 ${isCollapsible ? 'cursor-pointer' : ''}`}
             onClick={handleToggleClick}
+            data-testid={dataTestId ? `${dataTestId}-item-card-header` : undefined}
           >
             <div className="flex items-center space-x-2">
               {isCollapsible && (
