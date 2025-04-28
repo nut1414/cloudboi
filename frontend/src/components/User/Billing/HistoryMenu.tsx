@@ -15,10 +15,8 @@ const HistoryMenu: React.FC = () => {
     } = useUserBilling()
 
     useEffect(() => {
-        if (!userTransactions) {
-            fetchTransactions()
-        }
-    }, [fetchTransactions, userTransactions])
+        fetchTransactions()
+    }, [fetchTransactions])
 
     const columns: TableColumn<UserTransactionResponse>[] = [
         {

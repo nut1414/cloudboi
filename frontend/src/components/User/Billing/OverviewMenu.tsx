@@ -11,10 +11,8 @@ const OverviewMenu: React.FC = () => {
     const isZeroSubscription = userBillingOverview?.upcoming_payment?.total_subscription === 0
 
     useEffect(() => {
-        if (!userBillingOverview) {
-            fetchBillingOverview()
-        }
-    }, [fetchBillingOverview, userBillingOverview])
+        fetchBillingOverview()
+    }, [fetchBillingOverview])
 
     // Memoize the estimate usage and paid components
     const EstimateUsagePaid = useMemo(() => {
