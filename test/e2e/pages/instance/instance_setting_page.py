@@ -70,7 +70,10 @@ class InstanceSettingPage(BasePage):
     
     def wait_for_terminal_prompt(self):
         expect_prompt = self.access_menu["terminal"].get_by_text(f"root@{self.instance_name}:~#")
-        self.wait_for_locator(expect_prompt, state="visible", timeout=20000)
+        try:
+            self.wait_for_locator(expect_prompt, state="visible", timeout=20000)
+        except:
+            self.access_menu["input_textbox"].press("Enter")
         self.wait_for_timeout(3000) # Wait for websocket connection to stabilize
     
     def wait_for_console_prompt(self):

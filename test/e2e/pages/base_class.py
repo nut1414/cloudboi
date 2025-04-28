@@ -154,4 +154,7 @@ class BasePage:
         if toast_type not in toast_map:
             raise ValueError(f"Invalid toast type: {toast_type}. Valid options are: {', '.join(toast_map.keys())}")
             
-        return self.wait_for_locator(toast_map[toast_type], state="visible", timeout=timeout)
+        try:
+            self.wait_for_locator(toast_map[toast_type], state="visible", timeout=timeout)
+        except:
+            expect(toast_map[toast_type]).to_be_visible()
