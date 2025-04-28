@@ -207,3 +207,16 @@ def get_month_short(months_from_now: int = 0, use_bangkok_tz: bool = True) -> st
     
     target_date = current_date.replace(year=current_date.year + year_offset, month=month, day=1)
     return format_month_short(target_date, use_bangkok_tz)
+
+def format_date_for_instance_card(date_str: str) -> str:
+    """
+    Format date string from 'YYYY-MM-DD' to 'M/D/YYYY' format for instance cards
+    
+    Args:
+        date_str: Date string in 'YYYY-MM-DD' format
+        
+    Returns:
+        Date string in 'M/D/YYYY' format
+    """
+    dt = datetime.strptime(date_str, "%Y-%m-%d")
+    return dt.strftime("%-m/%-d/%Y")

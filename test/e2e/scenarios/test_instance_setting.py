@@ -8,6 +8,7 @@ from ..pages.instance import InstanceListPage, InstanceSettingPage
 from ..data.models import InstancePlanData, OsTypeData, UserData, UserInstanceData
 from ..registry.actions import ActionRegistry, TestData
 from ..api.client import ApiClient
+from ..utils.datetime_utils import now_formatted
 
 @pytest.fixture(scope="module")
 def test_instance_plan() -> InstancePlanData:
@@ -40,8 +41,8 @@ def test_user_instance(
         lxd_node_name="test-lxd-node-name",
         status="running",
         root_password="Password123!",
-        created_at=datetime.now(),
-        last_updated_at=datetime.now()
+        created_at=now_formatted(),
+        last_updated_at=now_formatted()
     )
 
 # Using before_all and after_all for class-level setup and teardown
