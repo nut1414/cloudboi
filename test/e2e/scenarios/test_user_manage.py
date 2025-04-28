@@ -143,8 +143,7 @@ class TestUserManage:
         user_manage_page.instance_card_should_have_data(test_users_detail_data[0].instances[0])
         user_manage_page.click_instance_card_header(test_users_detail_data[0].instances[1].hostname)
         user_manage_page.instance_card_should_have_data(test_users_detail_data[0].instances[1])
-    
-    @pytest.mark.smokey
+
     def test_user_manage_navigation_buttons_should_work_correctly(self, page: Page, test_users_detail_data: list[AdminUserDetailData]) -> None:
         user_manage_page = UserManagePage(page)
         user_manage_page.navigate()
