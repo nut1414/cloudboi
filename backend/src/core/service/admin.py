@@ -82,7 +82,7 @@ class AdminService:
             # DateTimeUtils.from_string already localizes the datetime to UTC
             start_dt = DateTimeUtils.from_string(start_date)
             end_dt = DateTimeUtils.from_string(end_date)
-            
+
             # Validate that end date is after start date
             if end_dt <= start_dt:
                 raise ValueError("End date must be after start date")
@@ -102,8 +102,11 @@ class AdminService:
         for transaction, user, instance in transactions_with_details:
             # Get instance name if instance exists
             instance_name = None
-            if instance:
-                instance_name = instance.hostname
+            if transaction.transaction_type == TransactionType.SUBSCRIPTION_PAYMENT:
+                if instance:
+                    instance_name = instance.hostname
+                else:
+                    instance_name = "Deleted Instance"
                 
             response.append(AdminTransactionResponse(
                 transaction_id=transaction.transaction_id,
@@ -112,8 +115,8 @@ class AdminService:
                 transaction_type=transaction.transaction_type,
                 transaction_status=transaction.transaction_status,
                 amount=transaction.amount,
-                created_at=transaction.created_at,
-                last_updated_at=transaction.last_updated_at
+                created_at=DateTimeUtils.to_bkk_string(transaction.created_at),  
+                last_updated_at=DateTimeUtils.to_bkk_string(transaction.last_updated_at)
             ))
         
         return response

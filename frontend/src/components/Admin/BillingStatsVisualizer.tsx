@@ -31,7 +31,7 @@ const BillingStatsVisualizer: React.FC<BillingStatsVisualizerProps> = React.memo
   const createStatusItem = useCallback((status: string, amount: number) => ({
     label: status,
     value: (
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between" data-testid={`billing-stats-visualizer-status-item-${status}`}>
         <StatusBadge status={status} />
         <span className="font-semibold">{CURRENCY.FORMAT(amount)}</span>
       </div>
@@ -92,18 +92,29 @@ const BillingStatsVisualizer: React.FC<BillingStatsVisualizerProps> = React.memo
   ), [])
 
   // Memoize the rendered items when loading
-  const renderSkeletonItems = useMemo(() => 
-    placeholderItems.map((item, index) => (
+  const renderSkeletonItems = useMemo(() => {
+    // Find the maximum number of detail items across all transaction types
+    const maxDetailItemCount = Math.max(
+      ...placeholderItems.map(item => item.detailItems.length)
+    )
+    
+    // Create a simple placeholder with no details
+    const emptyDetailItems = Array(maxDetailItemCount).fill(0).map(() => ({
+      label: "",
+      value: ""
+    }))
+    
+    return placeholderItems.map((item, index) => (
       <ItemCard
         key={`skeleton-${index}`}
         title={item.title}
         rightHeader={item.rightHeader}
-        detailItems={item.detailItems}
+        detailItems={emptyDetailItems}
         className="h-full"
         isLoading={true}
       />
     ))
-  , [placeholderItems])
+  }, [placeholderItems])
 
   // Memoize the rendered items when loaded
   const renderDetailItems = useMemo(() => 
@@ -112,13 +123,14 @@ const BillingStatsVisualizer: React.FC<BillingStatsVisualizerProps> = React.memo
         key={index}
         title={statItem.title}
         rightHeader={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2" data-testid={`billing-stats-visualizer-right-header-${statItem.type}`}>
             {statItem.icon}
             <span className="font-bold text-white">{CURRENCY.FORMAT(statItem.totalAmount)}</span>
           </div>
         }
         detailItems={statItem.detailItems}
         className="h-full"
+        data-testid={`billing-stats-visualizer-item-${statItem.type}`}
       />
     ))
   , [getDetailItems, CURRENCY.FORMAT])

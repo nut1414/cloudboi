@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { MESSAGE_TYPES } from "../constant/TerminalConstant"
-import useToast from "./useToast";
+import useToast from "./useToast"
 
 // Base WebSocket hook for terminal/console connections
 export const useWebSocketBase = (

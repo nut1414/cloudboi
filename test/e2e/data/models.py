@@ -87,3 +87,28 @@ class TransactionData:
     user_id: Optional[uuid.UUID] = None
     created_at: Optional[str] = None
     last_updated_at: Optional[str] = None
+
+@dataclass
+class AdminTransactionData(TransactionData):
+    """
+    Data model for admin transaction fixture data used in admin transaction tests.
+    """
+    instance_name: str = None
+    username: str = None
+    last_updated_at: Optional[str] = None
+
+@dataclass
+class AdminBillingStatsSubscriptionData:
+    scheduled_amount: float
+    paid_amount: float
+    overdue_amount: float
+    expired_amount: float
+    total_amount: float
+
+@dataclass
+class AdminBillingStatsTopUpData:
+    pending_amount: float
+    failed_amount: float
+    success_amount: float
+    total_amount: float
+
