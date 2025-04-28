@@ -1,9 +1,9 @@
-import { useNotification } from '../contexts/NotificationContext';
+import { useNotification } from '../contexts/NotificationContext'
 
-export type ToastType = 'success' | 'error' | 'info' | 'warning';
+export type ToastType = 'success' | 'error' | 'info' | 'warning'
 
 const useToast = () => {
-  const { addNotification } = useNotification();
+  const { addNotification } = useNotification()
 
   const showToast = (
     message: string,
@@ -11,8 +11,8 @@ const useToast = () => {
     autoDismiss = true,
     duration = 5000
   ) => {
-    addNotification(type, message, autoDismiss, duration);
-  };
+    addNotification(type, message, autoDismiss, duration)
+  }
 
   const toast = {
     success: (message: string, autoDismiss = true, duration = 5000) => 
@@ -26,9 +26,9 @@ const useToast = () => {
     
     warning: (message: string, autoDismiss = true, duration = 5000) => 
       showToast(message, 'warning', autoDismiss, duration),
-  };
+  }
 
-  return toast;
-};
+  return toast
+}
 
-export default useToast; 
+export default useToast 

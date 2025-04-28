@@ -1,10 +1,10 @@
-import { Requirement } from '../components/Common/RequirementsChecklist';
+import { Requirement } from '../components/Common/RequirementsChecklist'
 
 // Define the password requirement with test function
 interface PasswordRequirement {
-    key: string;
-    label: string;
-    test: (pwd: string) => boolean;
+    key: string
+    label: string
+    test: (pwd: string) => boolean
 }
 
 // Base password requirements definition
@@ -14,7 +14,7 @@ export const passwordRequirementRules: PasswordRequirement[] = [
     { key: 'lowercase', label: 'Lowercase letter', test: (pwd: string) => /[a-z]/.test(pwd) },
     { key: 'number', label: 'Number', test: (pwd: string) => /[0-9]/.test(pwd) },
     { key: 'special', label: 'Special character', test: (pwd: string) => /[!@#$%^&*()_+\-=\[\]{}':"\\|,.<>\/?]/.test(pwd) }
-];
+]
 
 /**
  * Generates requirement objects with passed status for password validation
@@ -26,8 +26,8 @@ export const getPasswordRequirements = (password: string): Requirement[] => {
         key,
         label,
         passed: test(password)
-    }));
-};
+    }))
+}
 
 /**
  * Checks if a password meets all requirements
@@ -35,5 +35,5 @@ export const getPasswordRequirements = (password: string): Requirement[] => {
  * @returns Boolean indicating if all requirements are met
  */
 export const isPasswordValid = (password: string): boolean => {
-    return passwordRequirementRules.every(({ test }) => test(password));
-}; 
+    return passwordRequirementRules.every(({ test }) => test(password))
+} 

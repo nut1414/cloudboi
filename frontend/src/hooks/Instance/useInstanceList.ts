@@ -35,12 +35,10 @@ export const useInstanceList = () => {
         }
     }, [dispatch, userName])
 
-    // Initial data load
+    // Fetch instances on mount and when username changes
     useEffect(() => {
-        if (!userInstances) {
-            fetchInstances()
-        }
-    }, [userInstances, fetchInstances])
+        fetchInstances()
+    }, [fetchInstances])
 
     // Filter instances based on search query
     const filteredInstances = useMemo(() => {

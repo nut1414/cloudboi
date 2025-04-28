@@ -39,8 +39,8 @@ class AdminTransactionResponse(BaseModel):
     transaction_type: TransactionType
     transaction_status: TransactionStatus
     amount: float
-    created_at: datetime
-    last_updated_at: datetime
+    created_at: str
+    last_updated_at: str
 
 class AdminInstancePlan(InstancePlan):
     is_editable: bool

@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react"
 import { useWebSocketBase } from "../useWebSocketBase"
 import { InstanceService } from "../../client"
-import { Terminal } from "xterm";
-import useToast from "../useToast";
+import { Terminal } from "xterm"
+import useToast from "../useToast"
 
 // Hook for managing WebSocket connection for console
 export const useConsoleWebSocket = (

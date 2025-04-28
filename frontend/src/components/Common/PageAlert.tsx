@@ -1,14 +1,14 @@
-import React from 'react';
-import Alert from './Alert';
+import React from 'react'
+import Alert from './Alert'
 
-type AlertType = 'success' | 'error' | 'info' | 'warning';
+type AlertType = 'success' | 'error' | 'info' | 'warning'
 
 interface PageAlertProps {
-  type: AlertType;
-  title?: string;
-  message: string | React.ReactNode;
-  className?: string;
-  onClose?: () => void;
+  type: AlertType
+  title?: string
+  message: string | React.ReactNode
+  className?: string
+  onClose?: () => void
 }
 
 /**
@@ -47,7 +47,7 @@ const PageAlert: React.FC<PageAlertProps> = ({
         } 
       />
     </div>
-  );
-};
+  )
+}
 
-export default PageAlert; 
+export default PageAlert 
