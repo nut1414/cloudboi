@@ -9,9 +9,9 @@ import useToast from "../useToast"
 
 // Define form type for date range
 type DateRangeFormType = {
-    isAllTime: boolean;
-    startDate: Date | null;
-    endDate: Date | null;
+    isAllTime: boolean
+    startDate: Date | null
+    endDate: Date | null
 }
 
 export const useAdminBilling = () => {

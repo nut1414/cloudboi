@@ -1,19 +1,19 @@
-import React from 'react';
-import { ArrowPathIcon } from '@heroicons/react/24/outline';
+import React from 'react'
+import { ArrowPathIcon } from '@heroicons/react/24/outline'
 
 interface StatusHeaderProps {
-  connected: boolean;
-  instanceName: string;
-  error?: string;
-  type?: string;
+  connected: boolean
+  instanceName: string
+  error?: string
+  type?: string
 }
 
 interface StatusMessageProps {
-  isRunning: boolean;
-  connected: boolean;
-  error?: string;
-  isBufferLoaded?: boolean;
-  type?: 'terminal' | 'console';
+  isRunning: boolean
+  connected: boolean
+  error?: string
+  isBufferLoaded?: boolean
+  type?: 'terminal' | 'console'
 }
 
 export const StatusHeader: React.FC<StatusHeaderProps> = ({ 
@@ -47,8 +47,8 @@ export const StatusHeader: React.FC<StatusHeaderProps> = ({
         {instanceName}{type ? ` - ${type}` : ''}
       </div>
     </div>
-  );
-};
+  )
+}
 
 export const StatusMessage: React.FC<StatusMessageProps> = ({ 
   isRunning, 
@@ -64,7 +64,7 @@ export const StatusMessage: React.FC<StatusMessageProps> = ({
           <span className="text-gray-300">{type === 'terminal' ? 'Terminal' : 'Console'} unavailable - <span className="text-red-400 font-medium">Instance not running</span></span>
         </div>
       </div>
-    );
+    )
   }
   
   if (!connected && !error) {
@@ -81,11 +81,11 @@ export const StatusMessage: React.FC<StatusMessageProps> = ({
           </span>
         </div>
       </div>
-    );
+    )
   }
   
-  return null;
-};
+  return null
+}
 
 export const StatusFooter: React.FC<{type?: 'terminal' | 'console'}> = ({ type = 'terminal' }) => {
   return (
@@ -94,5 +94,5 @@ export const StatusFooter: React.FC<{type?: 'terminal' | 'console'}> = ({ type =
         ? 'Instance Text Console - Press Ctrl+C to cancel, Ctrl+D to exit'
         : 'Instance Terminal - Press Ctrl+C to cancel, Ctrl+D to exit'}
     </div>
-  );
-}; 
+  )
+} 

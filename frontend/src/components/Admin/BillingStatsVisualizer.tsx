@@ -96,13 +96,13 @@ const BillingStatsVisualizer: React.FC<BillingStatsVisualizerProps> = React.memo
     // Find the maximum number of detail items across all transaction types
     const maxDetailItemCount = Math.max(
       ...placeholderItems.map(item => item.detailItems.length)
-    );
+    )
     
     // Create a simple placeholder with no details
     const emptyDetailItems = Array(maxDetailItemCount).fill(0).map(() => ({
       label: "",
       value: ""
-    }));
+    }))
     
     return placeholderItems.map((item, index) => (
       <ItemCard
@@ -113,8 +113,8 @@ const BillingStatsVisualizer: React.FC<BillingStatsVisualizerProps> = React.memo
         className="h-full"
         isLoading={true}
       />
-    ));
-  }, [placeholderItems]);
+    ))
+  }, [placeholderItems])
 
   // Memoize the rendered items when loaded
   const renderDetailItems = useMemo(() => 

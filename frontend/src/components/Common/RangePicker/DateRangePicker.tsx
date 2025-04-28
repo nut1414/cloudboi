@@ -15,7 +15,7 @@ interface DateRangePickerProps {
   className?: string
 }
 
-type FilterType = 'allTime' | 'customDate' | 'month';
+type FilterType = 'allTime' | 'customDate' | 'month'
 
 const DateRangePicker: React.FC<DateRangePickerProps> = React.memo(({
   isAllTime,

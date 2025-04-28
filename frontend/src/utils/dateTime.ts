@@ -101,37 +101,37 @@ export const convertToUTC = (date: Date): Date => {
  * Gets the first day of a given month and year
  */
 export const getFirstDayOfMonth = (year: number, month: number): Date => {
-    return new Date(year, month, 1);
+    return new Date(year, month, 1)
 }
 
 /**
  * Gets the last day of a given month and year
  */
 export const getLastDayOfMonth = (year: number, month: number): Date => {
-    return new Date(year, month + 1, 0);
+    return new Date(year, month + 1, 0)
 }
 
 /**
  * Formats a month for input fields in YYYY-MM format
  */
 export const formatMonthForInput = (date: Date | null): string => {
-    if (!date) return '';
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    return `${year}-${month}`;
+    if (!date) return ''
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    return `${year}-${month}`
 }
 
 /**
  * Parses a month input (YYYY-MM) and returns first and last day of that month
  */
 export const getMonthDateRange = (monthInput: string): { start: Date, end: Date } | null => {
-    if (!monthInput) return null;
+    if (!monthInput) return null
     
-    const [year, month] = monthInput.split('-').map(Number);
-    if (isNaN(year) || isNaN(month) || month < 1 || month > 12) return null;
+    const [year, month] = monthInput.split('-').map(Number)
+    if (isNaN(year) || isNaN(month) || month < 1 || month > 12) return null
     
-    const start = getFirstDayOfMonth(year, month - 1);
-    const end = getLastDayOfMonth(year, month - 1);
+    const start = getFirstDayOfMonth(year, month - 1)
+    const end = getLastDayOfMonth(year, month - 1)
     
-    return { start, end };
+    return { start, end }
 } 

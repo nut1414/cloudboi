@@ -1,21 +1,21 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDownIcon } from '@heroicons/react/24/outline';
+import React, { useState, useRef, useEffect } from 'react'
+import { ChevronDownIcon } from '@heroicons/react/24/outline'
 
 interface DropdownOption {
-  value: string;
-  label: string;
-  sublabel?: string;
+  value: string
+  label: string
+  sublabel?: string
 }
 
 interface DropdownProps {
-  options: DropdownOption[];
-  value?: string;
-  onChange: (value: string) => void;
-  onSearch?: (query: string) => void;
-  placeholder?: string;
-  searchPlaceholder?: string;
-  className?: string;
-  disabled?: boolean;
+  options: DropdownOption[]
+  value?: string
+  onChange: (value: string) => void
+  onSearch?: (query: string) => void
+  placeholder?: string
+  searchPlaceholder?: string
+  className?: string
+  disabled?: boolean
 }
 
 const Dropdown: React.FC<DropdownProps> = ({
@@ -28,34 +28,34 @@ const Dropdown: React.FC<DropdownProps> = ({
   className = '',
   disabled = false,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [isOpen, setIsOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
-  const selectedOption = options.find(opt => opt.value === value);
+  const selectedOption = options.find(opt => opt.value === value)
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
+        setIsOpen(false)
       }
-    };
+    }
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const query = e.target.value;
-    setSearchQuery(query);
-    onSearch?.(query);
-  };
+    const query = e.target.value
+    setSearchQuery(query)
+    onSearch?.(query)
+  }
 
   const handleOptionClick = (optionValue: string) => {
-    onChange(optionValue);
-    setIsOpen(false);
-    setSearchQuery('');
-  };
+    onChange(optionValue)
+    setIsOpen(false)
+    setSearchQuery('')
+  }
 
   return (
     <div className={`relative ${className}`} ref={dropdownRef}>
@@ -108,7 +108,7 @@ const Dropdown: React.FC<DropdownProps> = ({
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Dropdown; 
+export default Dropdown 

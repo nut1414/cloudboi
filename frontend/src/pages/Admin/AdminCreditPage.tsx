@@ -47,9 +47,9 @@ const AdminCreditPage: React.FC = () => {
             options={userOptions}
             value={username}
             onChange={(userId) => {
-              const selectedUser = users.find(u => u.user_id === userId);
+              const selectedUser = users.find(u => u.user_id === userId)
               if (selectedUser) {
-                handleSelectUser(selectedUser);
+                handleSelectUser(selectedUser)
               }
             }}
             onSearch={handleSearch}
