@@ -2,7 +2,6 @@ from playwright.sync_api import Page, expect
 
 from ..base_class import BasePage
 from ..common.side_nav_bar import SideNavBar
-from ...data.constant import TransactionType, TransactionStatus, Currency
 
 class AdminCreditPage(BasePage):
     path: str = "/admin/credits"
