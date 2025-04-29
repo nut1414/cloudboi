@@ -2,13 +2,14 @@ import { useState, useCallback } from 'react'
 import { AdminService } from '../../client'
 import { CURRENCY } from '../../constant/CurrencyConstant'
 import { AdminUser } from '../../client/types.gen'
+import useToast from '../../hooks/useToast'
 
 export const useAdminCredit = () => {
+    const toast = useToast()
+
     const [username, setUsername] = useState("")
     const [creditValue, setCreditValue] = useState<number | "">("")
     const [isLoading, setIsLoading] = useState(false)
-    const [error, setError] = useState<string | null>(null)
-    const [successMessage, setSuccessMessage] = useState<string | null>(null)
     const [searchQuery, setSearchQuery] = useState("")
     const [users, setUsers] = useState<AdminUser[]>([])
 
@@ -22,8 +23,6 @@ export const useAdminCredit = () => {
             return
         }
 
-        setError(null)
-
         try {
             const response = await AdminService.adminGetAllUsers()
             if (response.data?.users) {
@@ -34,7 +33,7 @@ export const useAdminCredit = () => {
                 setUsers(filteredUsers)
             }
         } catch {
-            setError("Failed to search users")
+            toast.error("Failed to search users")
             setUsers([])
         }
     }, [])
@@ -66,18 +65,16 @@ export const useAdminCredit = () => {
     // Process credit request
     const processCredit = useCallback(async () => {
         if (!username.trim()) {
-            setError("Please enter a username")
+            toast.error("Please enter a username")
             return false
         }
 
         if (!creditValue || Number(creditValue) <= 0) {
-            setError("Please enter a valid amount")
+            toast.error("Please enter a valid amount")
             return false
         }
 
         setIsLoading(true)
-        setError(null)
-        setSuccessMessage(null)
 
         try {
             const response = await AdminService.adminTopup({
@@ -88,14 +85,14 @@ export const useAdminCredit = () => {
             })
 
             if (response.data) {
-                setSuccessMessage(`Successfully added ${creditValue} ${CURRENCY.SYMBOL} to ${username}'s wallet`)
+                toast.success(`Successfully added ${creditValue} ${CURRENCY.SYMBOL} to ${username}'s wallet`)
                 setCreditValue("")
                 return true
             }
             return false
         } catch (error: unknown) {
             const errorMessage = (error as any).response?.data?.detail || "Failed to add credit. Please check the username and try again."
-            setError(errorMessage)
+            toast.error(errorMessage)
             return false
         } finally {
             setIsLoading(false)
@@ -106,8 +103,6 @@ export const useAdminCredit = () => {
         username,
         creditValue,
         isLoading,
-        error,
-        successMessage,
         predefinedAmounts,
         searchQuery,
         users,
