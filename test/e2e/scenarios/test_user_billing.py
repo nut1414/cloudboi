@@ -9,7 +9,7 @@ from ..data.models import InstancePlanData, OsTypeData, UserData, UserInstanceDa
 from ..registry.actions import ActionRegistry, TestData
 from ..api.client import ApiClient
 from ..data.constant import Currency, TransactionStatus, TransactionType
-from ..utils.datetime_utils import future_date_formatted
+from ..utils.datetime_utils import future_date_formatted, now_formatted
 
 @pytest.fixture(scope="module")
 def test_instance_plan() -> InstancePlanData:
@@ -42,8 +42,8 @@ def test_user_instance(
         lxd_node_name="test-lxd-node-name",
         status="running",
         root_password="Password123!",
-        created_at=datetime.now(),
-        last_updated_at=datetime.now()
+        created_at=now_formatted(),
+        last_updated_at=now_formatted()
     )
 
 @pytest.fixture(scope="module")

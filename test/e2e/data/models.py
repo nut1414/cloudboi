@@ -70,10 +70,10 @@ class UserInstanceData:
     lxd_node_name: str
     status: str
     root_password: str
-    last_updated_at: datetime
+    last_updated_at: str
     instance_id: Optional[uuid.UUID] = None
     user_id: Optional[uuid.UUID] = None
-    created_at: Optional[datetime] = None
+    created_at: Optional[str] = None
 
 @dataclass
 class TransactionData:
@@ -112,3 +112,11 @@ class AdminBillingStatsTopUpData:
     success_amount: float
     total_amount: float
 
+@dataclass
+class AdminUserDetailData:
+    username: str
+    email: str
+    number_of_instances: int
+    instances: List[UserInstanceData]
+    status_breakdown: str
+    role: str

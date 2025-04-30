@@ -56,6 +56,7 @@ const InstancesContent = React.memo(({
           return (
             <div key={instanceId} onClick={(e) => e.stopPropagation()}>
               <ItemCard
+                data-testid={`instance-card-${instance.hostname}`}
                 title={instance.hostname}
                 rightHeader={<StatusBadge status={instance.status} />}
                 isCollapsible={true}
@@ -97,6 +98,7 @@ const InstancesContent = React.memo(({
                       e.stopPropagation() // Prevent card expansion when clicking the button
                       navigateToInstanceDetail(username, instance)
                     }}
+                    data-testid={`view-instance-detail-${instance.hostname}`}
                   />
                 }
               />
@@ -232,6 +234,7 @@ const UserManagePage: React.FC = () => {
               e.stopPropagation()
               handleViewUserInstances(user)
             }}
+            data-testid={`view-instances-${user.username}`}
           />
         </div>
       )
@@ -262,7 +265,7 @@ const UserManagePage: React.FC = () => {
           columns={columns}
           data={users}
           isLoading={isLoading}
-          keyExtractor={(user) => user.user_id}
+          keyExtractor={(user) => user.username}
           unit="user"
           emptyStateMessage="No users found"
           // Expandable rows props
@@ -277,6 +280,7 @@ const UserManagePage: React.FC = () => {
           )}
           isRowExpanded={isRowExpanded}
           onRowExpand={handleRowExpand}
+          data-testid="user-manage"
         />
       </PageContainer>
     </>
