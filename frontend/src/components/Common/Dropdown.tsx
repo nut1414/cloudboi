@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { ChevronDownIcon } from '@heroicons/react/24/outline'
+import { useTestId } from '../../utils/testUtils'
 
 interface DropdownOption {
   value: string
@@ -27,10 +28,12 @@ const Dropdown: React.FC<DropdownProps> = ({
   searchPlaceholder = 'Search...',
   className = '',
   disabled = false,
+  ...restProps
 }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const { dataTestId } = useTestId(restProps)
 
   const selectedOption = options.find(opt => opt.value === value)
 
@@ -66,6 +69,7 @@ const Dropdown: React.FC<DropdownProps> = ({
         }`}
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
+        data-testid={`${dataTestId}-dropdown-button`}
       >
         <span className={selectedOption ? 'text-white' : 'text-gray-400'}>
           {selectedOption ? selectedOption.label : placeholder}
@@ -83,6 +87,7 @@ const Dropdown: React.FC<DropdownProps> = ({
                 placeholder={searchPlaceholder}
                 value={searchQuery}
                 onChange={handleSearchChange}
+                data-testid={`${dataTestId}-dropdown-search`}
               />
             </div>
           )}
@@ -92,6 +97,7 @@ const Dropdown: React.FC<DropdownProps> = ({
                 key={option.value}
                 className="px-4 py-2 hover:bg-blue-800/20 cursor-pointer"
                 onClick={() => handleOptionClick(option.value)}
+                data-testid={`${dataTestId}-dropdown-option-${option.label}`}
               >
                 <div className="flex flex-col">
                   <span className="text-white">{option.label}</span>

@@ -14,8 +14,6 @@ const AdminCreditPage: React.FC = () => {
     username,
     creditValue,
     isLoading,
-    error,
-    successMessage,
     predefinedAmounts,
     searchQuery,
     users,
@@ -55,6 +53,7 @@ const AdminCreditPage: React.FC = () => {
             onSearch={handleSearch}
             placeholder="Select a user"
             searchPlaceholder="Search users by username or email"
+            data-testid="admin-credits"
           />
           {username && (
             <div className="bg-[#23375F] rounded-lg p-4 border border-blue-800/30">
@@ -74,6 +73,7 @@ const AdminCreditPage: React.FC = () => {
                 onChange={handleInputChange}
                 placeholder="Enter custom amount"
                 endIcon={<span className="text-gray-400">{CURRENCY.SYMBOL}</span>}
+                data-testid="admin-credits"
               />
             </div>
 
@@ -83,6 +83,7 @@ const AdminCreditPage: React.FC = () => {
               className="py-3 px-6 self-end"
               onClick={processCredit}
               disabled={isLoading || creditValue === "" || Number(creditValue) <= 0 || !username.trim()}
+              data-testid="admin-add-credit"
             />
           </div>
         </div>
@@ -103,27 +104,14 @@ const AdminCreditPage: React.FC = () => {
                 variant="prominent"
                 isSelected={creditValue === amount}
                 onClick={() => handleInputChange(amount.toString())}
+                data-testid={`admin-credit-option-${amount}`}
               />
             ))}
           </div>
         </div>
-
-        {/* Success Message */}
-        {successMessage && (
-          <div className="bg-green-900/20 border border-green-800/30 p-4 rounded-lg text-green-400">
-            {successMessage}
-          </div>
-        )}
-
-        {/* Error Message */}
-        {error && (
-          <div className="bg-red-900/20 border border-red-800/30 p-4 rounded-lg text-red-400">
-            {error}
-          </div>
-        )}
       </Section>
     )
-  }, [username, creditValue, isLoading, error, successMessage, predefinedAmounts, userOptions, handleSearch, handleSelectUser, handleInputChange, processCredit])
+  }, [username, creditValue, isLoading, predefinedAmounts, userOptions, handleSearch, handleSelectUser, handleInputChange, processCredit])
 
   return (
     <PageContainer
