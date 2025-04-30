@@ -41,6 +41,7 @@ const SystemMetricsCard = React.memo(({ member }: { member: ClusterMemberStateIn
   return (
     <ItemCard
       title={member.server_name}
+      data-testid={`system-metrics-card-${member.server_name}`}
       isCollapsible={true}
       isCollapsed={isCollapsed}
       onCollapseToggle={() => setIsCollapsed(!isCollapsed)}
