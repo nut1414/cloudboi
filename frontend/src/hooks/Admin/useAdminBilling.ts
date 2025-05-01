@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { formatStandardDate, convertToUTC } from "../../utils/dateTime"
 import useToast from "../useToast"
+import { getErrorMessage } from "../../utils/errorHandling"
 
 // Define form type for date range
 type DateRangeFormType = {
@@ -78,11 +79,12 @@ export const useAdminBilling = () => {
             toast.success("Transactions fetched successfully")
             
             return transactionsData
-        } catch (err) {
-            dispatch({ type: BILLING_ACTIONS.FETCH_ERROR, payload: err })
+        } catch (error) {
+            const errorMessage = getErrorMessage(error, "Failed to fetch transactions")
+            dispatch({ type: BILLING_ACTIONS.FETCH_ERROR, payload: errorMessage })
             return null
         }
-    }, [dispatch])
+    }, [dispatch, toast])
     
     // Simplified function to fetch billing stats
     const fetchBillingStats = useCallback(async () => {
@@ -130,11 +132,12 @@ export const useAdminBilling = () => {
             toast.success("Billing stats fetched successfully")
 
             return response.data
-        } catch (err) {
-            dispatch({ type: BILLING_ACTIONS.FETCH_ERROR, payload: err })
+        } catch (error) {
+            const errorMessage = getErrorMessage(error, "Failed to fetch billing statistics")
+            dispatch({ type: BILLING_ACTIONS.FETCH_ERROR, payload: errorMessage })
             return null
         }
-    }, [dispatch, isAllTime, dateRange.startDate, dateRange.endDate])
+    }, [dispatch, isAllTime, dateRange.startDate, dateRange.endDate, toast])
     
     const handleSearch = (query: string) => {
         setSearchQuery(query)

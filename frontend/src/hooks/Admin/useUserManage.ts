@@ -4,6 +4,7 @@ import { AdminService } from '../../client'
 import { AdminUser, UserInstanceFromDB } from '../../client/types.gen'
 import { useNavigate } from 'react-router-dom'
 import { InstanceStatus } from '../../constant/InstanceConstant'
+import { getErrorMessage } from '../../utils/errorHandling'
 
 /**
  * Hook for managing users in the admin section
@@ -43,10 +44,10 @@ export const useUserManage = () => {
         type: ADMIN_ACTIONS.FETCH_SUCCESS,
         payload: data.users
       })
-    } catch (err) {
+    } catch (error) {
       dispatch({
         type: ADMIN_ACTIONS.FETCH_ERROR,
-        payload: `Failed to load user data. Please try again later. ${err}`
+        payload: getErrorMessage(error, "Failed to load user data. Please try again later.")
       })
     }
   }, [dispatch])

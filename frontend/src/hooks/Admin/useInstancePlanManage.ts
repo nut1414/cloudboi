@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form"
 import { InstancePlan, AdminService } from "../../client"
 import { INSTANCE_ACTIONS } from "../../contexts/instanceContext"
 import useToast from "../useToast"
+import { getErrorMessage } from "../../utils/errorHandling"
 
 export type InstancePlanFormData = {
     instance_plan_id?: number | null
@@ -58,7 +59,7 @@ export const useInstancePlanManage = () => {
             dispatch?.({ type: INSTANCE_ACTIONS.SET_ALL_INSTANCE_PLANS, payload: result?.data })
             dispatch?.({ type: INSTANCE_ACTIONS.FETCH_SUCCESS })
         } catch (error) {
-            dispatch?.({ type: INSTANCE_ACTIONS.SET_ERROR, payload: error })
+            dispatch?.({ type: INSTANCE_ACTIONS.SET_ERROR, payload: getErrorMessage(error, 'Failed to fetch instance plans') })
         }
     }, [dispatch])
     
@@ -132,8 +133,8 @@ export const useInstancePlanManage = () => {
             setTimeout(() => {
                 closeModal()
             }, 1500)
-        } catch (err: any) {
-            dispatch?.({ type: INSTANCE_ACTIONS.SET_ERROR, payload: err.message || 'Failed to create instance plan' })
+        } catch (error) {
+            dispatch?.({ type: INSTANCE_ACTIONS.SET_ERROR, payload: getErrorMessage(error, 'Failed to create instance plan') })
         } finally {
             setIsSubmitting(false)
         }
@@ -163,8 +164,8 @@ export const useInstancePlanManage = () => {
             setTimeout(() => {
                 closeModal()
             }, 1500)
-        } catch (err: any) {
-            dispatch?.({ type: INSTANCE_ACTIONS.SET_ERROR, payload: err.message || 'Failed to update instance plan' })
+        } catch (error) {
+            dispatch?.({ type: INSTANCE_ACTIONS.SET_ERROR, payload: getErrorMessage(error, 'Failed to update instance plan') })
         } finally {
             setIsSubmitting(false)
         }
@@ -193,8 +194,8 @@ export const useInstancePlanManage = () => {
             setTimeout(() => {
                 closeModal()
             }, 1500)
-        } catch (err: any) {
-            dispatch?.({ type: INSTANCE_ACTIONS.SET_ERROR, payload: err.message || 'Failed to delete instance plan' })
+        } catch (error) {
+            dispatch?.({ type: INSTANCE_ACTIONS.SET_ERROR, payload: getErrorMessage(error, 'Failed to delete instance plan') })
         } finally {
             setIsSubmitting(false)
         }

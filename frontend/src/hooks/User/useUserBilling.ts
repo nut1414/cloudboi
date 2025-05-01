@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom"
 import { useUser } from "../../contexts/userContext"
 import { CURRENCY } from '../../constant/CurrencyConstant'
 import useToast from "../useToast"
+import { getErrorMessage } from "../../utils/errorHandling"
 
 export const useUserBilling = () => {
     const {
@@ -47,7 +48,7 @@ export const useUserBilling = () => {
         } catch (error) {
             dispatch({
                 type: BILLING_ACTIONS.FETCH_ERROR,
-                payload: 'Failed to fetch wallet data'
+                payload: getErrorMessage(error, 'Failed to fetch wallet data')
             })
             return null
         }
@@ -94,10 +95,10 @@ export const useUserBilling = () => {
             })
 
             dispatch({ type: BILLING_ACTIONS.FETCH_SUCCESS })
-        } catch (err) {
+        } catch (error) {
             dispatch({
                 type: BILLING_ACTIONS.FETCH_ERROR,
-                payload: 'Failed to fetch transaction history'
+                payload: getErrorMessage(error, 'Failed to fetch transaction history')
             })
         }
     }, [dispatch, userName])
@@ -125,8 +126,8 @@ export const useUserBilling = () => {
 
             dispatch({ type: BILLING_ACTIONS.FETCH_SUCCESS })
             return response.data
-        } catch (err) {
-            throw err
+        } catch (error) {
+            throw error
         }
     }, [dispatch, fetchTransactions, userName, fetchUserWallet])
 
@@ -145,14 +146,14 @@ export const useUserBilling = () => {
             await topUpWallet(numericAmount)
             toast.success(`Successfully added ${numericAmount} ${CURRENCY.SYMBOL} to your wallet`)
             return true
-        } catch (err) {
+        } catch (error) {
             dispatch?.({
                 type: BILLING_ACTIONS.SET_ERROR,
-                payload: "Failed to add credit. Please try again."
+                payload: getErrorMessage(error, "Failed to add credit. Please try again.")
             })
             return false
         }
-    }, [topUpWallet])
+    }, [topUpWallet, dispatch, toast])
 
     // Fetch billing overview data
     const fetchBillingOverview = useCallback(async () => {
@@ -171,12 +172,13 @@ export const useUserBilling = () => {
             })
 
             dispatch({ type: BILLING_ACTIONS.FETCH_SUCCESS })
-        } catch (err) {
+        } catch (error) {
+            const errorMessage = getErrorMessage(error, 'Failed to fetch billing overview')
             dispatch({
                 type: BILLING_ACTIONS.FETCH_ERROR,
-                payload: 'Failed to fetch billing overview'
+                payload: errorMessage
             })
-            throw err
+            throw error
         }
     }, [dispatch, userName])
 
