@@ -7,7 +7,7 @@ import {
   EyeSlashIcon,
   ShieldCheckIcon
 } from "@heroicons/react/24/outline"
-import InstanceTerminal from "./InstanceTerminal"
+// import InstanceTerminal from "./InstanceTerminal"
 import InstanceConsole from "./InstanceConsole"
 import { useParams } from "react-router-dom"
 import Section from "../../../components/Common/Section"
@@ -32,7 +32,8 @@ const AccessMenu: React.FC<AccessMenuProps> = ({
   resetPassword
 }) => {
   const instanceName = useParams<{ instanceName: string }>().instanceName || ''
-  const [accessType, setAccessType] = useState<'terminal' | 'console'>('terminal')
+  // Set default access type to console since we're hiding terminal
+  const [accessType, setAccessType] = useState<'terminal' | 'console'>('console')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
 
@@ -49,13 +50,13 @@ const AccessMenu: React.FC<AccessMenuProps> = ({
     }
   }, [password, resetPassword])
 
-  // Define tabs for TabNavigation
+  // Define tabs for TabNavigation - only include console tab
   const accessTabs: TabItem[] = useMemo(() => [
-    {
-      id: 'terminal',
-      label: 'Terminal',
-      icon: <CommandLineIcon className="w-4 h-4" />
-    },
+    // {
+    //   id: 'terminal',
+    //   label: 'Terminal',
+    //   icon: <CommandLineIcon className="w-4 h-4" />
+    // },
     {
       id: 'console',
       label: 'Console',
@@ -123,11 +124,11 @@ const AccessMenu: React.FC<AccessMenuProps> = ({
           Instance Access
         </h2>
         <p className="text-gray-400 text-sm mt-1">
-          Access your instance via terminal or console. Commands entered here execute directly on your instance with root privileges.
+          Access your instance via console. Commands entered here execute directly on your instance with root privileges.
         </p>
       </div>
       
-      {/* Access Type Selector */}
+      {/* Access Type Selector - Only showing console now */}
       <TabNavigation 
         tabs={accessTabs}
         activeTab={accessType}
@@ -136,17 +137,17 @@ const AccessMenu: React.FC<AccessMenuProps> = ({
       />
       
       <div className="bg-[#12203c] rounded-lg overflow-hidden shadow-lg border border-blue-900/20">
-        {accessType === 'terminal' ? (
+        {/* {accessType === 'terminal' ? (
           <InstanceTerminal
             instanceName={instanceName}
             isRunning={isInstanceRunning || false}
           />
-        ) : (
+        ) : ( */}
           <InstanceConsole
             instanceName={instanceName}
             isRunning={isInstanceRunning || false}
           />
-        )}
+        {/* )} */}
       </div>
       {resetRootPasswordSection}
     </>
