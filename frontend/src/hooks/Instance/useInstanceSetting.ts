@@ -112,7 +112,7 @@ export const useInstanceSetting = () => {
                 payload: getErrorMessage(error, "Failed to start the instance")
             })
         }
-    }, [selectedInstance, dispatch, getInstanceAndUpdate, toast])
+    }, [selectedInstance, dispatch, getInstanceAndUpdate])
 
     // Stop instance
     const stopInstance = useCallback(async () => {
@@ -131,7 +131,7 @@ export const useInstanceSetting = () => {
                 payload: getErrorMessage(error, "Failed to stop the instance")
             })
         }
-    }, [selectedInstance, dispatch, getInstanceAndUpdate, toast])
+    }, [selectedInstance, dispatch, getInstanceAndUpdate])
 
     // Restart instance
     const restartInstance = useCallback(async () => {
@@ -150,7 +150,7 @@ export const useInstanceSetting = () => {
                 payload: getErrorMessage(error, "Failed to restart the instance")
             })
         }
-    }, [selectedInstance, dispatch, getInstanceAndUpdate, toast])
+    }, [selectedInstance, dispatch, getInstanceAndUpdate])
 
     // Delete instance
     const deleteInstance = useCallback(async () => {
@@ -170,7 +170,7 @@ export const useInstanceSetting = () => {
                 payload: getErrorMessage(error, "Failed to delete the instance")
             })
         }
-    }, [selectedInstance, dispatch, refreshInstances, navigate, userName, toast])
+    }, [selectedInstance, dispatch, refreshInstances, navigate, userName])
 
     // Reset root password
     const resetPassword = useCallback(async (password: string) => {
@@ -190,7 +190,7 @@ export const useInstanceSetting = () => {
                 payload: getErrorMessage(error, "Failed to reset the root password")
             })
         }
-    }, [selectedInstance, dispatch, getInstanceAndUpdate, toast])
+    }, [selectedInstance, dispatch, getInstanceAndUpdate])
 
     // Format instance uptime with user's timezone
     const getFormattedUptime = useCallback((lastUpdatedAt: Date) => {

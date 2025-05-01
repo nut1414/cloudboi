@@ -84,7 +84,7 @@ export const useAdminBilling = () => {
             dispatch({ type: BILLING_ACTIONS.FETCH_ERROR, payload: errorMessage })
             return null
         }
-    }, [dispatch, toast])
+    }, [dispatch])
     
     // Simplified function to fetch billing stats
     const fetchBillingStats = useCallback(async () => {
@@ -137,7 +137,7 @@ export const useAdminBilling = () => {
             dispatch({ type: BILLING_ACTIONS.FETCH_ERROR, payload: errorMessage })
             return null
         }
-    }, [dispatch, isAllTime, dateRange.startDate, dateRange.endDate, toast])
+    }, [dispatch, isAllTime, dateRange.startDate, dateRange.endDate])
     
     const handleSearch = (query: string) => {
         setSearchQuery(query)

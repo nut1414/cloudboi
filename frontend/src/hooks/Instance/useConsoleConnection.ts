@@ -28,7 +28,7 @@ export const useConsoleWebSocket = (
         } catch (error) {
             toast.error(getErrorMessage(error, "Failed to fetch console buffer"))
         }
-    }, [instanceName, toast])
+    }, [instanceName])
 
     // Pre-connection callback to fetch console buffer
     const preConnectionCallback = useCallback(async () => {

@@ -98,7 +98,7 @@ export const useAuth = () => {
       dispatch?.({ type: USER_ACTIONS.SET_ERROR, payload: errorMessage })
       throw error
     }
-  }, [dispatch, clearError, navigate, toast])
+  }, [dispatch, clearError, navigate])
   
   // Form submission handlers
   const handleLoginSubmit: SubmitHandler<UserLoginRequest> = async (data) => {

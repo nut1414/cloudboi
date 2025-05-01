@@ -29,7 +29,7 @@ export const useClusterState = () => {
     } catch (error) {
       dispatch?.({ type: ADMIN_ACTIONS.FETCH_ERROR, payload: getErrorMessage(error, "Failed to update cluster state") })
     }
-  }, [dispatch, toast])
+  }, [dispatch])
 
   const clusterMembers = useMemo(() => {
     if (!clusterStates) return []

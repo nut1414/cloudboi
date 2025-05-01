@@ -153,7 +153,7 @@ export const useUserBilling = () => {
             })
             return false
         }
-    }, [topUpWallet, dispatch, toast])
+    }, [topUpWallet, dispatch])
 
     // Fetch billing overview data
     const fetchBillingOverview = useCallback(async () => {

@@ -37,7 +37,7 @@ export const useAdminCredit = () => {
             toast.error(getErrorMessage(error, "Failed to search users"))
             setUsers([])
         }
-    }, [toast])
+    }, [])
 
     // Handle search input change
     const handleSearch = useCallback((query: string) => {
@@ -98,7 +98,7 @@ export const useAdminCredit = () => {
         } finally {
             setIsLoading(false)
         }
-    }, [username, creditValue, toast])
+    }, [username, creditValue])
 
     return {
         username,
