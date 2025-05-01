@@ -11,7 +11,22 @@ import TabSkeletonLoader from "../../components/Common/Tab/TabSkeletonLoader"
 
 const InstanceSettingPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("AccessMenu")
-  const { instance, isLoading, getFormattedUptime } = useInstanceSetting()
+  const { 
+    instance, 
+    instanceState, 
+    isLoading, 
+    error,
+    isInstanceRunning, 
+    isInstanceStopped,
+    getFormattedUptime,
+    getInstanceAndUpdate,
+    getInstanceStateAndUpdate,
+    startInstance,
+    stopInstance,
+    restartInstance,
+    deleteInstance,
+    resetPassword
+  } = useInstanceSetting()
 
   // Define tabs with icons for better visual hierarchy
   const tabs: TabItem[] = [
@@ -71,7 +86,20 @@ const InstanceSettingPage: React.FC = () => {
               setActiveTab={setActiveTab}
               data-testid="instance-setting"
             />
-            <InstanceSettingContent active={activeTab} />
+            <InstanceSettingContent 
+              active={activeTab}
+              instance={instance}
+              instanceState={instanceState}
+              isInstanceRunning={isInstanceRunning}
+              isInstanceStopped={isInstanceStopped}
+              isLoading={isLoading}
+              getInstanceStateAndUpdate={getInstanceStateAndUpdate}
+              startInstance={startInstance}
+              stopInstance={stopInstance}
+              restartInstance={restartInstance}
+              deleteInstance={deleteInstance}
+              resetPassword={resetPassword}
+            />
           </>
         )}
     </PageContainer>

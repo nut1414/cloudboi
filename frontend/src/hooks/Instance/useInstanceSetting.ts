@@ -82,7 +82,7 @@ export const useInstanceSetting = () => {
 
     
     useEffect(() => {
-        if (!selectedInstance) {
+        if (!selectedInstance || selectedInstance?.instance_name !== instanceName) {
             getInstanceAndUpdate()
         }
     }, [selectedInstance, getInstanceAndUpdate])

@@ -2,11 +2,19 @@ import React from "react"
 import { ChartBarIcon, CpuChipIcon, InboxStackIcon, ArrowPathIcon } from "@heroicons/react/24/outline"
 import Section from "../../../components/Common/Section"
 import Button from "../../../components/Common/Button/Button"
-import { useInstanceSetting } from "../../../hooks/Instance/useInstanceSetting"
 import { formatBytes } from "../../../utils/systemState"
 
-const MonitorMenu: React.FC = () => {
-    const { instanceState, getInstanceStateAndUpdate } = useInstanceSetting()
+interface MonitorMenuProps {
+    instanceState: any
+    isLoading: boolean
+    getInstanceStateAndUpdate: () => void
+}
+
+const MonitorMenu: React.FC<MonitorMenuProps> = ({ 
+    instanceState, 
+    isLoading,
+    getInstanceStateAndUpdate 
+}) => {
     const { memory, cpu } = instanceState || { memory: { used: 0, total: 0, percentage: 0 }, cpu: { usage: 0, cores: 0 } }
 
     const handleRefresh = () => {
@@ -25,6 +33,7 @@ const MonitorMenu: React.FC = () => {
                     icon={<ArrowPathIcon className="w-5 h-5 text-gray-400 hover:text-purple-400" />}
                     variant="outline"
                     className="pr-0 pl-2 flex items-center justify-center min-w-[36px] min-h-[36px]"
+                    disabled={isLoading}
                 />
             }
         >

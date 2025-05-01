@@ -2,11 +2,14 @@
 import React from "react"
 import { WifiIcon } from "@heroicons/react/24/outline"
 import Section from "../../../components/Common/Section"
-import { useInstanceSetting } from "../../../hooks/Instance/useInstanceSetting"
 
-const NetworkingMenu: React.FC = () => {
-    const { instanceState } = useInstanceSetting()
-    const networkInfo = instanceState?.network.main || { ipv4: '-', ipv6: '-' }
+interface NetworkingMenuProps {
+    instanceState: any
+    isLoading: boolean
+}
+
+const NetworkingMenu: React.FC<NetworkingMenuProps> = ({ instanceState, isLoading }) => {
+    const networkInfo = instanceState?.network?.main || { ipv4: '-', ipv6: '-' }
 
     return (
         <>
