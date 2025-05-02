@@ -8,6 +8,7 @@ import { useInstanceList } from "./useInstanceList"
 import { formatUptime } from "../../utils/dateTime"
 import { parseInstanceState } from "../../utils/systemState"
 import useToast from "../useToast"
+import { getErrorMessage } from "../../utils/errorHandling"
 
 // 30 seconds
 const STATUS_POLLING_INTERVAL = 30000
@@ -51,13 +52,13 @@ export const useInstanceSetting = () => {
                 type: INSTANCE_ACTIONS.SET_SELECTED_INSTANCE,
                 payload: response.data
             })
-        } catch (err) {
+        } catch (error) {
             dispatch?.({
                 type: INSTANCE_ACTIONS.FETCH_ERROR,
-                payload: "Failed to fetch instance details"
+                payload: getErrorMessage(error, "Failed to fetch instance details")
             })
         }
-    }, [selectedInstance, userInstances, dispatch])
+    }, [selectedInstance, userInstances, dispatch, instanceName])
 
     const getInstanceStateAndUpdate = useCallback(async () => {
         if (!instanceName) return
@@ -69,19 +70,19 @@ export const useInstanceSetting = () => {
                 type: INSTANCE_ACTIONS.SET_INSTANCE_STATE,
                 payload: response.data
             })
-        } catch (err) {
+        } catch (error) {
           if (selectedInstance?.instance_status === InstanceStatus.RUNNING) {
             dispatch?.({
                 type: INSTANCE_ACTIONS.FETCH_ERROR,
-                payload: "Failed to fetch instance state"
+                payload: getErrorMessage(error, "Failed to fetch instance state")
             })
           }
         }
-    }, [instanceName, dispatch])
+    }, [instanceName, dispatch, selectedInstance])
 
     
     useEffect(() => {
-        if (!selectedInstance) {
+        if (!selectedInstance || selectedInstance?.instance_name !== instanceName) {
             getInstanceAndUpdate()
         }
     }, [selectedInstance, getInstanceAndUpdate])
@@ -105,10 +106,10 @@ export const useInstanceSetting = () => {
             })
             await getInstanceAndUpdate()
             toast.success(`Instance ${selectedInstance.instance_name} started successfully`)
-        } catch (err) {
+        } catch (error) {
             dispatch?.({
                 type: INSTANCE_ACTIONS.FETCH_ERROR,
-                payload: "Failed to start the instance"
+                payload: getErrorMessage(error, "Failed to start the instance")
             })
         }
     }, [selectedInstance, dispatch, getInstanceAndUpdate])
@@ -124,10 +125,10 @@ export const useInstanceSetting = () => {
             })
             await getInstanceAndUpdate()
             toast.success(`Instance ${selectedInstance.instance_name} stopped successfully`)
-        } catch (err) {
+        } catch (error) {
             dispatch?.({
                 type: INSTANCE_ACTIONS.FETCH_ERROR,
-                payload: "Failed to stop the instance"
+                payload: getErrorMessage(error, "Failed to stop the instance")
             })
         }
     }, [selectedInstance, dispatch, getInstanceAndUpdate])
@@ -143,10 +144,10 @@ export const useInstanceSetting = () => {
             })
             await getInstanceAndUpdate()
             toast.success(`Instance ${selectedInstance.instance_name} restarted successfully`)
-        } catch (err) {
+        } catch (error) {
             dispatch?.({
                 type: INSTANCE_ACTIONS.FETCH_ERROR,
-                payload: "Failed to restart the instance"
+                payload: getErrorMessage(error, "Failed to restart the instance")
             })
         }
     }, [selectedInstance, dispatch, getInstanceAndUpdate])
@@ -163,13 +164,13 @@ export const useInstanceSetting = () => {
             toast.success(`Instance ${selectedInstance.instance_name} deleted successfully`)
             refreshInstances()
             navigate(`/user/${userName}/instance`)
-        } catch (err) {
+        } catch (error) {
             dispatch?.({
                 type: INSTANCE_ACTIONS.FETCH_ERROR,
-                payload: "Failed to delete the instance"
+                payload: getErrorMessage(error, "Failed to delete the instance")
             })
         }
-    }, [selectedInstance, dispatch, getInstanceAndUpdate, navigate])
+    }, [selectedInstance, dispatch, refreshInstances, navigate, userName])
 
     // Reset root password
     const resetPassword = useCallback(async (password: string) => {
@@ -183,10 +184,10 @@ export const useInstanceSetting = () => {
             })
             await getInstanceAndUpdate()
             toast.success(`Root password for ${selectedInstance.instance_name} has been updated successfully`)
-        } catch (err) {
+        } catch (error) {
             dispatch?.({
                 type: INSTANCE_ACTIONS.FETCH_ERROR,
-                payload: "Failed to reset the root password"
+                payload: getErrorMessage(error, "Failed to reset the root password")
             })
         }
     }, [selectedInstance, dispatch, getInstanceAndUpdate])

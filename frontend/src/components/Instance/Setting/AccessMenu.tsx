@@ -7,21 +7,33 @@ import {
   EyeSlashIcon,
   ShieldCheckIcon
 } from "@heroicons/react/24/outline"
-import InstanceTerminal from "./InstanceTerminal"
+// import InstanceTerminal from "./InstanceTerminal"
 import InstanceConsole from "./InstanceConsole"
 import { useParams } from "react-router-dom"
-import { useInstanceSetting } from "../../../hooks/Instance/useInstanceSetting"
 import Section from "../../../components/Common/Section"
 import Button from "../../../components/Common/Button/Button"
 import InputField from "../../../components/Common/InputField"
 import RequirementsChecklist from "../../../components/Common/RequirementsChecklist"
 import { getPasswordRequirements, isPasswordValid } from '../../../utils/instanceUtils'
 import TabNavigation, { TabItem } from "../../../components/Common/Tab/TabNavigation"
+import { UserInstanceResponse } from "../../../client"
 
-const AccessMenu: React.FC = () => {
+interface AccessMenuProps {
+  instance: UserInstanceResponse
+  isInstanceRunning: boolean
+  isLoading: boolean
+  resetPassword: (password: string) => void
+}
+
+const AccessMenu: React.FC<AccessMenuProps> = ({
+  instance,
+  isInstanceRunning,
+  isLoading,
+  resetPassword
+}) => {
   const instanceName = useParams<{ instanceName: string }>().instanceName || ''
-  const { isInstanceRunning, resetPassword, instance } = useInstanceSetting()
-  const [accessType, setAccessType] = useState<'terminal' | 'console'>('terminal')
+  // Set default access type to console since we're hiding terminal
+  const [accessType, setAccessType] = useState<'terminal' | 'console'>('console')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
 
@@ -38,13 +50,13 @@ const AccessMenu: React.FC = () => {
     }
   }, [password, resetPassword])
 
-  // Define tabs for TabNavigation
+  // Define tabs for TabNavigation - only include console tab
   const accessTabs: TabItem[] = useMemo(() => [
-    {
-      id: 'terminal',
-      label: 'Terminal',
-      icon: <CommandLineIcon className="w-4 h-4" />
-    },
+    // {
+    //   id: 'terminal',
+    //   label: 'Terminal',
+    //   icon: <CommandLineIcon className="w-4 h-4" />
+    // },
     {
       id: 'console',
       label: 'Console',
@@ -77,7 +89,7 @@ const AccessMenu: React.FC = () => {
             placeholder="Enter new root password..."
             endIcon={showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
             onEndIconClick={togglePasswordVisibility}
-            disabled={!isInstanceRunning}
+            disabled={!isInstanceRunning || isLoading}
             data-testid="reset-root-password"
           />
         </div>
@@ -97,12 +109,12 @@ const AccessMenu: React.FC = () => {
           onClick={handleResetPassword}
           variant="outline"
           icon={<KeyIcon className="w-5 h-5" />}
-          disabled={!isInstanceRunning || !isPasswordValid(password)}
+          disabled={!isInstanceRunning || !isPasswordValid(password) || isLoading}
           data-testid="reset-root-password"
         />
       </Section>
     )
-  }, [isInstanceRunning, password, resetPassword, showPassword, togglePasswordVisibility, handleResetPassword])
+  }, [isInstanceRunning, password, resetPassword, showPassword, togglePasswordVisibility, handleResetPassword, isLoading])
 
   return (
     <>
@@ -112,11 +124,11 @@ const AccessMenu: React.FC = () => {
           Instance Access
         </h2>
         <p className="text-gray-400 text-sm mt-1">
-          Access your instance via terminal or console. Commands entered here execute directly on your instance with root privileges.
+          Access your instance via console. Commands entered here execute directly on your instance with root privileges.
         </p>
       </div>
       
-      {/* Access Type Selector */}
+      {/* Access Type Selector - Only showing console now */}
       <TabNavigation 
         tabs={accessTabs}
         activeTab={accessType}
@@ -125,17 +137,17 @@ const AccessMenu: React.FC = () => {
       />
       
       <div className="bg-[#12203c] rounded-lg overflow-hidden shadow-lg border border-blue-900/20">
-        {accessType === 'terminal' ? (
+        {/* {accessType === 'terminal' ? (
           <InstanceTerminal
             instanceName={instanceName}
             isRunning={isInstanceRunning || false}
           />
-        ) : (
+        ) : ( */}
           <InstanceConsole
             instanceName={instanceName}
             isRunning={isInstanceRunning || false}
           />
-        )}
+        {/* )} */}
       </div>
       {resetRootPasswordSection}
     </>

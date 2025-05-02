@@ -4,6 +4,7 @@ import { UserService, UserCreateUserData, UserLoginUserData, UserCreateRequest, 
 import { useUser, USER_ACTIONS } from '../../contexts/userContext'
 import { useNavigate } from 'react-router-dom'
 import useToast from '../useToast'
+import { getErrorMessage } from '../../utils/errorHandling'
 
 export const useAuth = () => {
   const { dispatch, error: contextError } = useUser()
@@ -48,8 +49,8 @@ export const useAuth = () => {
       }
       
       await UserService.userCreateUser(userCreate)
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.detail || 'Registration failed'
+    } catch (error) {
+      const errorMessage = getErrorMessage(error, 'Registration failed')
       dispatch?.({ type: USER_ACTIONS.SET_ERROR, payload: errorMessage })
       throw error
     }
@@ -76,8 +77,8 @@ export const useAuth = () => {
       } else {
         throw new Error('No user data returned after login')
       }
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.detail || 'Login failed'
+    } catch (error) {
+      const errorMessage = getErrorMessage(error, 'Login failed')
       dispatch?.({ type: USER_ACTIONS.SET_ERROR, payload: errorMessage })
       throw error
     }
@@ -92,12 +93,12 @@ export const useAuth = () => {
       dispatch?.({ type: USER_ACTIONS.LOGOUT })
       toast.success('Logout successful')
       navigate('/login', { replace: true })
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.detail || 'Logout failed'
+    } catch (error) {
+      const errorMessage = getErrorMessage(error, 'Logout failed')
       dispatch?.({ type: USER_ACTIONS.SET_ERROR, payload: errorMessage })
       throw error
     }
-  }, [dispatch, clearError])
+  }, [dispatch, clearError, navigate])
   
   // Form submission handlers
   const handleLoginSubmit: SubmitHandler<UserLoginRequest> = async (data) => {

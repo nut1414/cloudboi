@@ -3,6 +3,7 @@ import { useEffect, useState, useCallback, useMemo } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { useInstance, INSTANCE_ACTIONS } from "../../contexts/instanceContext"
 import { InstanceService, UserInstanceResponse } from "../../client"
+import { getErrorMessage } from "../../utils/errorHandling"
 
 export const useInstanceList = () => {
     const {
@@ -27,10 +28,10 @@ export const useInstanceList = () => {
             })
             dispatch?.({ type: INSTANCE_ACTIONS.FETCH_SUCCESS })
             dispatch?.({ type: INSTANCE_ACTIONS.SET_USER_INSTANCES, payload: response.data })
-        } catch (err) {
+        } catch (error) {
             dispatch?.({ 
                 type: INSTANCE_ACTIONS.FETCH_ERROR, 
-                payload: "Failed to load instances. Please try again later." 
+                payload: getErrorMessage(error, "Failed to load instances. Please try again later.")
             })
         }
     }, [dispatch, userName])
@@ -119,10 +120,10 @@ export const useInstanceList = () => {
             // Refresh the instances list after action completes
             fetchInstances()
             
-        } catch (err) {
+        } catch (error) {
             dispatch?.({
                 type: INSTANCE_ACTIONS.FETCH_ERROR,
-                payload: `Failed to ${action} instance: ${instance.instance_name}`
+                payload: getErrorMessage(error, `Failed to ${action} instance: ${instance.instance_name}`)
             })
         }
     }, [dispatch, fetchInstances])

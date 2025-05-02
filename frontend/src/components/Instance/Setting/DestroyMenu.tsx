@@ -3,15 +3,35 @@ import React, { useState } from "react"
 import { ExclamationTriangleIcon, TrashIcon } from "@heroicons/react/24/outline"
 import Section from "../../../components/Common/Section"
 import Button from "../../../components/Common/Button/Button"
-import { useInstanceSetting } from "../../../hooks/Instance/useInstanceSetting"
 import InputField from "../../Common/InputField"
+import { UserInstanceResponse } from "../../../client"
 
-const DestroyMenu: React.FC = () => {
+interface DestroyMenuProps {
+    instance: UserInstanceResponse
+    isLoading: boolean
+    deleteInstance: () => void
+}
+
+const DestroyMenu: React.FC<DestroyMenuProps> = ({ 
+    instance, 
+    isLoading: isPageLoading, 
+    deleteInstance 
+}) => {
     const [confirmText, setConfirmText] = useState("")
-    const { instance, deleteInstance, isLoading } = useInstanceSetting()
+    const [isDeleting, setIsDeleting] = useState(false)
     
     const instanceName = instance?.instance_name || ""
     const isDeleteConfirmed = confirmText === instanceName
+    const isLoading = isDeleting || isPageLoading
+
+    const handleDelete = async () => {
+        try {
+            setIsDeleting(true)
+            await deleteInstance()
+        } finally {
+            setIsDeleting(false)
+        }
+    }
 
     return (
         <>
@@ -53,6 +73,7 @@ const DestroyMenu: React.FC = () => {
                         value={confirmText}
                         onChange={setConfirmText}
                         placeholder={`Type ${instanceName} to confirm`}
+                        disabled={isLoading}
                         data-testid="destroy-instance-input"
                     />
                 </div>
@@ -60,7 +81,7 @@ const DestroyMenu: React.FC = () => {
                 <div className="flex justify-end">
                     <Button
                         label="Destroy this Instance"
-                        onClick={deleteInstance}
+                        onClick={handleDelete}
                         icon={<TrashIcon className="w-5 h-5" />}
                         variant="purple" 
                         disabled={!isDeleteConfirmed || isLoading}

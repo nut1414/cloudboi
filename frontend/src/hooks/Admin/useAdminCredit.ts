@@ -3,6 +3,7 @@ import { AdminService } from '../../client'
 import { CURRENCY } from '../../constant/CurrencyConstant'
 import { AdminUser } from '../../client/types.gen'
 import useToast from '../../hooks/useToast'
+import { getErrorMessage } from '../../utils/errorHandling'
 
 export const useAdminCredit = () => {
     const toast = useToast()
@@ -32,8 +33,8 @@ export const useAdminCredit = () => {
                 ).slice(0, 5)
                 setUsers(filteredUsers)
             }
-        } catch {
-            toast.error("Failed to search users")
+        } catch (error) {
+            toast.error(getErrorMessage(error, "Failed to search users"))
             setUsers([])
         }
     }, [])
@@ -90,8 +91,8 @@ export const useAdminCredit = () => {
                 return true
             }
             return false
-        } catch (error: unknown) {
-            const errorMessage = (error as any).response?.data?.detail || "Failed to add credit. Please check the username and try again."
+        } catch (error) {
+            const errorMessage = getErrorMessage(error, "Failed to add credit. Please check the username and try again.")
             toast.error(errorMessage)
             return false
         } finally {

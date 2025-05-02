@@ -3,6 +3,7 @@ import { useWebSocketBase } from "../useWebSocketBase"
 import { InstanceService } from "../../client"
 import { Terminal } from "xterm"
 import useToast from "../useToast"
+import { getErrorMessage } from "../../utils/errorHandling"
 
 // Hook for managing WebSocket connection for console
 export const useConsoleWebSocket = (
@@ -25,7 +26,7 @@ export const useConsoleWebSocket = (
                 setConsoleBuffer(response.data)
             }
         } catch (error) {
-            toast.error("Failed to fetch console buffer")
+            toast.error(getErrorMessage(error, "Failed to fetch console buffer"))
         }
     }, [instanceName])
 

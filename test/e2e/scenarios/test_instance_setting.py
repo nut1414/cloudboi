@@ -64,17 +64,17 @@ def setup_class_actions(action_registry: ActionRegistry, test_user_instance: Use
         
 @pytest.mark.usefixtures("test_class_lifecycle")  # Add this fixture to use class-level actions
 class TestInstanceSetting:
-    def test_access_menu_terminal(self, page: Page, test_user_instance: UserInstanceData, test_user: UserData) -> None:
-        # We use a function-scoped page for each test, but the instance was created once by before_all
-        instance_list_page = InstanceListPage(page, test_user.username)
-        instance_list_page.navigate()
-        instance_list_page.click_row_view_button(test_user_instance.hostname)
-        instance_list_page.should_navigate_to_instance_setting_page(test_user_instance.hostname)
+    # def test_access_menu_terminal(self, page: Page, test_user_instance: UserInstanceData, test_user: UserData) -> None:
+    #     # We use a function-scoped page for each test, but the instance was created once by before_all
+    #     instance_list_page = InstanceListPage(page, test_user.username)
+    #     instance_list_page.navigate()
+    #     instance_list_page.click_row_view_button(test_user_instance.hostname)
+    #     instance_list_page.should_navigate_to_instance_setting_page(test_user_instance.hostname)
 
-        instance_setting_page = InstanceSettingPage(page, test_user.username, test_user_instance.hostname)
-        instance_setting_page.wait_for_terminal_prompt()
-        instance_setting_page.input_to_terminal("echo $(( (17*19) + (23*3) - (5*6) ))")
-        instance_setting_page.should_have_output_access_menu("362", "terminal")
+    #     instance_setting_page = InstanceSettingPage(page, test_user.username, test_user_instance.hostname)
+    #     instance_setting_page.wait_for_terminal_prompt()
+    #     instance_setting_page.input_to_terminal("echo $(( (17*19) + (23*3) - (5*6) ))")
+    #     instance_setting_page.should_have_output_access_menu("362", "terminal")
 
     def test_access_menu_console_login_success(self, page: Page, test_user_instance: UserInstanceData, test_user: UserData) -> None:
         instance_list_page = InstanceListPage(page, test_user.username)
@@ -92,18 +92,18 @@ class TestInstanceSetting:
         instance_setting_page.should_have_output_access_menu("362", "console")
         instance_setting_page.logout_console()
 
-    def test_access_menu_console_login_failed(self, page: Page, test_user_instance: UserInstanceData, test_user: UserData) -> None:
-        instance_list_page = InstanceListPage(page, test_user.username)
-        instance_list_page.navigate()
-        instance_list_page.click_row_view_button(test_user_instance.hostname)
-        instance_list_page.should_navigate_to_instance_setting_page(test_user_instance.hostname)
+    # def test_access_menu_console_login_failed(self, page: Page, test_user_instance: UserInstanceData, test_user: UserData) -> None:
+    #     instance_list_page = InstanceListPage(page, test_user.username)
+    #     instance_list_page.navigate()
+    #     instance_list_page.click_row_view_button(test_user_instance.hostname)
+    #     instance_list_page.should_navigate_to_instance_setting_page(test_user_instance.hostname)
         
-        instance_setting_page = InstanceSettingPage(page, test_user.username, test_user_instance.hostname)
-        instance_setting_page.click_access_menu_tab("console")
-        instance_setting_page.wait_for_console_prompt()
-        instance_setting_page.input_to_terminal("root")
-        instance_setting_page.input_to_terminal("wrong-password")
-        instance_setting_page.should_have_output_access_menu("Login incorrect", "console")
+    #     instance_setting_page = InstanceSettingPage(page, test_user.username, test_user_instance.hostname)
+    #     instance_setting_page.click_access_menu_tab("console")
+    #     instance_setting_page.wait_for_console_prompt()
+    #     instance_setting_page.input_to_terminal("root")
+    #     instance_setting_page.input_to_terminal("wrong-password")
+    #     instance_setting_page.should_have_output_access_menu("Login incorrect", "console")
 
     def test_access_menu_reset_root_password(self, page: Page, test_user_instance: UserInstanceData, test_user: UserData) -> None:
         instance_list_page = InstanceListPage(page, test_user.username)

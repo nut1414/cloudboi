@@ -3,18 +3,27 @@ import React from "react"
 import { PowerIcon, ArrowPathIcon } from "@heroicons/react/24/outline"
 import Section from "../../../components/Common/Section"
 import Button from "../../../components/Common/Button/Button"
-import { useInstanceSetting } from "../../../hooks/Instance/useInstanceSetting"
+import { UserInstanceResponse } from "../../../client"
 
-const PowerMenu: React.FC = () => {
-    const {
-        instance,
-        isInstanceRunning,
-        isInstanceStopped,
-        startInstance,
-        stopInstance,
-        restartInstance
-    } = useInstanceSetting()
+interface PowerMenuProps {
+    instance: UserInstanceResponse
+    isInstanceRunning: boolean
+    isInstanceStopped: boolean
+    isLoading: boolean
+    startInstance: () => void
+    stopInstance: () => void
+    restartInstance: () => void
+}
 
+const PowerMenu: React.FC<PowerMenuProps> = ({
+    instance,
+    isInstanceRunning,
+    isInstanceStopped,
+    isLoading,
+    startInstance,
+    stopInstance,
+    restartInstance
+}) => {
     return (
         <>
             <Section
@@ -38,6 +47,7 @@ const PowerMenu: React.FC = () => {
                             onClick={startInstance}
                             variant="primary"
                             icon={<PowerIcon className="w-5 h-5" />}
+                            disabled={isLoading}
                             data-testid="start-instance"
                         />
                     ) : (
@@ -46,6 +56,7 @@ const PowerMenu: React.FC = () => {
                             onClick={stopInstance}
                             variant="primary"
                             icon={<PowerIcon className="w-5 h-5" />}
+                            disabled={isLoading}
                             data-testid="stop-instance"
                         />
                     )}
@@ -55,7 +66,7 @@ const PowerMenu: React.FC = () => {
                         onClick={restartInstance}
                         variant="outline"
                         icon={<ArrowPathIcon className="w-5 h-5" />}
-                        disabled={!isInstanceRunning}
+                        disabled={!isInstanceRunning || isLoading}
                         data-testid="restart-instance"
                     />
                 </div>

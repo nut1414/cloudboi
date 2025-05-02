@@ -3,6 +3,7 @@ import { ClusterService } from "../../client"
 import { useAdmin, ADMIN_ACTIONS } from "../../contexts/adminContext"
 import { groupClusterMemberStateInfo } from "../../utils/systemState"
 import useToast from "../useToast"
+import { getErrorMessage } from "../../utils/errorHandling"
 /**
  * Hook for managing users in the admin section
  * Uses AdminContext to store and manage user data
@@ -26,8 +27,7 @@ export const useClusterState = () => {
         toast.success("Cluster state updated successfully")
       }
     } catch (error) {
-      dispatch?.({ type: ADMIN_ACTIONS.SET_LOADING, payload: false })
-      dispatch?.({ type: ADMIN_ACTIONS.FETCH_ERROR, payload: error })
+      dispatch?.({ type: ADMIN_ACTIONS.FETCH_ERROR, payload: getErrorMessage(error, "Failed to update cluster state") })
     }
   }, [dispatch])
 

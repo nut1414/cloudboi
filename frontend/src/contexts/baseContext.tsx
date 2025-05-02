@@ -46,7 +46,7 @@ const CommonProvider = <T extends BaseContextState>({
       // Update the previous error reference
       prevErrorRef.current = contextValue.error
     }
-  }, [contextValue.error, toast])
+  }, [contextValue.error])
   
   return (
     <Context.Provider value={contextValue}>

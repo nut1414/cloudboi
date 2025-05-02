@@ -12,6 +12,7 @@ import { INSTANCE_ACTIONS } from "../../contexts/instanceContext"
 import { useInstanceList } from "./useInstanceList"
 import useToast from "../useToast"
 import { useNavigate, useParams } from "react-router-dom"
+import { getErrorMessage } from "../../utils/errorHandling"
 
 export const useInstanceCreate = () => {
     const {
@@ -128,10 +129,10 @@ export const useInstanceCreate = () => {
                 payload: response.data
             })
             dispatch?.({ type: INSTANCE_ACTIONS.SET_ERROR, payload: null })
-        } catch (err) {
+        } catch (error) {
             dispatch?.({
                 type: INSTANCE_ACTIONS.SET_ERROR,
-                payload: "Failed to load instance details. Please try again."
+                payload: getErrorMessage(error, "Failed to load instance details. Please try again.")
             })
         } finally {
             dispatch?.({ type: INSTANCE_ACTIONS.SET_LOADING, payload: false })
@@ -211,15 +212,14 @@ export const useInstanceCreate = () => {
                     data: response.data,
                     error: null
                 }
-            } catch (err: any) {
-                const errorMessage = err.response?.data?.detail?.[0]?.msg ||
-                    "Failed to create instance. Please try again."
-
+            } catch (error) {
+                const errorMessage = getErrorMessage(error, "Failed to create instance. Please try again.")
+                
                 dispatch?.({ type: INSTANCE_ACTIONS.SET_ERROR, payload: errorMessage })
                 result = {
                     success: false,
                     data: null,
-                    error: errorMessage
+                    error: errorMessage as unknown as null // Type assertion to fix the error
                 }
             } finally {
                 setIsSubmitting(false)
