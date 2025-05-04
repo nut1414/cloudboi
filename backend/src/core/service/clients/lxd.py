@@ -229,7 +229,9 @@ class LXDClient(BaseInstanceClient[models.Instance]):
         }
     
     def __to_image_alias(self, os_image_name: str, os_image_version: str) -> str:
-        return (f"{os_image_name}/{os_image_version}").lower()
+        if os_image_name.lower() == "ubuntu":
+            return os_image_version
+        return f"{os_image_name}/{os_image_version}".lower()
     
     def __get_image_server_url(self, os_image_name: str) -> str:
         if os_image_name == "ubuntu":

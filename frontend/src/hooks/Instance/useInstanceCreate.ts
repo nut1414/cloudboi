@@ -26,7 +26,8 @@ export const useInstanceCreate = () => {
         refreshInstances
     } = useInstanceList()
     const {
-        fetchBillingOverview
+        fetchBillingOverview,
+        fetchTransactions
     } = useUserBilling()
 
     // Form setup with react-hook-form
@@ -217,6 +218,7 @@ export const useInstanceCreate = () => {
                     error: null
                 }
                 fetchBillingOverview()
+                fetchTransactions()
             } catch (error) {
                 const errorMessage = getErrorMessage(error, "Failed to create instance. Please try again.")
                 
