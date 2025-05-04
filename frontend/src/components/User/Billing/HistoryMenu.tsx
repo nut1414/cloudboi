@@ -10,13 +10,8 @@ import TransactionAmount from "../../Common/TransactionAmount"
 const HistoryMenu: React.FC = () => {
     const {
         userTransactions,
-        fetchTransactions,
         formatTransactionType
     } = useUserBilling()
-
-    useEffect(() => {
-        fetchTransactions()
-    }, [fetchTransactions])
 
     const columns: TableColumn<UserTransactionResponse>[] = [
         {

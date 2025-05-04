@@ -11,7 +11,7 @@ import { createContextProvider, BaseContextState, ReducerAction } from './baseCo
 
 // Define the specific state for billing context
 interface BillingContextState extends BaseContextState {
-    userWallets: Record<string, UserWalletResponse | null>
+    userWallet: UserWalletResponse | null
     userTransactions: UserTransactionResponse[] | null
     userBillingOverview: UserBillingOverviewResponse | null
     adminBillingStats: AdminBillingStatsResponse | null
@@ -44,10 +44,7 @@ const billingReducer = (
         case BILLING_ACTIONS.SET_USER_WALLET:
             return {
                 ...state,
-                userWallets: {
-                    ...state.userWallets,
-                    [action.payload?.username || '']: action.payload,
-                },
+                userWallet: action.payload,
             }
         case BILLING_ACTIONS.SET_USER_TRANSACTIONS:
             return {
@@ -104,7 +101,7 @@ const billingReducer = (
 
 // Initial state
 const initialState: BillingContextState = {
-    userWallets: {},
+    userWallet: null,
     userTransactions: null,
     userBillingOverview: null,
     adminBillingStats: null,

@@ -13,6 +13,7 @@ import { useInstanceList } from "./useInstanceList"
 import useToast from "../useToast"
 import { useNavigate, useParams } from "react-router-dom"
 import { getErrorMessage } from "../../utils/errorHandling"
+import { useUserBilling } from "../User/useUserBilling"
 
 export const useInstanceCreate = () => {
     const {
@@ -24,6 +25,10 @@ export const useInstanceCreate = () => {
     const {
         refreshInstances
     } = useInstanceList()
+    const {
+        fetchBillingOverview,
+        fetchTransactions
+    } = useUserBilling()
 
     // Form setup with react-hook-form
     const {
@@ -212,6 +217,8 @@ export const useInstanceCreate = () => {
                     data: response.data,
                     error: null
                 }
+                fetchBillingOverview()
+                fetchTransactions()
             } catch (error) {
                 const errorMessage = getErrorMessage(error, "Failed to create instance. Please try again.")
                 
