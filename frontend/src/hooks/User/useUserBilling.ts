@@ -10,7 +10,7 @@ import { getErrorMessage } from "../../utils/errorHandling"
 
 export const useUserBilling = () => {
     const {
-        userWallets,
+        userWallet,
         userTransactions,
         userBillingOverview,
         isLoading,
@@ -21,9 +21,6 @@ export const useUserBilling = () => {
     const { userName } = useParams<{ userName: string }>()
     const { isAuthenticated } = useUser()
     const toast = useToast()
-    
-    // Get the current user's wallet from the wallets map
-    const userWallet = userName ? userWallets[userName] || null : null
     
     // Function to fetch user wallet
     const fetchUserWallet = useCallback(async (username: string): Promise<UserWalletResponse | null> => {
@@ -53,16 +50,6 @@ export const useUserBilling = () => {
             return null
         }
     }, [dispatch])
-
-    // Fetch wallet data when the username changes
-    useEffect(() => {
-        if (userName && isAuthenticated) {
-            // Only fetch if we don't have wallet data for this username
-            if (!userWallets[userName]) {
-                fetchUserWallet(userName)
-            }
-        }
-    }, [userName, fetchUserWallet, isAuthenticated, userWallets])
 
     // Format transaction type string for display
     const formatTransactionType = useCallback((type: string) => {
@@ -195,6 +182,15 @@ export const useUserBilling = () => {
     const sanitizeNumericInput = useCallback((value: string) => {
         return value.replace(/\D/g, "")
     }, [])
+
+    // Fetch wallet data when the username changes
+    useEffect(() => {
+        if (userName && isAuthenticated && (!userWallet || userWallet?.username !== userName)) {
+            fetchUserWallet(userName)
+            fetchTransactions()
+            fetchBillingOverview()
+        }
+    }, [userName, fetchUserWallet, isAuthenticated, fetchTransactions, fetchBillingOverview])
 
     return {
         // State from context

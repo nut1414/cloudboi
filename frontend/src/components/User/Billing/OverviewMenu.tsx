@@ -7,12 +7,8 @@ import { useUserBilling } from "../../../hooks/User/useUserBilling"
 import { CURRENCY } from "../../../constant/CurrencyConstant"
 
 const OverviewMenu: React.FC = () => {
-    const { userBillingOverview, userWallet, fetchBillingOverview, navigateToTopUp } = useUserBilling()
+    const { userBillingOverview, userWallet, navigateToTopUp } = useUserBilling()
     const isZeroSubscription = userBillingOverview?.upcoming_payment?.total_subscription === 0
-
-    useEffect(() => {
-        fetchBillingOverview()
-    }, [fetchBillingOverview])
 
     // Memoize the estimate usage and paid components
     const EstimateUsagePaid = useMemo(() => {
