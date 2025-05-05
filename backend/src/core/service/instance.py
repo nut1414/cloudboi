@@ -81,6 +81,10 @@ class InstanceService:
             instance_plan_db=instance_plan_create,
             os_type_db=os_type_create
         )
+
+        user_wallet = await self.subscription_service.get_user_wallet(user_id=user_session_ctx.get().user_id)
+        if user_wallet.balance < self.subscription_service._calculate_payment_amount(instance_plan_create.cost_hour):
+            raise HTTPException(status_code=400, detail="Insufficient balance")
         
         # Create instance in LXD
         instance = await self.lxd_client.create_instance(instance_create)
@@ -89,10 +93,6 @@ class InstanceService:
         
         # Create instance in DB
         created_instance = await self.instance_opr.upsert_user_instance(instance)
-
-        user_wallet = await self.subscription_service.get_user_wallet(user_id=user_session_ctx.get().user_id)
-        if user_wallet.balance < self.subscription_service._calculate_payment_amount(instance_plan_create.cost_hour):
-            raise HTTPException(status_code=400, detail="Insufficient balance")
 
         # Create subscription
         first_payment_transaction = await self.subscription_service.create_subscription(
